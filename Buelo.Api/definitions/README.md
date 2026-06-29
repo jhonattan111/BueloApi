@@ -1,29 +1,29 @@
-# definitions/ — exemplos declarativos do Buelo
+# definitions/ — Buelo declarative examples
 
-Mocks no **padrão declarativo** (YAML), lidos pelo `FileSystemDefinitionStore` no layout
-`{kind}/{name}.yml`. Substituem os antigos templates C# (`templates/`, removidos).
+Mocks in the **declarative standard** (YAML), read by the `FileSystemDefinitionStore` in the
+`{kind}/{name}.yml` layout. They replace the old C# templates (`templates/`, removed).
 
 ## Layout
 
 ```
 definitions/
-  report/        report completos (renderáveis)    → hello, invoice, colaboradores
-  component/     componentes reusáveis (use/slots)  → layoutPadrao
-  styles/        classes de estilo (+ extends)      → corporativo
-  theme/         page defaults + classes            → corporativo
-  formats/       máscaras nomeadas                  → br
-  lib/           expressões puras nomeadas          → vendas
-  validator/     validadores (3 degraus)            → cpf
-  data/          dados mock (JSON) p/ cada report    → hello/invoice/colaboradores
+  report/        complete reports (renderable)        → hello, invoice, colaboradores
+  component/     reusable components (use/slots)       → layoutPadrao
+  styles/        style classes (+ extends)             → corporativo
+  theme/         page defaults + classes               → corporativo
+  formats/       named masks                           → br
+  lib/           named pure expressions                → vendas
+  validator/     validators (3 tiers)                  → cpf
+  data/          mock data (JSON) for each report      → hello/invoice/colaboradores
 ```
 
-`report/*.yml` declaram seus `import:` (resolvidos pelo store); `data/` **não** é um kind — é só o
-JSON de exemplo para alimentar cada report.
+`report/*.yml` declare their `import:` (resolved by the store); `data/` is **not** a kind — it is just the
+example JSON to feed each report.
 
-## Renderizar (API em `http://localhost:5238`)
+## Render (API at `http://localhost:5238`)
 
 ```bash
-# por nome (resolve os imports do store); o corpo é o JSON de data/<nome>.json
+# by name (resolves the store's imports); the body is the JSON from data/<name>.json
 curl -X POST http://localhost:5238/api/report/render-stored/invoice \
   -H "Content-Type: application/json" \
   -d '{ "data": '"$(cat definitions/data/invoice.json)"' }' --output invoice.pdf
@@ -33,15 +33,15 @@ curl -X POST http://localhost:5238/api/report/render-stored/colaboradores \
   -d '{ "data": '"$(cat definitions/data/colaboradores.json)"' }' --output colaboradores.pdf
 ```
 
-Também dá para renderizar YAML inline (`POST api/report/render-declarative`), ejetar para C#
-(`POST api/report/eject`), pegar os schemas (`GET api/schemas/{kind}`) e validar valores
+You can also render inline YAML (`POST api/report/render-declarative`), eject to C#
+(`POST api/report/eject`), fetch the schemas (`GET api/schemas/{kind}`), and validate values
 (`POST api/validate-data`).
 
-## O que cada report exercita
+## What each report exercises
 
-- **hello** — markdown (heading/bold/itálico/lista) + numeração de página no rodapé.
-- **invoice** — `use: layoutPadrao` (component + slot), `styles`/`theme`, tabela §5 com colunas
-  `*`/`px`, `class`, pipe `| cnpj`, e footer com `sum(data.itens, 'preco * qtd')`.
-- **colaboradores** — tabela com `groupBy: departamento`, header/subtotal por grupo.
+- **hello** — markdown (heading/bold/italic/list) + page numbering in the footer.
+- **invoice** — `use: layoutPadrao` (component + slot), `styles`/`theme`, §5 table with `*`/`px`
+  columns, `class`, the `| cnpj` pipe, and a footer with `sum(data.itens, 'preco * qtd')`.
+- **colaboradores** — table with `groupBy: departamento`, header/subtotal per group.
 
-> Os três são verificados por `Buelo.Tests/Engine/DeclarativeMocksTests` (renderiza do disco → PDF).
+> All three are verified by `Buelo.Tests/Engine/DeclarativeMocksTests` (renders from disk → PDF).

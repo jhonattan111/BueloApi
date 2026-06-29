@@ -1,20 +1,20 @@
 # 📚 QuestPDF Template References
 
-Este documento cataloga os templates QuestPDF de referência fornecidos para ajudar no desenvolvimento dos novos templates do Buelo.
+This document catalogs the reference QuestPDF templates provided to help develop the new Buelo templates.
 
-## 📋 Templates Disponíveis
+## 📋 Available Templates
 
-### 1. **InvoiceDocument.cs** - Template de Fatura
-**Localização**: Attachments (QuestPDFShowcase project)
+### 1. **InvoiceDocument.cs** - Invoice Template
+**Location**: Attachments (QuestPDFShowcase project)
 
-**Características**:
-- Layout limpo e profissional
-- Dados do vendedor e comprador
-- Tabela de itens com quantidade/preço
-- Sumário de subtotal, impostos, total
-- Header e footer com informações
+**Features**:
+- Clean, professional layout
+- Seller and buyer data
+- Items table with quantity/price
+- Summary of subtotal, taxes, total
+- Header and footer with information
 
-**Modelo de Dados**:
+**Data Model**:
 ```csharp
 public class InvoiceModel
 {
@@ -35,7 +35,7 @@ public class InvoiceModel
 }
 ```
 
-**Uso em Buelo**:
+**Use in Buelo**:
 ```csharp
 public class InvoiceDocument : IDocument
 {
@@ -49,7 +49,7 @@ public class InvoiceDocument : IDocument
         {
             page.Size(PageSizes.A4);
             page.Margin(40);
-            // ... implementar layout baseado na referência
+            // ... implement layout based on the reference
         });
     }
 }
@@ -57,15 +57,15 @@ public class InvoiceDocument : IDocument
 
 ---
 
-### 2. **FinancialDashboardDocument.cs** - Dashboard Financeiro
-**Características**:
-- Estatísticas mensais (Revenue, Expenses, Profit)
-- Cards de KPI com cores destacadas
-- Tabela de dados financeiros
-- Gráfico de departamentos com barras
-- Layout landscape com múltiplos elementos
+### 2. **FinancialDashboardDocument.cs** - Financial Dashboard
+**Features**:
+- Monthly statistics (Revenue, Expenses, Profit)
+- KPI cards with highlighted colors
+- Financial data table
+- Department chart with bars
+- Landscape layout with multiple elements
 
-**Modelo de Dados**:
+**Data Model**:
 ```csharp
 public class MonthlyStat
 {
@@ -94,24 +94,24 @@ public class FinancialDashboardModel
 }
 ```
 
-**Técnicas Úteis**:
-- Cards com cores de destaque (KPI)
-- Tabelas com múltiplas colunas
-- Gráficos de barras verticais
-- Row layout para dados lado a lado
+**Useful Techniques**:
+- Cards with highlight colors (KPI)
+- Tables with multiple columns
+- Vertical bar charts
+- Row layout for side-by-side data
 
 ---
 
-### 3. **ProductCatalogDocument.cs** - Catálogo de Produtos
-**Características**:
-- Capa customizada com branding
-- Páginas por categoria
-- Grid de produtos com imagens/descrições
-- Badges para "New" e "Featured"
-- Rating com estrelas
-- Info de stock e preço
+### 3. **ProductCatalogDocument.cs** - Product Catalog
+**Features**:
+- Custom cover with branding
+- Pages by category
+- Product grid with images/descriptions
+- Badges for "New" and "Featured"
+- Star rating
+- Stock and price info
 
-**Modelo de Dados**:
+**Data Model**:
 ```csharp
 public class Product
 {
@@ -135,25 +135,25 @@ public class ProductCatalogModel
 }
 ```
 
-**Técnicas Úteis**:
-- Múltiplas páginas (cover + content pages)
-- Group by categoria
-- Badges e indicadores
+**Useful Techniques**:
+- Multiple pages (cover + content pages)
+- Group by category
+- Badges and indicators
 - Star ratings
 - Grid layout
-- Borders e espaçamento
+- Borders and spacing
 
 ---
 
-### 4. **SalesPerformanceDocument.cs** - Report de Performance de Vendas
-**Características**:
-- KPI cards com métricas principais
-- Gráfico de bookings vs renewals
-- Gráfico de pipeline por estágio
-- Tabela de breakdown trimestral
-- Múltiplas páginas (overview + detalhes)
+### 4. **SalesPerformanceDocument.cs** - Sales Performance Report
+**Features**:
+- KPI cards with key metrics
+- Bookings vs renewals chart
+- Pipeline-by-stage chart
+- Quarterly breakdown table
+- Multiple pages (overview + details)
 
-**Modelo de Dados**:
+**Data Model**:
 ```csharp
 public class SalesMonthlyMetric
 {
@@ -178,24 +178,24 @@ public class SalesPerformanceModel
 }
 ```
 
-**Técnicas Úteis**:
-- Múltiplas páginas
-- Gráficos (bar, line, pie)
-- KPI cards com cores
+**Useful Techniques**:
+- Multiple pages
+- Charts (bar, line, pie)
+- KPI cards with colors
 - Summary tables
-- Page headers com metadata
+- Page headers with metadata
 
 ---
 
-### 5. **OperationsSnapshotDocument.cs** - Snapshot Operacional
-**Características**:
-- Métricas de tickets e incidentes
-- Cards de KPI com colores
-- Gráfico de tickets abertos por dia
-- Gráfico de capacidade de times
-- Layout compacto
+### 5. **OperationsSnapshotDocument.cs** - Operations Snapshot
+**Features**:
+- Ticket and incident metrics
+- KPI cards with colors
+- Chart of tickets opened per day
+- Team capacity chart
+- Compact layout
 
-**Modelo de Dados**:
+**Data Model**:
 ```csharp
 public class TeamCapacity
 {
@@ -226,21 +226,21 @@ public class OperationsSnapshotModel
 ## 🛠️ Shared Components
 
 ### SharedReportLayout.cs
-Componentes compartilhados para layout:
-- `ComposeHeader()` - Header padronizado com título/subtitle
-- `ComposeFooter()` - Footer com numeração de páginas
+Shared components for layout:
+- `ComposeHeader()` - Standardized header with title/subtitle
+- `ComposeFooter()` - Footer with page numbering
 
 ### SharedChartComponents.cs
-Componentes de gráficos reutilizáveis:
-- `VerticalBarChart()` - Gráfico de barras verticais
-- `HorizontalBars()` - Gráfico de barras horizontais
-- `SectionCard()` - Card para seções de conteúdo
+Reusable chart components:
+- `VerticalBarChart()` - Vertical bar chart
+- `HorizontalBars()` - Horizontal bar chart
+- `SectionCard()` - Card for content sections
 
 ---
 
-## 🎨 Padrões & Técnicas Utilizadas
+## 🎨 Patterns & Techniques Used
 
-### 1. **Layout Estruturado**
+### 1. **Structured Layout**
 ```csharp
 container.Page(page =>
 {
@@ -253,7 +253,7 @@ container.Page(page =>
 });
 ```
 
-### 2. **Cards para KPIs**
+### 2. **Cards for KPIs**
 ```csharp
 container.Background(SurfaceColor)
     .Border(1)
@@ -266,7 +266,7 @@ container.Background(SurfaceColor)
     });
 ```
 
-### 3. **Tabelas**
+### 3. **Tables**
 ```csharp
 container.Table(table =>
 {
@@ -288,7 +288,7 @@ container.Table(table =>
 });
 ```
 
-### 4. **Gráficos com Barras**
+### 4. **Bar Charts**
 ```csharp
 foreach (var bar in bars)
 {
@@ -302,7 +302,7 @@ foreach (var bar in bars)
 }
 ```
 
-### 5. **Cores e Styling**
+### 5. **Colors and Styling**
 ```csharp
 private static readonly Color PrimaryColor = Color.FromHex("#0f4c81");
 private static readonly Color GreenColor = Color.FromHex("#137333");
@@ -312,28 +312,28 @@ private static readonly Color LightBg = Color.FromHex("#f1f3f4");
 
 ---
 
-## 📖 Como Usar Estas Referências
+## 📖 How to Use These References
 
-### Para Desenvolvedores
-1. Leia os templates de referência para entender estrutura
-2. Copie e adapte as estruturas para seus templates
-3. Use `SharedReportLayout` e `SharedChartComponents` como base
-4. Mantenha a mesma estrutura (IDocument, GetMetadata, Compose)
+### For Developers
+1. Read the reference templates to understand the structure
+2. Copy and adapt the structures for your templates
+3. Use `SharedReportLayout` and `SharedChartComponents` as a base
+4. Keep the same structure (IDocument, GetMetadata, Compose)
 
-### Para Product/Design
-1. Veja os exemplos para entender capacidades
-2. Adapte cores, fontes e layouts
-3. Considerações de print vs digital
-4. Otimize para os formatos (PDF, Excel)
+### For Product/Design
+1. Review the examples to understand the capabilities
+2. Adapt colors, fonts, and layouts
+3. Print vs digital considerations
+4. Optimize for the formats (PDF, Excel)
 
 ---
 
-## 🚀 Templates para Criar (Sprint B1-B4)
+## 🚀 Templates to Create (Sprint B1-B4)
 
 ### Core Templates (Must-Have)
-- [ ] InvoiceDocument (baseado no exemplo)
-- [ ] FinancialReportDocument (baseado no exemplo)
-- [ ] SimpleBulletReport (template minimalista)
+- [ ] InvoiceDocument (based on the example)
+- [ ] FinancialReportDocument (based on the example)
+- [ ] SimpleBulletReport (minimalist template)
 
 ### Extended Templates (Nice-to-Have)
 - [ ] ProductCatalogDocument
@@ -342,9 +342,9 @@ private static readonly Color LightBg = Color.FromHex("#f1f3f4");
 
 ---
 
-## 📚 Referências QuestPDF
+## 📚 QuestPDF References
 
-- **Documentação Oficial**: https://www.questpdf.com/
+- **Official Documentation**: https://www.questpdf.com/
 - **Community Discord**: https://discord.gg/questpdf
 - **GitHub**: https://github.com/QuestPDF/QuestPDF
 - **Examples**: https://github.com/QuestPDF/QuestPDF/tree/main/Examples

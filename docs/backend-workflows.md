@@ -1,72 +1,72 @@
 # WORKFLOWS.md — Buelo Backend
 
-## 1. Workflow de execução por agentes
+## 1. Agent execution workflow
 
-1. Ler `TASKS.md` e escolher o próximo sprint `[ ] pending` respeitando a cadeia de dependências
-2. Ler o arquivo de sprint escolhido em `ai/sprints/`
-3. Confirmar que todas as dependências listadas na seção `Dependencies` estão marcadas como `done`
-4. Implementar somente o escopo definido no sprint — não antecipar tarefas de sprints futuros
-5. Rodar `dotnet build` e `dotnet test` — ambos devem passar com zero erros
-6. Marcar todas as tasks do sprint como `[x]` no arquivo de sprint
-7. Atualizar o status do sprint para `[x] done` em `ai/TASKS.md`
+1. Read `TASKS.md` and pick the next `[ ] pending` sprint, respecting the dependency chain
+2. Read the chosen sprint file in `ai/sprints/`
+3. Confirm that all dependencies listed in the `Dependencies` section are marked as `done`
+4. Implement only the scope defined in the sprint — do not anticipate tasks from future sprints
+5. Run `dotnet build` and `dotnet test` — both must pass with zero errors
+6. Mark all the sprint tasks as `[x]` in the sprint file
+7. Update the sprint status to `[x] done` in `ai/TASKS.md`
 
 ---
 
-## 2. Workflow de implementação de um sprint
+## 2. Sprint implementation workflow
 
-### Ordem padrão por camada
+### Standard order by layer
 
 ```
-1. Buelo.Contracts   ← novos modelos, interfaces, enums
-2. Buelo.Engine      ← lógica de negócio, parsers, store
+1. Buelo.Contracts   ← new models, interfaces, enums
+2. Buelo.Engine      ← business logic, parsers, store
 3. Buelo.Api         ← endpoints, controllers
-4. Buelo.Tests       ← testes unitários cobrindo cada camada
+4. Buelo.Tests       ← unit tests covering each layer
 ```
 
-Sempre nessa ordem — nunca referenciar `Buelo.Engine` a partir de `Buelo.Contracts`.
+Always in this order — never reference `Buelo.Engine` from `Buelo.Contracts`.
 
 ---
 
-## 3. Workflow de adição de um novo parser/componente do engine
+## 3. Workflow for adding a new engine parser/component
 
-1. Criar o arquivo em `Buelo.Engine/`
-2. Se expor tipos novos: adicionar models/interfaces em `Buelo.Contracts/` primeiro
-3. Injetar no `TemplateEngine` via construtor ou chamada direta (sem DI interna no engine)
-4. Registrar no contêiner em `EngineExtensions.cs` se necessário
-5. Cobrir com testes em `Buelo.Tests/Engine/`
-
----
-
-## 4. Workflow de adição de um novo endpoint
-
-1. Definir o contrato de request/response (records em `Buelo.Contracts` se reutilizáveis, ou records locais no controller se exclusivos)
-2. Adicionar o método no controller com o atributo de rota correto
-3. Chamar `TemplateEngine` ou `ITemplateStore` via injeção (primary constructor)
-4. Retornar tipos explícitos (`Ok(result)`, `NotFound()`, `BadRequest(msg)`) — sem retornar `IActionResult` genérico sem necessidade
-5. Testar em `Buelo.Tests/Api/` com pelo menos: happy path, not found, bad input
+1. Create the file in `Buelo.Engine/`
+2. If it exposes new types: add the models/interfaces to `Buelo.Contracts/` first
+3. Inject it into `TemplateEngine` via the constructor or a direct call (no internal DI in the engine)
+4. Register it in the container in `EngineExtensions.cs` if needed
+5. Cover it with tests in `Buelo.Tests/Engine/`
 
 ---
 
-## 5. Workflow de adição de uma nova `ITemplateStore`
+## 4. Workflow for adding a new endpoint
 
-1. Criar a classe em `Buelo.Engine/` implementando `ITemplateStore`
-2. Adicionar método de extensão de registro em `EngineExtensions.cs` (ex: `AddBueloFileSystemStore()`)
-3. NÃO registrar como padrão — `InMemoryTemplateStore` é o default; a nova impl é opt-in via `appsettings` ou chamada explícita no `Program.cs`
-4. Cobrir com round-trip tests em `Buelo.Tests/Engine/`
-
----
-
-## 6. Workflow de deprecação de um modo de template
-
-1. Adicionar `[Obsolete("mensagem")]` no valor do enum em `Buelo.Contracts/TemplateMode.cs`
-2. NÃO remover o valor — manter suporte de runtime
-3. NÃO lançar exceção ao processar o modo obsoleto — apenas executar normalmente
-4. Documentar na seção `## Template Modes` do `SKILLS.md`
-5. O frontend trata a deprecação visualmente — o backend apenas avisa em tempo de compilação via `[Obsolete]`
+1. Define the request/response contract (records in `Buelo.Contracts` if reusable, or local records in the controller if exclusive)
+2. Add the method to the controller with the correct route attribute
+3. Call `TemplateEngine` or `ITemplateStore` via injection (primary constructor)
+4. Return explicit types (`Ok(result)`, `NotFound()`, `BadRequest(msg)`) — don't return a generic `IActionResult` without need
+5. Test in `Buelo.Tests/Api/` with at least: happy path, not found, bad input
 
 ---
 
-## 7. Workflow de validação de template (endpoint /validate)
+## 5. Workflow for adding a new `ITemplateStore`
+
+1. Create the class in `Buelo.Engine/` implementing `ITemplateStore`
+2. Add a registration extension method in `EngineExtensions.cs` (e.g.: `AddBueloFileSystemStore()`)
+3. Do NOT register it as the default — `InMemoryTemplateStore` is the default; the new impl is opt-in via `appsettings` or an explicit call in `Program.cs`
+4. Cover it with round-trip tests in `Buelo.Tests/Engine/`
+
+---
+
+## 6. Workflow for deprecating a template mode
+
+1. Add `[Obsolete("message")]` on the enum value in `Buelo.Contracts/TemplateMode.cs`
+2. Do NOT remove the value — keep runtime support
+3. Do NOT throw an exception when processing the obsolete mode — just run normally
+4. Document it in the `## Template Modes` section of `SKILLS.md`
+5. The frontend handles the deprecation visually — the backend only warns at compile time via `[Obsolete]`
+
+---
+
+## 7. Template validation workflow (/validate endpoint)
 
 ```
 POST /api/report/validate
@@ -78,29 +78,29 @@ POST /api/report/validate
       ↓
   WrapSectionsTemplateAsync(...)
       ↓
-  CSharpScript.Create(...).GetDiagnostics()   ← compilar sem executar
+  CSharpScript.Create(...).GetDiagnostics()   ← compile without executing
       ↓
-  mapear linha: diagnosticLine - wrapperLineOffset = userLine
+  map line: diagnosticLine - wrapperLineOffset = userLine
       ↓
-  retornar { valid, errors[] }    ← sempre HTTP 200
+  return { valid, errors[] }    ← always HTTP 200
 ```
 
-Nunca lançar exceção not-handled neste endpoint — capturar tudo e retornar `valid: false`.
+Never throw an unhandled exception in this endpoint — catch everything and return `valid: false`.
 
 ---
 
-## 8. Workflow de versionamento em SaveAsync
+## 8. Versioning workflow in SaveAsync
 
 ```
 SaveAsync(record)
   ↓
-  ler versão atual por GetAsync(record.Id)    ← se existir
+  read current version via GetAsync(record.Id)    ← if it exists
   ↓
-  criar TemplateVersion { Version = atual.Version + 1, Template, Artefacts, SavedAt }
+  create TemplateVersion { Version = current.Version + 1, Template, Artefacts, SavedAt }
   ↓
-  persistir snapshot (memory dict / arquivo versions/{n}.snapshot.json)
+  persist snapshot (memory dict / file versions/{n}.snapshot.json)
   ↓
-  sobrescrever registro principal
+  overwrite the main record
 ```
 
-Não versionar quando `Id == Guid.Empty` (create) — versão 1 é o próprio registro inicial.
+Don't version when `Id == Guid.Empty` (create) — version 1 is the initial record itself.

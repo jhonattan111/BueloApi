@@ -1,28 +1,28 @@
-# PageSettings — Configuração de Página Parametrizável
+# PageSettings — Parameterizable Page Configuration
 
-## Visão Geral
+## Overview
 
-O sistema `PageSettings` permite que você configure dinamicamente todos os aspectos visuais de uma página PDF diretamente no seu relatório, sem precisar hardcodear valores dentro do template.
+The `PageSettings` system lets you dynamically configure all the visual aspects of a PDF page directly in your report, without having to hardcode values inside the template.
 
-## O que é Configurável
+## What is Configurable
 
-A classe `PageSettings` oferece controle sobre:
+The `PageSettings` class provides control over:
 
-- **Tamanho da página**: A4, Letter, Legal, A3, A5
-- **Margens**: Horizontal e vertical (em centímetros)
-- **Cores**: Cor de fundo e cor padrão do texto
-- **Marca d'água**: Texto, cor, opacidade e tamanho da fonte
-- **Headers/Footers**: Ativar ou desativar
-- **Fonte padrão**: Tamanho da fonte para corpo do texto
+- **Page size**: A4, Letter, Legal, A3, A5
+- **Margins**: Horizontal and vertical (in centimeters)
+- **Colors**: Background color and default text color
+- **Watermark**: Text, color, opacity, and font size
+- **Headers/Footers**: Enable or disable
+- **Default font**: Font size for body text
 
-## Arquitetura
+## Architecture
 
-### Fluxo de Dados
+### Data Flow
 
 ```
 ReportRequest/TemplateRenderRequest
     ↓
-    PageSettings (opcional)
+    PageSettings (optional)
     ↓
 ReportController
     ↓
@@ -32,34 +32,34 @@ ReportContext
     ├─ ctx.Data
     ├─ ctx.Helpers
     ├─ ctx.Globals
-    └─ ctx.PageSettings ← AQUI!
+    └─ ctx.PageSettings ← HERE!
     ↓
 IReport.GenerateReport(ctx)
     ↓
-PDF com as configurações aplicadas
+PDF with the settings applied
 ```
 
-### Precedência
+### Precedence
 
-1. **Request PageSettings** (se fornecido) — sobrescreve tudo
-2. **TemplateRecord.PageSettings** — padrão para renderização
-3. **PageSettings.Default()** — fallback global (A4 com 2cm de margens)
+1. **Request PageSettings** (if provided) — overrides everything
+2. **TemplateRecord.PageSettings** — default for rendering
+3. **PageSettings.Default()** — global fallback (A4 with 2cm margins)
 
-## Exemplos de Uso
+## Usage Examples
 
-### 1. Usar Padrões Pré-configurados
+### 1. Use Pre-configured Defaults
 
 ```csharp
-// Renderizar com padrões de fábrica
-var settings = PageSettings.Letter();           // Letter com margens de 1"
-var settings = PageSettings.A4Compact();        // A4 com margens de 1cm
-var settings = PageSettings.WithWatermark("DRAFT");  // Com marca d'água
+// Render with factory defaults
+var settings = PageSettings.Letter();           // Letter with 1" margins
+var settings = PageSettings.A4Compact();        // A4 with 1cm margins
+var settings = PageSettings.WithWatermark("DRAFT");  // With watermark
 ```
 
-### 2. Template Builder com PageSettings
+### 2. Template Builder with PageSettings
 
 ```csharp
-// Template Builder mode — acesso às configurações via ctx
+// Template Builder mode — access the settings via ctx
 const string template = @"
 Document.Create(c => 
 {
@@ -92,7 +92,7 @@ Document.Create(c =>
 }).GeneratePdf()
 ";
 
-// Enviar via API
+// Send via API
 var request = new ReportRequest
 {
     Template = template,
@@ -112,11 +112,11 @@ var request = new ReportRequest
 var response = await client.PostAsJsonAsync("/api/report/render", request);
 ```
 
-### 2.1 Sections Mode com fallback para PageSettings
+### 2.1 Sections Mode with fallback to PageSettings
 
-No modo `Sections`, se o bloco `page => { ... }` for omitido, o engine aplica
-automaticamente `ctx.PageSettings` (tamanho, margens e fonte padrão). Você só
-declara header/body/footer de forma fluente.
+In `Sections` mode, if the `page => { ... }` block is omitted, the engine automatically
+applies `ctx.PageSettings` (size, margins, and default font). You only
+declare header/body/footer fluently.
 
 ```csharp
 const string sectionsTemplate = @"
@@ -151,10 +151,10 @@ var request = new ReportRequest
 };
 ```
 
-Se quiser sobrescrever visualmente as configurações de página dentro do próprio
-template, inclua o bloco `page => { ... }` explicitamente.
+If you want to visually override the page settings inside the template
+itself, include the `page => { ... }` block explicitly.
 
-### 3. FullClass Template com PageSettings
+### 3. FullClass Template with PageSettings
 
 ```csharp
 public class Report : IReport
@@ -171,7 +171,7 @@ public class Report : IReport
                 p.Size(GetPageSize(settings.PageSize));
                 p.Margin(settings.MarginVertical, settings.MarginHorizontal, Unit.Centimetre);
                 
-                // Aplicar marca d'água se configurada
+                // Apply watermark if configured
                 if (!string.IsNullOrEmpty(settings.WatermarkText))
                 {
                     p.Background()
@@ -205,7 +205,7 @@ public class Report : IReport
 }
 ```
 
-### 4. Salvar Template com Configurações
+### 4. Save Template with Settings
 
 ```csharp
 var template = new TemplateRecord
@@ -217,7 +217,7 @@ var template = new TemplateRecord
     MockData = new { /* ... */ },
     DefaultFileName = "vendas.pdf",
     
-    // Configurações que serão o padrão
+    // Settings that will be the default
     PageSettings = new PageSettings
     {
         PageSize = "A4",
@@ -238,17 +238,17 @@ var template = new TemplateRecord
 await store.SaveAsync(template);
 ```
 
-### 5. Renderizar com Override de Configurações
+### 5. Render with Settings Override
 
 ```csharp
 // GET /api/report/render/{templateId}
-// Body (opcional):
+// Body (optional):
 var overrides = new TemplateRenderRequest
 {
-    Data = new { /* dados */ },
+    Data = new { /* data */ },
     FileName = "especial.pdf",
     
-    // Sobrescreve as configurações do template
+    // Overrides the template's settings
     PageSettings = new PageSettings
     {
         PageSize = "Letter",
@@ -259,29 +259,29 @@ var overrides = new TemplateRenderRequest
 var response = await client.PostAsJsonAsync($"/api/report/render/{templateId}", overrides);
 ```
 
-## Propriedades de PageSettings
+## PageSettings Properties
 
 ```csharp
 public class PageSettings
 {
-    // Tamanho da página (ex: "A4", "Letter", "Legal")
+    // Page size (e.g.: "A4", "Letter", "Legal")
     public string PageSize { get; set; } = "A4";
 
-    // Margens em centímetros
+    // Margins in centimeters
     public float MarginHorizontal { get; set; } = 2.0f;
     public float MarginVertical { get; set; } = 2.0f;
 
-    // Cores (formato hex)
+    // Colors (hex format)
     public string BackgroundColor { get; set; } = "#FFFFFF";
     public string DefaultTextColor { get; set; } = "#000000";
 
-    // Marca d'água
+    // Watermark
     public string? WatermarkText { get; set; }
     public string WatermarkColor { get; set; } = "#CCCCCC";
     public float WatermarkOpacity { get; set; } = 0.3f;
     public int WatermarkFontSize { get; set; } = 60;
 
-    // Tipografia
+    // Typography
     public int DefaultFontSize { get; set; } = 12;
 
     // Layout
@@ -290,57 +290,57 @@ public class PageSettings
 }
 ```
 
-## Métodos Auxiliares (Factory Methods)
+## Helper Methods (Factory Methods)
 
 ```csharp
-// Padrão A4 com 2cm margens
+// A4 default with 2cm margins
 var settings = PageSettings.Default();
 
-// Letter com margens de 1 polegada (2.54cm)
+// Letter with 1-inch margins (2.54cm)
 var settings = PageSettings.Letter();
 
-// A4 compacto com 1cm margens
+// Compact A4 with 1cm margins
 var settings = PageSettings.A4Compact();
 
-// Com marca d'água predefinida
+// With a predefined watermark
 var settings = PageSettings.WithWatermark("CONFIDENTIAL");
 ```
 
-## Fluxo de Precedência
+## Precedence Flow
 
-Ao renderizar um template:
+When rendering a template:
 
-1. Se `PageSettings` for fornecido na request → usar esse
-2. Senão, se o template tem `PageSettings` configurado → usar esse
-3. Senão → usar `PageSettings.Default()`
+1. If `PageSettings` is provided in the request → use it
+2. Otherwise, if the template has `PageSettings` configured → use it
+3. Otherwise → use `PageSettings.Default()`
 
-## Compatibilidade com Versões Anteriores
+## Backward Compatibility
 
-- Templates existentes continuam funcionando sem mudanças
-- `PageSettings` é opcional em todas as requisições
-- Se não fornecido, usa padrões sensatos (A4, margens 2cm)
+- Existing templates keep working without changes
+- `PageSettings` is optional in every request
+- If not provided, it uses sensible defaults (A4, 2cm margins)
 
-## Boas Práticas
+## Best Practices
 
-1. **Para relatórios muito customizáveis**: Use templates `Builder` e acesse `ctx.PageSettings`
-2. **Para relatórios padrão**: Configure `PageSettings` no `TemplateRecord` e reutilize
-3. **Para overrides dinâmicos**: Forneça `PageSettings` na request quando necessário
-4. **Para marca d'água**: Use `PageSettings.WithWatermark()` ou configure manualmente
-5. **Para múltiplas variações**: Crie múltiplos `TemplateRecord` com diferentes configurações
+1. **For highly customizable reports**: Use `Builder` templates and access `ctx.PageSettings`
+2. **For standard reports**: Configure `PageSettings` on the `TemplateRecord` and reuse it
+3. **For dynamic overrides**: Provide `PageSettings` in the request when needed
+4. **For watermarks**: Use `PageSettings.WithWatermark()` or configure it manually
+5. **For multiple variations**: Create multiple `TemplateRecord`s with different settings
 
-## Exemplos de Configuração por Cenário
+## Configuration Examples by Scenario
 
-### Relatório Formal
+### Formal Report
 ```csharp
 PageSettings.Default()
 ```
 
-### Relatório de Rascunho
+### Draft Report
 ```csharp
 PageSettings.WithWatermark("DRAFT")
 ```
 
-### Etiqueta de Envio
+### Shipping Label
 ```csharp
 new PageSettings 
 { 
@@ -350,7 +350,7 @@ new PageSettings
 }
 ```
 
-### Documento Confidencial
+### Confidential Document
 ```csharp
 new PageSettings
 {

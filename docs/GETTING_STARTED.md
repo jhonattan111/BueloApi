@@ -1,41 +1,41 @@
-# 🎉 Refatoração Completa - Buelo QuestPDF Edition
+# 🎉 Refactor Complete - Buelo QuestPDF Edition
 
-> Uma transformação de um projeto complexo com DSL customizado para uma arquitetura moderna e limpa usando C# puro com QuestPDF.
-
----
-
-## 📊 O Que Mudou?
-
-### ❌ Removido (Obsoleto)
-- **BueloDsl** - Linguagem customizada YAML-like (5 arquivos removidos)
-- **BueloDsl Tests** - Todos os testes relacionados (4 arquivos removidos)
-- **Frontend Buelo Language Support** - Suporte à linguagem no editor (pasta inteira removida)
-- **Sprints Obsoletas** - 5 sprints arquivadas em pastas `_archived/`
-
-### ✅ Mantido & Refatorado
-- **PageSettings** - Sistema de configuração de página parametrizável
-- **Global Artefacts** - Armazenamento de dados JSON centralizados
-- **QuestPDF Rendering** - Motor de renderização com QuestPDF
-- **File Validation** - Validadores para C# e JSON
-- **Template Storage** - Armazenamento e gerenciamento de templates
-
-### 🆕 Novo
-- **8 Sprints Estruturadas** - Roadmap claro e detalhado
-- **ARCHITECTURE.md** - Documentação completa da arquitetura
-- **QUESTPDF_REFERENCES.md** - Guia de templates de referência
-- **Simplified TemplateEngine** - Pronto para compilação C# dinâmica
+> A transformation from a complex project with a custom DSL to a modern, clean architecture using pure C# with QuestPDF.
 
 ---
 
-## 🚀 Como Começar (Sprint B1)
+## 📊 What Changed?
 
-### Passo 1: Entender a Nova Abordagem
-Leia estes arquivos nesta ordem:
-1. `ARCHITECTURE.md` - Visão geral
-2. `Buelo.Api/ai/sprints/sprint-1-backend-core-engine.md` - Primeiro sprint
-3. `QUESTPDF_REFERENCES.md` - Exemplos práticos
+### ❌ Removed (Obsolete)
+- **BueloDsl** - YAML-like custom language (5 files removed)
+- **BueloDsl Tests** - All related tests (4 files removed)
+- **Frontend Buelo Language Support** - Language support in the editor (entire folder removed)
+- **Obsolete Sprints** - 5 sprints archived in `_archived/` folders
 
-### Passo 2: Preparar o Ambiente
+### ✅ Kept & Refactored
+- **PageSettings** - Parameterizable page configuration system
+- **Global Artefacts** - Centralized JSON data storage
+- **QuestPDF Rendering** - Rendering engine with QuestPDF
+- **File Validation** - Validators for C# and JSON
+- **Template Storage** - Template storage and management
+
+### 🆕 New
+- **8 Structured Sprints** - Clear, detailed roadmap
+- **ARCHITECTURE.md** - Complete architecture documentation
+- **QUESTPDF_REFERENCES.md** - Reference templates guide
+- **Simplified TemplateEngine** - Ready for dynamic C# compilation
+
+---
+
+## 🚀 How to Start (Sprint B1)
+
+### Step 1: Understand the New Approach
+Read these files in this order:
+1. `ARCHITECTURE.md` - Overview
+2. `Buelo.Api/ai/sprints/sprint-1-backend-core-engine.md` - First sprint
+3. `QUESTPDF_REFERENCES.md` - Practical examples
+
+### Step 2: Prepare the Environment
 ```bash
 # Frontend
 cd BueloWeb
@@ -47,16 +47,16 @@ dotnet restore
 dotnet build
 ```
 
-### Passo 3: Implementar TemplateEngine (Sprint B1)
-Focos do `Buelo.Engine/TemplateEngine.cs`:
-- [ ] Implementar compilação dinâmica com Roslyn
-- [ ] Validação de sintaxe C#
-- [ ] Instanciação de classe IDocument
+### Step 3: Implement TemplateEngine (Sprint B1)
+Focus areas of `Buelo.Engine/TemplateEngine.cs`:
+- [ ] Implement dynamic compilation with Roslyn
+- [ ] C# syntax validation
+- [ ] IDocument class instantiation
 - [ ] Data binding
-- [ ] Teste com templates de exemplo
+- [ ] Test with example templates
 
-### Passo 4: Criar Templates de Exemplo
-Crie em `Buelo.Api/templates/` (ou similar):
+### Step 4: Create Example Templates
+Create them in `Buelo.Api/templates/` (or similar):
 ```csharp
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -92,7 +92,7 @@ public class SimpleInvoiceDocument : IDocument
 }
 ```
 
-### Passo 5: Testar Rendering
+### Step 5: Test Rendering
 ```csharp
 var engine = new TemplateEngine(new DefaultHelperRegistry());
 
@@ -102,54 +102,54 @@ var result = await engine.RenderAsync(
     pageSettings: new PageSettings { PageSize = "A4" }
 );
 
-// result é um byte[] com o PDF
+// result is a byte[] with the PDF
 ```
 
 ---
 
-## 📋 Sprints Detalhadas
+## 📋 Detailed Sprints
 
-### Backend (8-12 semanas)
+### Backend (8-12 weeks)
 ```
-Sprint B1 (1-2 semanas): Core Rendering Engine
-├── Compilação C# com Roslyn
-├── Validação de templates
-└── Templates de exemplo
+Sprint B1 (1-2 weeks): Core Rendering Engine
+├── C# compilation with Roslyn
+├── Template validation
+└── Example templates
 
-Sprint B2 (2-3 semanas): Report API & Mock Data
+Sprint B2 (2-3 weeks): Report API & Mock Data
 ├── ReportController endpoints
 ├── Mock data flow
 └── Template storage
 
-Sprint B3 (2-3 semanas): Global Artefacts & Data Sources
+Sprint B3 (2-3 weeks): Global Artefacts & Data Sources
 ├── JSON data source storage
 ├── Data binding
 └── Environment config
 
-Sprint B4 (2-3 semanas): Multi-Format Output
+Sprint B4 (2-3 weeks): Multi-Format Output
 ├── PDF rendering (QuestPDF)
 ├── Excel rendering (ClosedXML)
 └── Performance optimization
 ```
 
-### Frontend (8-12 semanas)
+### Frontend (8-12 weeks)
 ```
-Sprint F1 (2-3 semanas): Report Editor UI
+Sprint F1 (2-3 weeks): Report Editor UI
 ├── Monaco Editor (C#)
 ├── Real-time validation
 └── PDF preview
 
-Sprint F2 (2-3 semanas): Report Settings Panel
+Sprint F2 (2-3 weeks): Report Settings Panel
 ├── Page configuration UI
 ├── Data source binding
 └── Preview
 
-Sprint F3 (2-3 semanas): Template Gallery & Organization
+Sprint F3 (2-3 weeks): Template Gallery & Organization
 ├── CRUD operations
 ├── Versioning
 └── Export/Import
 
-Sprint F4 (2-3 semanas): Workspace Integration
+Sprint F4 (2-3 weeks): Workspace Integration
 ├── File tree integration
 ├── Export functionality
 └── Batch operations
@@ -157,13 +157,13 @@ Sprint F4 (2-3 semanas): Workspace Integration
 
 ---
 
-## 🗂️ Estrutura do Projeto
+## 🗂️ Project Structure
 
 ```
 c:\projetos\Buelo\
-├── ARCHITECTURE.md (📖 LEIA PRIMEIRO)
-├── QUESTPDF_REFERENCES.md (🎨 Exemplos de templates)
-├── REFACTOR_SUMMARY.md (✅ O que foi feito)
+├── ARCHITECTURE.md (📖 READ FIRST)
+├── QUESTPDF_REFERENCES.md (🎨 Template examples)
+├── REFACTOR_SUMMARY.md (✅ What was done)
 │
 ├── Buelo.Contracts/
 │   ├── PageSettings.cs ✨
@@ -172,7 +172,7 @@ c:\projetos\Buelo\
 │   └── TemplateMode.cs (FullClass only) ✨
 │
 ├── Buelo.Engine/
-│   ├── TemplateEngine.cs 🔨 (Implementar compilação C#)
+│   ├── TemplateEngine.cs 🔨 (Implement C# compilation)
 │   ├── DefaultHelperRegistry.cs
 │   ├── Renderers/
 │   │   ├── PdfRenderer.cs
@@ -210,9 +210,9 @@ c:\projetos\Buelo\
 
 ---
 
-## 💡 Exemplos de Uso
+## 💡 Usage Examples
 
-### Template C# Simples
+### Simple C# Template
 ```csharp
 public class HelloWorldDocument : IDocument
 {
@@ -242,7 +242,7 @@ public class HelloWorldDocument : IDocument
 ```csharp
 new ReportRequest
 {
-    Template = "... código C# acima ...",
+    Template = "... C# code above ...",
     Data = new { Name = "World" },
     FileName = "hello.pdf",
     PageSettings = new PageSettings
@@ -257,97 +257,97 @@ new ReportRequest
 
 ---
 
-## 🧪 Checklist Para Sprint B1
+## 🧪 Checklist For Sprint B1
 
 - [ ] **Backend**
-  - [ ] Implementar compilação dinâmica de C# com Roslyn em `TemplateEngine.cs`
-  - [ ] Adicionar validação de sintaxe C#
-  - [ ] Criar 3 templates de exemplo (Invoice, Financial, Operations)
-  - [ ] Testar RenderAsync() com dados mockados
-  - [ ] Criar testes unitários
+  - [ ] Implement dynamic C# compilation with Roslyn in `TemplateEngine.cs`
+  - [ ] Add C# syntax validation
+  - [ ] Create 3 example templates (Invoice, Financial, Operations)
+  - [ ] Test RenderAsync() with mocked data
+  - [ ] Create unit tests
 
 - [ ] **Frontend**
-  - [ ] Atualizar Monaco Editor para linguagem C#
-  - [ ] Configurar syntax highlighting
-  - [ ] Criar panel de preview PDF
-  - [ ] Implementar validação em keystroke
+  - [ ] Update Monaco Editor for the C# language
+  - [ ] Configure syntax highlighting
+  - [ ] Create a PDF preview panel
+  - [ ] Implement validation on keystroke
 
 ---
 
-## 🎓 Recursos & Documentação
+## 🎓 Resources & Documentation
 
-### Externos
+### External
 - 📖 [QuestPDF Docs](https://www.questpdf.com/)
 - 🔗 [QuestPDF GitHub](https://github.com/QuestPDF/QuestPDF)
 - 💬 [QuestPDF Discord](https://discord.gg/questpdf)
 
-### Internos
-- 📄 [ARCHITECTURE.md](./ARCHITECTURE.md) - Arquitetura completa
-- 📚 [QUESTPDF_REFERENCES.md](./QUESTPDF_REFERENCES.md) - Templates de referência
-- ✅ [REFACTOR_SUMMARY.md](./REFACTOR_SUMMARY.md) - O que foi feito
-- 📋 [Sprints Backend](./Buelo.Api/ai/sprints/) - Tarefas detalhadas
-- 📋 [Sprints Frontend](./BueloWeb/ai/sprints/) - Tarefas detalhadas
+### Internal
+- 📄 [ARCHITECTURE.md](./ARCHITECTURE.md) - Complete architecture
+- 📚 [QUESTPDF_REFERENCES.md](./QUESTPDF_REFERENCES.md) - Reference templates
+- ✅ [REFACTOR_SUMMARY.md](./REFACTOR_SUMMARY.md) - What was done
+- 📋 [Backend Sprints](./Buelo.Api/ai/sprints/) - Detailed tasks
+- 📋 [Frontend Sprints](./BueloWeb/ai/sprints/) - Detailed tasks
 
 ---
 
-## 🎯 Objetivos por Sprint
+## 🎯 Objectives by Sprint
 
-### Sprint B1 ⭐ (Próximo!)
-**Objetivo**: Estabelecer motor de renderização sólido
-- ✅ Compilação C# dinâmica
-- ✅ Validação de templates
-- ✅ Templates de exemplo
-- **Saída**: Endpoint `/api/report/validate` funcionando 100%
+### Sprint B1 ⭐ (Next!)
+**Objective**: Establish a solid rendering engine
+- ✅ Dynamic C# compilation
+- ✅ Template validation
+- ✅ Example templates
+- **Output**: `/api/report/validate` endpoint working 100%
 
 ### Sprint B2 🔄
-**Objetivo**: Fluxo completo de renderização com mock data
-- ✅ API endpoints completos
+**Objective**: Complete rendering flow with mock data
+- ✅ Complete API endpoints
 - ✅ Mock data binding
-- **Saída**: Você consegue renderizar um template com dados
+- **Output**: You can render a template with data
 
 ### Sprint B3 📊
-**Objetivo**: Integração com Global Artefacts
+**Objective**: Integration with Global Artefacts
 - ✅ JSON data sources
 - ✅ Data binding
-- **Saída**: Dados vêm de artefatos globais
+- **Output**: Data comes from global artefacts
 
 ### Sprint B4 🎨
-**Objetivo**: Múltiplos formatos de saída
+**Objective**: Multiple output formats
 - ✅ PDF + Excel
 - ✅ Performance
-- **Saída**: Export funcionando 100%
+- **Output**: Export working 100%
 
 ---
 
-## ⚠️ Notas Importantes
+## ⚠️ Important Notes
 
-### Compatibilidade
-- .NET 10.0 (já configurado em .csproj)
-- QuestPDF 2026.2.4+ (community license na dev)
-- ClosedXML 0.105.0+ (para Excel)
-- Roslyn 5.3.0+ (para compilação C#)
+### Compatibility
+- .NET 10.0 (already configured in .csproj)
+- QuestPDF 2026.2.4+ (community license in dev)
+- ClosedXML 0.105.0+ (for Excel)
+- Roslyn 5.3.0+ (for C# compilation)
 
 ### Licensing
-- QuestPDF: Community license para desenvolvimento
-- Verifique `Program.cs`: `QuestPDF.Settings.License = LicenseType.Community;`
+- QuestPDF: Community license for development
+- Check `Program.cs`: `QuestPDF.Settings.License = LicenseType.Community;`
 
 ### Performance
-- Caching de templates compilados (Sprint B4)
-- Async/await para operações longas
-- Pool de compiladores Roslyn
+- Caching of compiled templates (Sprint B4)
+- Async/await for long operations
+- Roslyn compiler pool
 
 ---
 
-## 🎉 Conclusão
+## 🎉 Conclusion
 
-Você tem um projeto **limpo, bem estruturado e pronto para growth**.
+You have a **clean, well-structured project ready for growth**.
 
-**Próximo passo**: Comece com Sprint B1 e implemente o TemplateEngine!
+**Next step**: Start with Sprint B1 and implement the TemplateEngine!
 
-Boa sorte! 🚀
+Good luck! 🚀
 
 ---
 
-**Última Atualização**: 21 de Abril de 2026  
-**Status**: ✅ Refatoração Completa - Pronto para Implementação  
-**Sprint Atual**: Sprint B1 (Core Rendering Engine)
+**Last Updated**: April 21, 2026  
+**Status**: ✅ Refactor Complete - Ready for Implementation  
+**Current Sprint**: Sprint B1 (Core Rendering Engine)

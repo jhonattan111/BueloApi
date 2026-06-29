@@ -1,60 +1,60 @@
-# 🎨 PageSettings — Configuração de Página Parametrizável
+# 🎨 PageSettings — Parameterizable Page Configuration
 
-## ✅ O que foi implementado
+## ✅ What was implemented
 
-Refatorei o sistema Buelo para permitir **configurações de página totalmente parametrizáveis** através de uma nova classe `PageSettings`. Agora você pode configurar tamanho da página, margens, cores, marca d'água e muito mais **diretamente no relatório**, sem precisar hardcodear nada no template.
+I refactored the Buelo system to allow **fully parameterizable page settings** through a new `PageSettings` class. You can now configure page size, margins, colors, watermark, and much more **directly in the report**, without having to hardcode anything in the template.
 
 ---
 
-## 📋 Resumo das Mudanças
+## 📋 Summary of Changes
 
-### 1. **Nova Classe: `PageSettings`** (Buelo.Contracts)
+### 1. **New Class: `PageSettings`** (Buelo.Contracts)
 ```csharp
 public class PageSettings
 {
     public string PageSize { get; set; } = "A4";                    // A4, Letter, Legal, etc
-    public float MarginHorizontal { get; set; } = 2.0f;             // em centímetros
-    public float MarginVertical { get; set; } = 2.0f;               // em centímetros
+    public float MarginHorizontal { get; set; } = 2.0f;             // in centimeters
+    public float MarginVertical { get; set; } = 2.0f;               // in centimeters
     public string BackgroundColor { get; set; } = "#FFFFFF";        // hex
     public string DefaultTextColor { get; set; } = "#000000";       // hex
     
-    // Marca d'água
+    // Watermark
     public string? WatermarkText { get; set; }
     public string WatermarkColor { get; set; } = "#CCCCCC";
     public float WatermarkOpacity { get; set; } = 0.3f;
     public int WatermarkFontSize { get; set; } = 60;
     
-    // Tipografia e Layout
+    // Typography and Layout
     public int DefaultFontSize { get; set; } = 12;
     public bool ShowHeader { get; set; } = true;
     public bool ShowFooter { get; set; } = true;
 }
 ```
 
-### 2. **`ReportContext` Estendido**
-Agora inclui a propriedade `PageSettings`:
+### 2. **`ReportContext` Extended**
+Now includes the `PageSettings` property:
 ```csharp
 public class ReportContext
 {
     public dynamic Data { get; set; }
     public IHelperRegistry Helpers { get; set; }
     public IDictionary<string, object>? Globals { get; set; }
-    public PageSettings PageSettings { get; set; } = PageSettings.Default();  // ← NOVO
+    public PageSettings PageSettings { get; set; } = PageSettings.Default();  // ← NEW
 }
 ```
 
-### 3. **`TemplateRecord` Estendido**
-Agora permite persistir as configurações com o template:
+### 3. **`TemplateRecord` Extended**
+Now allows persisting the settings with the template:
 ```csharp
 public class TemplateRecord
 {
-    // ... propriedades existentes ...
-    public PageSettings PageSettings { get; set; } = PageSettings.Default();  // ← NOVO
+    // ... existing properties ...
+    public PageSettings PageSettings { get; set; } = PageSettings.Default();  // ← NEW
 }
 ```
 
-### 4. **`ReportRequest` e `TemplateRenderRequest` Estendidos**
-Permitem passar configurações na requisição:
+### 4. **`ReportRequest` and `TemplateRenderRequest` Extended**
+They allow passing settings in the request:
 ```csharp
 public class ReportRequest
 {
@@ -62,42 +62,42 @@ public class ReportRequest
     public string FileName { get; set; } = "report.pdf";
     public object Data { get; set; }
     public TemplateMode Mode { get; set; } = TemplateMode.FullClass;
-    public PageSettings? PageSettings { get; set; }  // ← NOVO (opcional)
+    public PageSettings? PageSettings { get; set; }  // ← NEW (optional)
 }
 
 public class TemplateRenderRequest
 {
     public object? Data { get; set; }
     public string? FileName { get; set; }
-    public PageSettings? PageSettings { get; set; }  // ← NOVO (opcional)
+    public PageSettings? PageSettings { get; set; }  // ← NEW (optional)
 }
 ```
 
-### 5. **`TemplateEngine` Atualizado**
-Os métodos agora aceitam `PageSettings`:
+### 5. **`TemplateEngine` Updated**
+The methods now accept `PageSettings`:
 ```csharp
 public async Task<byte[]> RenderAsync(
     string template, 
     object data, 
     TemplateMode mode = TemplateMode.FullClass, 
-    PageSettings? pageSettings = null  // ← NOVO
+    PageSettings? pageSettings = null  // ← NEW
 )
 
 public Task<byte[]> RenderTemplateAsync(
     TemplateRecord template, 
     object data, 
-    PageSettings? pageSettings = null  // ← NOVO
+    PageSettings? pageSettings = null  // ← NEW
 )
 ```
 
-### 6. **`ReportController` Atualizado**
-Passa `PageSettings` através do pipeline de rendering.
+### 6. **`ReportController` Updated**
+Passes `PageSettings` through the rendering pipeline.
 
 ---
 
-## 🚀 Como Usar
+## 🚀 How to Use
 
-### Opção 1: Template Builder com Configurações
+### Option 1: Template Builder with Settings
 
 ```csharp
 const string template = @"
@@ -149,29 +149,29 @@ var request = new ReportRequest
 };
 ```
 
-### Opção 2: Usar Presets Pré-configurados
+### Option 2: Use Pre-configured Presets
 
 ```csharp
-// Padrão A4 com 2cm margens
+// A4 default with 2cm margins
 var settings = PageSettings.Default();
 
-// Letter com margens de 1"
+// Letter with 1" margins
 var settings = PageSettings.Letter();
 
-// A4 compacto com 1cm margens
+// Compact A4 with 1cm margins
 var settings = PageSettings.A4Compact();
 
-// Com marca d'água
+// With watermark
 var settings = PageSettings.WithWatermark("DRAFT");
 ```
 
-### Opção 3: Salvar Template com Configurações
+### Option 3: Save Template with Settings
 
 ```csharp
 var template = new TemplateRecord
 {
     Name = "Relatório de Vendas",
-    Template = /* seu template aqui */,
+    Template = /* your template here */,
     Mode = TemplateMode.Builder,
     PageSettings = new PageSettings
     {
@@ -187,66 +187,66 @@ await store.SaveAsync(template);
 
 ---
 
-## 🔄 Precedência de Configurações
+## 🔄 Settings Precedence
 
-Ao renderizar, as configurações são aplicadas nesta ordem:
+When rendering, settings are applied in this order:
 
-1. **PageSettings fornecida na requisição** (maior prioridade)
-2. **PageSettings do TemplateRecord** (se template é savedno banco)
+1. **PageSettings provided in the request** (highest priority)
+2. **PageSettings from the TemplateRecord** (if the template is saved in the database)
 3. **PageSettings.Default()** (fallback)
 
 ```
-Request PageSettings?  → Usar esse
-                ↓ não
-Template PageSettings? → Usar esse
-                ↓ não
-PageSettings.Default() → Usar esse (A4, 2cm margens)
+Request PageSettings?  → Use it
+                ↓ no
+Template PageSettings? → Use it
+                ↓ no
+PageSettings.Default() → Use it (A4, 2cm margins)
 ```
 
 ---
 
-## 📁 Arquivos Criados/Modificados
+## 📁 Files Created/Modified
 
-### Criados:
-- `Buelo.Contracts/PageSettings.cs` — Nova classe com todas as configurações
-- `PAGE_SETTINGS_GUIDE.md` — Documentação completa
-- `Buelo.Tests/Engine/PageSettingsExamples.cs` — Templates de exemplo
-- `Buelo.Tests/Engine/PageSettingsEngineTests.cs` — Testes unitários
+### Created:
+- `Buelo.Contracts/PageSettings.cs` — New class with all the settings
+- `PAGE_SETTINGS_GUIDE.md` — Complete documentation
+- `Buelo.Tests/Engine/PageSettingsExamples.cs` — Example templates
+- `Buelo.Tests/Engine/PageSettingsEngineTests.cs` — Unit tests
 
-### Modificados:
-- `ReportContext.cs` — Adicionado `PageSettings`
-- `TemplateRecord.cs` — Adicionado `PageSettings`
-- `ReportRequest.cs` — Adicionado `PageSettings?`
-- `TemplateRenderRequest.cs` — Adicionado `PageSettings?`
-- `TemplateEngine.cs` — Atualizado para aceitar `PageSettings`
-- `ReportController.cs` — Passa `PageSettings` no pipeline
-- `ReportControllerTests.cs` — Adicionados testes de `PageSettings`
-
----
-
-## ✅ Testes
-
-✅ **28 testes passando** — Incluindo:
-- Testes de presets (`Default()`, `Letter()`, `A4Compact()`, `WithWatermark()`)
-- Testes de rendering com configurações customizadas
-- Testes de override de configurações na requisição
-- Testes de fallback para `TemplateRecord.PageSettings`
+### Modified:
+- `ReportContext.cs` — Added `PageSettings`
+- `TemplateRecord.cs` — Added `PageSettings`
+- `ReportRequest.cs` — Added `PageSettings?`
+- `TemplateRenderRequest.cs` — Added `PageSettings?`
+- `TemplateEngine.cs` — Updated to accept `PageSettings`
+- `ReportController.cs` — Passes `PageSettings` in the pipeline
+- `ReportControllerTests.cs` — Added `PageSettings` tests
 
 ---
 
-## 🎯 Exemplos de Uso Por Cenário
+## ✅ Tests
 
-### Relatório Formal
+✅ **28 tests passing** — Including:
+- Preset tests (`Default()`, `Letter()`, `A4Compact()`, `WithWatermark()`)
+- Rendering tests with custom settings
+- Settings override tests in the request
+- Fallback tests for `TemplateRecord.PageSettings`
+
+---
+
+## 🎯 Usage Examples By Scenario
+
+### Formal Report
 ```csharp
 PageSettings.Default()
 ```
 
-### Rascunho com Marca d'água
+### Draft with Watermark
 ```csharp
 PageSettings.WithWatermark("DRAFT")
 ```
 
-### Etiqueta Compacta
+### Compact Label
 ```csharp
 new PageSettings 
 { 
@@ -258,7 +258,7 @@ new PageSettings
 }
 ```
 
-### Documento Confidencial
+### Confidential Document
 ```csharp
 new PageSettings
 {
@@ -271,27 +271,27 @@ new PageSettings
 
 ---
 
-## 🔄 Compatibilidade
+## 🔄 Compatibility
 
-✅ **Totalmente compatível com código existente** — `PageSettings` é optional em todas as requisições. Se não fornecido, usa padrões sensatos.
-
----
-
-## 📝 Próximos Passos (Opcionais)
-
-1. Armazenar `PageSettings` em banco de dados (se mudar para persistência)
-2. UI para editar `PageSettings` visualmente
-3. Suporte para diferentes tamanhos de papel customizados
-4. Temas/presets salvos
-5. Historial de versões de templates com configurações diferentes
+✅ **Fully compatible with existing code** — `PageSettings` is optional in every request. If not provided, it uses sensible defaults.
 
 ---
 
-## 🎉 Resultado Final
+## 📝 Next Steps (Optional)
 
-Você agora pode:
-- ✅ Passar a declaração inteira do Document.Create() como template Builder
-- ✅ Configurar tamanho, margens, cor, marca d'água diretamente no relatório
-- ✅ Parametrizar todas as configurações de página via `ctx.PageSettings`
-- ✅ Reutilizar templates com diferentes configurações
-- ✅ Usar presets pré-configurados para cenários comuns
+1. Store `PageSettings` in a database (if switching to persistence)
+2. UI to edit `PageSettings` visually
+3. Support for different custom paper sizes
+4. Saved themes/presets
+5. Template version history with different settings
+
+---
+
+## 🎉 Final Result
+
+You can now:
+- ✅ Pass the entire Document.Create() declaration as a Builder template
+- ✅ Configure size, margins, color, watermark directly in the report
+- ✅ Parameterize all page settings via `ctx.PageSettings`
+- ✅ Reuse templates with different settings
+- ✅ Use pre-configured presets for common scenarios

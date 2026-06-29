@@ -1,50 +1,50 @@
 # CLAUDE.md — BueloApi
 
-Guia para agentes de IA (Claude Code) trabalhando neste repositório. É o **documento canônico** da arquitetura atual — em caso de divergência com docs antigos (`ARCHITECTURE.md`, `docs/`), este arquivo vence.
+Guide for AI agents (Claude Code) working in this repository. It is the **canonical document** of the current architecture — in case of divergence with older docs (`ARCHITECTURE.md`, `docs/`), this file wins.
 
-## O que é
+## What it is
 
-`BueloApi` é a **API de geração de relatórios** do produto Buelo. Tem **dois caminhos de autoria**:
+`BueloApi` is the **report generation API** of the Buelo product. It has **two authoring paths**:
 
-1. **C# (`IDocument`)** — recebe código C# em runtime, compila com **Roslyn**, instancia uma classe `QuestPDF.Infrastructure.IDocument` e retorna **PDF** (ou **Excel** via ClosedXML). É o "escape hatch" de poder total.
-2. **Declarativo (YAML)** — recebe uma definição declarativa, faz *lowering* para um IR tipado (`BueloDocument`) e compõe via QuestPDF — **sem Roslyn**. É o caminho principal de autoria. Ver [`docs/blueprint-schema-canonico.md`](../docs/blueprint-schema-canonico.md) e a seção **Engine declarativo** abaixo.
+1. **C# (`IDocument`)** — receives C# code at runtime, compiles it with **Roslyn**, instantiates a `QuestPDF.Infrastructure.IDocument` class, and returns **PDF** (or **Excel** via ClosedXML). It is the full-power "escape hatch".
+2. **Declarative (YAML)** — receives a declarative definition, lowers it to a typed IR (`BueloDocument`), and composes via QuestPDF — **without Roslyn**. It is the primary authoring path. See [`docs/blueprint-schema-canonico.md`](../docs/blueprint-schema-canonico.md) and the **Declarative engine** section below.
 
-> Faz parte do produto Buelo, junto do front [`BueloWeb`](../BueloWeb). O repo guarda-chuva é [`Buelo`](..) (submodules). O front consome esta API em `http://localhost:5238`.
+> It is part of the Buelo product, alongside the front end [`BueloWeb`](../BueloWeb). The umbrella repo is [`Buelo`](..) (submodules). The front end consumes this API at `http://localhost:5238`.
 
 ## Stack
 
-- **ASP.NET Core 10** (`net10.0`), C# com primary constructors
-- **QuestPDF** (Community license) — layout PDF
-- **Microsoft.CodeAnalysis.CSharp** (Roslyn) — compilação de template em runtime
-- **ClosedXML** — saída Excel
-- Testes: **xUnit** em `Buelo.Tests`
+- **ASP.NET Core 10** (`net10.0`), C# with primary constructors
+- **QuestPDF** (Community license) — PDF layout
+- **Microsoft.CodeAnalysis.CSharp** (Roslyn) — template compilation at runtime
+- **ClosedXML** — Excel output
+- Tests: **xUnit** in `Buelo.Tests`
 
-## Estrutura da solução (`Buelo.slnx`)
+## Solution structure (`Buelo.slnx`)
 
 ```
-Buelo.Contracts   ← interfaces, models, enums. SEM lógica de negócio, SEM QuestPDF, SEM Roslyn
-Buelo.Engine      ← compilação Roslyn, render (PDF/Excel), stores, validators
-Buelo.Api         ← controllers ASP.NET Core + Program.cs
-Buelo.Tests       ← xUnit (Engine/ e Api/)
+Buelo.Contracts   ← interfaces, models, enums. NO business logic, NO QuestPDF, NO Roslyn
+Buelo.Engine      ← Roslyn compilation, render (PDF/Excel), stores, validators
+Buelo.Api         ← ASP.NET Core controllers + Program.cs
+Buelo.Tests       ← xUnit (Engine/ and Api/)
 ```
 
-**Direção de dependência (nunca inverter):** `Buelo.Api → Buelo.Engine → Buelo.Contracts`
+**Dependency direction (never invert):** `Buelo.Api → Buelo.Engine → Buelo.Contracts`
 
-## Comandos
+## Commands
 
 ```bash
-dotnet build                          # da raiz do repo (usa Buelo.slnx)
-dotnet test                           # roda Buelo.Tests
-dotnet run --project Buelo.Api        # sobe a API em http://localhost:5238
+dotnet build                          # from the repo root (uses Buelo.slnx)
+dotnet test                           # runs Buelo.Tests
+dotnet run --project Buelo.Api        # starts the API at http://localhost:5238
 ```
 
-**Após qualquer mudança, `dotnet build` e `dotnet test` devem passar com zero erros antes de considerar a tarefa concluída.**
+**After any change, `dotnet build` and `dotnet test` must pass with zero errors before considering the task done.**
 
-**Commit & push:** com `dotnet build` + `dotnet test` verdes, faça `git commit` e `git push` (não acumule trabalho local); depois bumpe o ponteiro no guarda-chuva e dê push lá também. Se algum teste falhar, conserte antes de commitar/pushar. Ver [`../CLAUDE.md`](../CLAUDE.md) (§Política de commit & push).
+**Commit & push:** with `dotnet build` + `dotnet test` green, run `git commit` and `git push` (don't pile up local work); then bump the pointer in the umbrella repo and push there too. If any test fails, fix it before committing/pushing. See [`../CLAUDE.md`](../CLAUDE.md) (§Commit & push policy).
 
-## Conceito central: templates são classes C# `IDocument`
+## Core concept: templates are C# `IDocument` classes
 
-Um template é uma classe C# completa e compilável implementando `QuestPDF.Infrastructure.IDocument`. O construtor recebe os dados (e opcionalmente `PageSettings`):
+A template is a complete, compilable C# class implementing `QuestPDF.Infrastructure.IDocument`. The constructor receives the data (and optionally `PageSettings`):
 
 ```csharp
 public class InvoiceDocument : IDocument
@@ -63,77 +63,77 @@ public class InvoiceDocument : IDocument
 }
 ```
 
-`TemplateMode` tem **apenas** `FullClass = 1`. A antiga DSL `.buelo` e os modos `Sections`/`Builder`/`Partial` e a interface `IReport` **foram removidos** — não reintroduza.
+`TemplateMode` has **only** `FullClass = 1`. The old `.buelo` DSL and the `Sections`/`Builder`/`Partial` modes and the `IReport` interface **have been removed** — do not reintroduce them.
 
-## Pipeline de render (`TemplateEngine`)
+## Render pipeline (`TemplateEngine`)
 
 `RenderAsync(template, data, mode = FullClass, pageSettings?)`:
 
 1. `ConvertToDynamic(data)` — `object` → `ExpandoObject` via System.Text.Json
-2. `CompileTemplate(source)` — `CSharpCompilation` (Release, nullable enable) → emite assembly em memória; erros viram `InvalidOperationException` com linha
-3. `FindDocumentType` — primeira classe não-abstrata que implementa `IDocument`
-4. `CreateDocumentInstance` — escolhe o ctor com **mais parâmetros**; parâmetros do tipo `PageSettings` recebem as settings, os demais recebem os dados (`ExpandoObject` direto, ou round-trip JSON para um modelo tipado)
+2. `CompileTemplate(source)` — `CSharpCompilation` (Release, nullable enable) → emits assembly in memory; errors become `InvalidOperationException` with line
+3. `FindDocumentType` — first non-abstract class that implements `IDocument`
+4. `CreateDocumentInstance` — picks the ctor with the **most parameters**; parameters of type `PageSettings` receive the settings, the rest receive the data (`ExpandoObject` directly, or JSON round-trip into a typed model)
 5. `document.GeneratePdf()` → `byte[]`
 
-`RenderTemplateAsync(record, data?, pageSettings?)`: usa `record.MockData` se `data` for null; `MergeSettings` = `request ?? template ?? Default`.
+`RenderTemplateAsync(record, data?, pageSettings?)`: uses `record.MockData` if `data` is null; `MergeSettings` = `request ?? template ?? Default`.
 
-`ValidateAsync` compila e retorna `ValidationResult { Valid, Errors[] }` (linha/coluna) **sem** executar — nunca lança.
+`ValidateAsync` compiles and returns `ValidationResult { Valid, Errors[] }` (line/column) **without** executing — it never throws.
 
-## Engine declarativo (YAML → IR → QuestPDF)
+## Declarative engine (YAML → IR → QuestPDF)
 
-Pipeline: **YAML → `DeclarativeParser` (YamlDotNet) → `DeclarativeInterpreter`/`DeclarativeLowering` (avalia `{{ }}`, resolve diretivas e estilos) → `BueloDocument` (IR tipado) → `BueloDocumentRenderer` (compõe QuestPDF) → PDF.** Código em `Buelo.Engine/Declarative/`, `Buelo.Engine/Ir/`, `Buelo.Engine/Renderers/BueloDocumentRenderer.cs`. Orquestrador: `DeclarativeReportEngine` (singleton).
+Pipeline: **YAML → `DeclarativeParser` (YamlDotNet) → `DeclarativeInterpreter`/`DeclarativeLowering` (evaluates `{{ }}`, resolves directives and styles) → `BueloDocument` (typed IR) → `BueloDocumentRenderer` (composes QuestPDF) → PDF.** Code in `Buelo.Engine/Declarative/`, `Buelo.Engine/Ir/`, `Buelo.Engine/Renderers/BueloDocumentRenderer.cs`. Orchestrator: `DeclarativeReportEngine` (singleton).
 
-- **Kinds** (`kind:` no topo do YAML): `report` (renderável), `component` (params + slots + `use`/`with`), `styles` (classes + `extends`), `theme`, `formats` (máscaras), `lib` (expressões nomeadas), `validator` (3 degraus). Módulos indexados por `Declarative/Modules/ModuleRegistry`.
-- **Blocos de layout** (`Declarative/DeclarativeAst.cs`): `text`, `markdown`, `table` (data-oriented, `groupBy`, footer com agregação), `row`, `column`, `card`/`panel`, `image`, `spacer`, `divider`, `pageBreak`; bandas `header`/`content`/`footer`; context vars `now`/`today`/`page`/`pageCount`/`report.name`.
-- **Expressões `{{ }}`** (`Declarative/Expressions/`): lexer + parser recursivo + avaliador. Aritmética, comparação, lógico, ternário, `??`, pipes, chamadas; stdlib (`moeda`/`data`/`cpf`/`cnpj`/`percent`/`upper`/`join`/`mask`/`if`/`coalesce`…) + agregação `sum`/`avg`/`count`/`min`/`max`.
-- **Persistência das definições:** `IDefinitionStore` (`{kind}/{name}.yml`) — `FileSystemDefinitionStore` (default, git-friendly) e `InMemoryDefinitionStore` (testes). Raiz via config `Buelo:DefinitionStorePath` (fallback `definitions`).
-- **Operacional (EF Core):** `BueloDbContext` + `IRenderLog` (histórico de render). SQLite (dev) / Postgres (prod) por `Buelo:Database:Provider`. `AddBueloPersistence(config)` + `EnsureBueloDatabase()` no startup. Default sem DB = `NullRenderLog`.
-- **Eject:** `CSharpEjector` gera um `IDocument` C# a partir do IR (graduação declarativo→código).
-- **Exemplos:** `Buelo.Api/definitions/` (reports `hello`/`invoice`/`colaboradores` + módulos + dados mock em `data/`). Ver `Buelo.Api/definitions/README.md`.
+- **Kinds** (`kind:` at the top of the YAML): `report` (renderable), `component` (params + slots + `use`/`with`), `styles` (classes + `extends`), `theme`, `formats` (masks), `lib` (named expressions), `validator` (3 tiers). Modules indexed by `Declarative/Modules/ModuleRegistry`.
+- **Layout blocks** (`Declarative/DeclarativeAst.cs`): `text`, `markdown`, `table` (data-oriented, `groupBy`, footer with aggregation), `row`, `column`, `card`/`panel`, `image`, `spacer`, `divider`, `pageBreak`; `header`/`content`/`footer` bands; context vars `now`/`today`/`page`/`pageCount`/`report.name`.
+- **`{{ }}` expressions** (`Declarative/Expressions/`): lexer + recursive parser + evaluator. Arithmetic, comparison, logical, ternary, `??`, pipes, calls; stdlib (`moeda`/`data`/`cpf`/`cnpj`/`percent`/`upper`/`join`/`mask`/`if`/`coalesce`…) + aggregation `sum`/`avg`/`count`/`min`/`max`.
+- **Definition persistence:** `IDefinitionStore` (`{kind}/{name}.yml`) — `FileSystemDefinitionStore` (default, git-friendly) and `InMemoryDefinitionStore` (tests). Root via config `Buelo:DefinitionStorePath` (fallback `definitions`).
+- **Operational (EF Core):** `BueloDbContext` + `IRenderLog` (render history). SQLite (dev) / Postgres (prod) via `Buelo:Database:Provider`. `AddBueloPersistence(config)` + `EnsureBueloDatabase()` at startup. Default without DB = `NullRenderLog`.
+- **Eject:** `CSharpEjector` generates a C# `IDocument` from the IR (declarative→code graduation).
+- **Examples:** `Buelo.Api/definitions/` (reports `hello`/`invoice`/`colaboradores` + modules + mock data in `data/`). See `Buelo.Api/definitions/README.md`.
 
-## Superfície da API (rotas reais)
+## API surface (real routes)
 
-| Controller | Base | Rotas |
+| Controller | Base | Routes |
 |---|---|---|
-| `ReportController` | `api/report` | C#: `POST render`, `POST validate`, `POST render/{id}`, `POST preview/{id}`, `GET formats` · Declarativo: `POST render-declarative`, `POST render-stored/{name}`, `POST eject` |
-| `SchemasController` | `api/schemas` | `GET` (lista kinds), `GET {kind}` (JSON Schema do kind) |
-| `DeclarativeValidationController` | `api/validate-data` | `POST` (valida um valor contra um `kind: validator`) |
-| `RenderHistoryController` | `api/render-history` | `GET` (histórico de render do EF store) |
+| `ReportController` | `api/report` | C#: `POST render`, `POST validate`, `POST render/{id}`, `POST preview/{id}`, `GET formats` · Declarative: `POST render-declarative`, `POST render-stored/{name}`, `POST eject` |
+| `SchemasController` | `api/schemas` | `GET` (lists kinds), `GET {kind}` (JSON Schema of the kind) |
+| `DeclarativeValidationController` | `api/validate-data` | `POST` (validates a value against a `kind: validator`) |
+| `RenderHistoryController` | `api/render-history` | `GET` (render history from the EF store) |
 | `TemplatesController` | `api/templates` | CRUD + `{id}/artefacts[/{name}]`, `{id}/files`, `{id}/versions[/{n}[/restore]]` |
 | `GlobalArtefactsController` | `api/artefacts` | CRUD + `GET by-name/{name}` |
 | `WorkspaceController` | `api/workspace` | `GET tree`, `POST folders`, `POST/GET/PUT files[/content]`, `DELETE nodes`, `GET types` |
-| `ValidateController` | `api/validate` | `POST` (1 arquivo), `POST project` |
-| *(minimal)* | `/ping` | `GET` (liveness público; aberto mesmo com API key) |
+| `ValidateController` | `api/validate` | `POST` (1 file), `POST project` |
+| *(minimal)* | `/ping` | `GET` (public liveness; open even with API key) |
 
-Render/preview retornam `application/pdf` (ou Excel). Use `?format=` quando aplicável. Erros: `404` (id não encontrado), `400` (sem dados).
+Render/preview return `application/pdf` (or Excel). Use `?format=` when applicable. Errors: `404` (id not found), `400` (no data).
 
-## Contracts principais (`Buelo.Contracts`)
+## Main contracts (`Buelo.Contracts`)
 
 - **`TemplateRecord`** — `Id, Name, Description, Template (C#), Mode, DataSchema, MockData, DefaultFileName, OutputFormat (Pdf|Excel), PageSettings, CreatedAt, UpdatedAt, Artefacts[]`
-- **`TemplateArtefact`** — `Path?, Name, Extension, Content` (arquivos anexos: mock data, schema, helpers `.cs`)
+- **`TemplateArtefact`** — `Path?, Name, Extension, Content` (attached files: mock data, schema, `.cs` helpers)
 - **`ReportRequest`** — `Template, FileName, Data, Mode, PageSettings?`
-- **`PageSettings`** — tamanho, margens (cm), cores, watermark, fonte, header/footer. `PageSettings.Default()` = A4 / 2cm
+- **`PageSettings`** — size, margins (cm), colors, watermark, font, header/footer. `PageSettings.Default()` = A4 / 2cm
 - **`IHelperRegistry`** — `FormatCurrency`, `FormatDate` (default: `DefaultHelperRegistry`)
 - Stores: `ITemplateStore`, `IGlobalArtefactStore`, `IWorkspaceStore`, `IWorkspaceFileEnumerator`
 
-## Registro no DI (`AddBueloEngine`)
+## DI registration (`AddBueloEngine`)
 
-`builder.Services.AddBueloEngine();` registra como singletons: `TemplateEngine`, `ITemplateStore → InMemoryTemplateStore`, `IGlobalArtefactStore → InMemory...`, `IWorkspaceStore/Enumerator → FileSystem...`, validators (`Json`, `Csharp`) + `FileValidatorRegistry`, renderers (`Pdf`, `Excel`) + `OutputRendererRegistry`, `IHelperRegistry → DefaultHelperRegistry`.
+`builder.Services.AddBueloEngine();` registers as singletons: `TemplateEngine`, `ITemplateStore → InMemoryTemplateStore`, `IGlobalArtefactStore → InMemory...`, `IWorkspaceStore/Enumerator → FileSystem...`, validators (`Json`, `Csharp`) + `FileValidatorRegistry`, renderers (`Pdf`, `Excel`) + `OutputRendererRegistry`, `IHelperRegistry → DefaultHelperRegistry`.
 
-- Usa `TryAdd` → registre sua própria `IHelperRegistry`/`ITemplateStore` **antes** para sobrescrever.
-- Persistência em disco: `AddBueloFileSystemStore()` (opt-in); raiz via `appsettings` `Buelo:TemplateStorePath` (fallback: `./templates`).
+- Uses `TryAdd` → register your own `IHelperRegistry`/`ITemplateStore` **first** to override.
+- Disk persistence: `AddBueloFileSystemStore()` (opt-in); root via `appsettings` `Buelo:TemplateStorePath` (fallback: `./templates`).
 
-## Convenções
+## Conventions
 
-- **Camadas em ordem:** mudança nasce em `Contracts` → `Engine` → `Api`. Nunca referenciar `Engine` a partir de `Contracts`.
-- Controllers usam **primary constructor injection**; retornem tipos explícitos (`Ok`, `NotFound`, `BadRequest`).
-- `ITemplateStore` é **async** em tudo (`Task<T>`), mesmo a impl in-memory.
-- Todo novo endpoint precisa de teste em `Buelo.Tests/Api/` (happy path + not found + bad input). Componentes de engine: teste em `Buelo.Tests/Engine/`.
-- `Program.cs`: `AddBueloEngine()` + `AddBueloPersistence(config)`; CORS p/ `http://localhost:5173`; OpenAPI só em Development; licença QuestPDF Community; `EnsureBueloDatabase()`; `/ping` público; `ApiKeyMiddleware` (gate opt-in).
-- **Config (env/appsettings):** `Buelo:ApiKey` (Bearer opt-in; vazio = auth off), `Buelo:RenderTimeoutSeconds` (default 30; 0 desliga), `Buelo:DefinitionStorePath` (default `definitions`), `Buelo:Database:Provider` (`sqlite`|`postgres`) + `Buelo:Database:ConnectionString`.
-- **Cache de assembly Roslyn** por hash de conteúdo no `TemplateEngine` (renders repetidos do mesmo template C# pulam recompilação).
-- **Modelo self-hosted:** sem sandbox/multi-tenant; quem tem a API key é confiável (ver blueprint).
+- **Layers in order:** a change is born in `Contracts` → `Engine` → `Api`. Never reference `Engine` from `Contracts`.
+- Controllers use **primary constructor injection**; return explicit types (`Ok`, `NotFound`, `BadRequest`).
+- `ITemplateStore` is **async** in everything (`Task<T>`), even the in-memory impl.
+- Every new endpoint needs a test in `Buelo.Tests/Api/` (happy path + not found + bad input). Engine components: test in `Buelo.Tests/Engine/`.
+- `Program.cs`: `AddBueloEngine()` + `AddBueloPersistence(config)`; CORS for `http://localhost:5173`; OpenAPI only in Development; QuestPDF Community license; `EnsureBueloDatabase()`; public `/ping`; `ApiKeyMiddleware` (opt-in gate).
+- **Config (env/appsettings):** `Buelo:ApiKey` (Bearer opt-in; empty = auth off), `Buelo:RenderTimeoutSeconds` (default 30; 0 disables), `Buelo:DefinitionStorePath` (default `definitions`), `Buelo:Database:Provider` (`sqlite`|`postgres`) + `Buelo:Database:ConnectionString`.
+- **Roslyn assembly cache** by content hash in `TemplateEngine` (repeated renders of the same C# template skip recompilation).
+- **Self-hosted model:** no sandbox/multi-tenant; whoever has the API key is trusted (see blueprint).
 
-## Histórico e referência
+## History and reference
 
-`docs/` guarda o histórico de sprints e guias detalhados (era DSL `.buelo` → era C#/QuestPDF). É **referência histórica**, não estado atual. `ARCHITECTURE.md` na raiz tem o racional do redesign.
+`docs/` keeps the sprint history and detailed guides (`.buelo` DSL era → C#/QuestPDF era). It is **historical reference**, not the current state. `ARCHITECTURE.md` at the root has the rationale for the redesign.

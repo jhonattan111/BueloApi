@@ -3,11 +3,11 @@
 ## Overview
 Source of truth for backend sprint planning. Each sprint has its own file in `ai/sprints/`.
 
-> **Arquitetura atual**: Templates C# puros implementando `IDocument` do QuestPDF. A DSL customizada (.buelo) foi removida. Consulte `ARCHITECTURE.md` na raiz para a visão completa.
+> **Current architecture**: Pure C# templates implementing QuestPDF's `IDocument`. The custom DSL (.buelo) has been removed. See `ARCHITECTURE.md` at the root for the full picture.
 
 ## Sprint Index
 
-### ✅ Sprints Arquivadas (DSL era — removida)
+### ✅ Archived Sprints (DSL era — removed)
 
 | Sprint | File | Goal | Status |
 |--------|------|------|--------|
@@ -25,20 +25,20 @@ Source of truth for backend sprint planning. Each sprint has its own file in `ai
 | 20 | [sprint-20-backend-remove-obsolete.md](sprints/sprint-20-backend-remove-obsolete.md) | Remove Sections/Partial modes, BueloDsl, SectionsTemplateParser, ZIP bundle endpoints | `[x] done` |
 | 21 | [sprint-21-backend-workspace-filesystem.md](sprints/sprint-21-backend-workspace-filesystem.md) | Workspace filesystem APIs (folders/files), dataSourcePath binding, import resolver | `[x] done` |
 
-### 🚀 Sprints Ativas (QuestPDF C# era)
+### 🚀 Active Sprints (QuestPDF C# era)
 
 | Sprint | File | Goal | Status |
 |--------|------|------|--------|
-| B1 | [sprint-1-backend-core-engine.md](sprints/sprint-1-backend-core-engine.md) | TemplateEngine com C# IDocument; Roslyn compilation; validação; PageSettings | `[x] done` |
-| B2 | [sprint-2-backend-api-mockdata.md](sprints/sprint-2-backend-api-mockdata.md) | ReportController endpoints completos; mock data flow; render pipeline | `[x] done` |
-| B3 | [sprint-3-backend-global-artefacts.md](sprints/sprint-3-backend-global-artefacts.md) | GlobalArtefactStore como data sources JSON; data binding em templates | `[x] done` |
+| B1 | [sprint-1-backend-core-engine.md](sprints/sprint-1-backend-core-engine.md) | TemplateEngine with C# IDocument; Roslyn compilation; validation; PageSettings | `[x] done` |
+| B2 | [sprint-2-backend-api-mockdata.md](sprints/sprint-2-backend-api-mockdata.md) | Complete ReportController endpoints; mock data flow; render pipeline | `[x] done` |
+| B3 | [sprint-3-backend-global-artefacts.md](sprints/sprint-3-backend-global-artefacts.md) | GlobalArtefactStore as JSON data sources; data binding in templates | `[x] done` |
 | B4 | [sprint-4-backend-multi-format.md](sprints/sprint-4-backend-multi-format.md) | Multi-format output (PDF + Excel); OutputRendererRegistry; performance | `[x] done` |
 | B5 | [sprint-22-backend-typed-data-intellisense.md](sprints/sprint-22-backend-typed-data-intellisense.md) | JsonTypeInferrer; C# type declarations from JSON; `GET /api/workspace/types` | `[x] done` |
 
 ## Dependency Chain
 
 ```
-[Sprints 6–21 arquivados/concluídos — DSL era]
+[Sprints 6–21 archived/completed — DSL era]
     ↓
 Sprint B1 (Core Rendering Engine — C# IDocument + Roslyn)
     ↓
