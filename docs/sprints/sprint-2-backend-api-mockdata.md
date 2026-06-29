@@ -1,63 +1,63 @@
 # Sprint B2: Report API & Mock Data Flow
 
-## 🎯 Objetivo
-Implementar o fluxo completo de renderização: dados JSON → template C# → PDF usando QuestPDF puro, com dados mockados para validação.
+## 🎯 Objective
+Implement the complete rendering flow: JSON data → C# template → PDF using pure QuestPDF, with mock data for validation.
 
-## ✅ Tarefas
+## ✅ Tasks
 
 ### Backend
 
-#### 1. Template Storage com MockData
-- [ ] Criar alguns templates de exemplo com MockData:
-  - Invoice template com dados ficcionais
-  - Financial Dashboard com KPIs
-  - Operations Snapshot com métricas
-- [ ] Verificar que MockData está sendo persistido corretamente
-- [ ] Implementar validação de MockData contra formato esperado
+#### 1. Template Storage with MockData
+- [ ] Create a few example templates with MockData:
+  - Invoice template with fictional data
+  - Financial Dashboard with KPIs
+  - Operations Snapshot with metrics
+- [ ] Verify that MockData is being persisted correctly
+- [ ] Implement MockData validation against the expected format
 
 #### 2. ReportController Endpoints
-- [x] POST /api/report/validate - validação de template
-- [ ] POST /api/report/render - renderização com dados mockados
-  - Receber: Template, Data, PageSettings
-  - Retornar: PDF bytes
-- [ ] GET /api/report/templates - listar templates
-- [ ] GET /api/report/templates/{id} - obter template específico
+- [x] POST /api/report/validate - template validation
+- [ ] POST /api/report/render - rendering with mock data
+  - Receive: Template, Data, PageSettings
+  - Return: PDF bytes
+- [ ] GET /api/report/templates - list templates
+- [ ] GET /api/report/templates/{id} - get a specific template
 
 #### 3. C# Template Validation
-- [ ] Verificar compilação de template (sem Roslyn dinamicamente por enquanto)
-- [ ] Retornar erros de sintaxe claros
-- [ ] Validar presença de IDocument interface
+- [ ] Verify template compilation (without dynamic Roslyn for now)
+- [ ] Return clear syntax errors
+- [ ] Validate presence of the IDocument interface
 
 ### Frontend
 
 #### 1. Report Editor Interface
-- [ ] Criar abas: Editor, Preview, Settings
-- [ ] Monaco Editor com C# syntax highlighting
-- [ ] Preview panel mostrando resultado em tempo real
-- [ ] Validação on-keystroke
+- [ ] Create tabs: Editor, Preview, Settings
+- [ ] Monaco Editor with C# syntax highlighting
+- [ ] Preview panel showing the result in real time
+- [ ] On-keystroke validation
 
 #### 2. Report Settings Panel
-- [ ] Form para configurar:
+- [ ] Form to configure:
   - Data source (JSON selector)
   - Page size
   - Margins
   - Colors
-- [ ] Preview dos settings aplicados
+- [ ] Preview of the applied settings
 
 #### 3. Mock Data Integration
-- [ ] Carregar MockData do template
-- [ ] Permitir editar MockData inline
-- [ ] Atualizar preview automaticamente
+- [ ] Load MockData from the template
+- [ ] Allow editing MockData inline
+- [ ] Update the preview automatically
 
-## 📊 Exemplo de Fluxo
+## 📊 Flow Example
 ```
-1. User escreve template C# (implements IDocument)
-2. User clica "Preview"
-3. Frontend valida template via /api/report/validate
-4. Frontend envia Template + MockData para /api/report/render
-5. Backend renderiza e retorna PDF bytes
-6. Frontend exibe PDF preview
+1. User writes a C# template (implements IDocument)
+2. User clicks "Preview"
+3. Frontend validates the template via /api/report/validate
+4. Frontend sends Template + MockData to /api/report/render
+5. Backend renders and returns PDF bytes
+6. Frontend displays the PDF preview
 ```
 
-## 🚀 Próximo Sprint
-Sprint B3: Global Artefacts & Data Sources (dados reais)
+## 🚀 Next Sprint
+Sprint B3: Global Artefacts & Data Sources (real data)

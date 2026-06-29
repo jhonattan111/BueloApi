@@ -1,62 +1,62 @@
 # Sprint B3: Global Artefacts & Data Sources
 
-## 🎯 Objetivo
-Implementar sistema de Global Artefacts para armazenar e gerenciar fontes de dados JSON, permitindo que templates referenciem dados externos de forma centralizada.
+## 🎯 Objective
+Implement a Global Artefacts system to store and manage JSON data sources, allowing templates to reference external data in a centralized way.
 
-## ✅ Tarefas
+## ✅ Tasks
 
 ### Backend
 
 #### 1. GlobalArtefactStore Enhancement
-- [ ] Implementar armazenamento persistente de artefatos globais
-- [ ] Permitir criar/atualizar/deletar artefatos
-- [ ] Suportar artefatos JSON como data sources
+- [ ] Implement persistent storage of global artefacts
+- [ ] Allow creating/updating/deleting artefacts
+- [ ] Support JSON artefacts as data sources
 
 #### 2. GlobalArtefactsController
-- [ ] GET /api/artefacts - listar todos
-- [ ] GET /api/artefacts/{id} - obter específico
-- [ ] POST /api/artefacts - criar novo
-- [ ] PUT /api/artefacts/{id} - atualizar
-- [ ] DELETE /api/artefacts/{id} - deletar
+- [ ] GET /api/artefacts - list all
+- [ ] GET /api/artefacts/{id} - get a specific one
+- [ ] POST /api/artefacts - create new
+- [ ] PUT /api/artefacts/{id} - update
+- [ ] DELETE /api/artefacts/{id} - delete
 
 #### 3. Data Binding
-- [ ] Permitir que template referencie Global Artefacts por ID
-- [ ] Implementar resolução de referências em RenderAsync()
-- [ ] Validar que artefato existe antes de render
+- [ ] Allow a template to reference Global Artefacts by ID
+- [ ] Implement reference resolution in RenderAsync()
+- [ ] Validate that the artefact exists before rendering
 
 #### 4. Environment-Specific Data
-- [ ] Suportar override de data sources por ambiente
+- [ ] Support data source override per environment
 - [ ] Development vs Production data sources
-- [ ] Environment configuration em appsettings
+- [ ] Environment configuration in appsettings
 
 ### Frontend
 
 #### 1. Data Sources Panel
-- [ ] Listar Global Artefacts disponíveis
-- [ ] Editor inline para JSON data sources
-- [ ] Carregar/salvar data sources
-- [ ] Validar JSON syntax
+- [ ] List available Global Artefacts
+- [ ] Inline editor for JSON data sources
+- [ ] Load/save data sources
+- [ ] Validate JSON syntax
 
 #### 2. Template Data Binding
-- [ ] Permitir selecionar data source para template
-- [ ] Dropdown com artefatos disponíveis
-- [ ] Preview com data source selecionada
+- [ ] Allow selecting a data source for a template
+- [ ] Dropdown with available artefacts
+- [ ] Preview with the selected data source
 
 #### 3. Artefact Manager
-- [ ] Interface para criar/editar artefatos globais
-- [ ] Upload de JSON files
-- [ ] Teste de artefato antes de salvar
+- [ ] Interface to create/edit global artefacts
+- [ ] Upload of JSON files
+- [ ] Test an artefact before saving
 
-## 🗂️ Exemplo de Estrutura
+## 🗂️ Structure Example
 ```
 GlobalArtefacts/
-├── invoices.json (lista de faturas)
-├── products.json (catálogo de produtos)
-├── employees.json (dados de colaboradores)
-└── financial-2024.json (dados financeiros)
+├── invoices.json (list of invoices)
+├── products.json (product catalog)
+├── employees.json (employee data)
+└── financial-2024.json (financial data)
 ```
 
-## 📋 ReportRequest com Data Binding
+## 📋 ReportRequest with Data Binding
 ```csharp
 new ReportRequest {
     Template = "...", // C# template code
@@ -64,5 +64,5 @@ new ReportRequest {
 }
 ```
 
-## 🚀 Próximo Sprint
+## 🚀 Next Sprint
 Sprint B4: Multi-Format Output (PDF, Excel, etc)

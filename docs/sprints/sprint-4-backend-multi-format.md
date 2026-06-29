@@ -1,43 +1,43 @@
 # Sprint B4: Multi-Format Output & Advanced Rendering
 
-## 🎯 Objetivo
-Estender capacidades de rendering para múltiplos formatos (PDF, Excel) e otimizar performance com cache e compilação em background.
+## 🎯 Objective
+Extend rendering capabilities to multiple formats (PDF, Excel) and optimize performance with caching and background compilation.
 
-## ✅ Tarefas
+## ✅ Tasks
 
 ### Backend
 
 #### 1. Output Renderer Registry
-- [ ] Verificar IOutputRenderer interface
-- [ ] Registrar PdfRenderer e ExcelRenderer
-- [ ] Adicionar suporte para mais formatos conforme necessário
+- [ ] Verify IOutputRenderer interface
+- [ ] Register PdfRenderer and ExcelRenderer
+- [ ] Add support for more formats as needed
 
 #### 2. Excel Rendering
-- [ ] Implementar ExcelRenderer usando ClosedXML
-- [ ] Criar templates Excel equivalentes aos PDFs
-- [ ] Tester rendering de dados complexos em Excel
+- [ ] Implement ExcelRenderer using ClosedXML
+- [ ] Create Excel templates equivalent to the PDFs
+- [ ] Test rendering of complex data in Excel
 
 #### 3. Performance Optimization
-- [ ] Implementar cache de templates compilados
-- [ ] Lazy loading de templates grandes
-- [ ] Batch rendering para múltiplos relatórios
+- [ ] Implement cache of compiled templates
+- [ ] Lazy loading of large templates
+- [ ] Batch rendering for multiple reports
 
 #### 4. ReportController Format Support
-- [ ] Query parameter `format=pdf|excel` em render endpoint
-- [ ] Content-Type correto por formato
-- [ ] Filename correto com extensão
+- [ ] Query parameter `format=pdf|excel` on the render endpoint
+- [ ] Correct Content-Type per format
+- [ ] Correct filename with extension
 
 ### Frontend
 
 #### 1. Export Options
-- [ ] Dropdown "Export As" (PDF, Excel)
-- [ ] Direct download após click
-- [ ] Preview para formato selecionado
+- [ ] "Export As" dropdown (PDF, Excel)
+- [ ] Direct download after click
+- [ ] Preview for the selected format
 
 #### 2. Template Preview by Format
-- [ ] Mostrar preview em PDF vs Excel
-- [ ] Diferentes layous por formato
-- [ ] Validação de template por formato
+- [ ] Show preview in PDF vs Excel
+- [ ] Different layouts per format
+- [ ] Template validation per format
 
 ## 📊 Supported Output Formats
 - PDF (QuestPDF) - ✅ Primary
@@ -57,11 +57,11 @@ Template (C#)
 ```
 
 ## ✅ Sprint Completion Criteria
-- [ ] PDF rendering funcionando 100%
-- [ ] Excel rendering funcionando
-- [ ] Format selector no frontend
-- [ ] Performance aceitável (<2s para relatório médio)
-- [ ] Cache implementado
+- [ ] PDF rendering working 100%
+- [ ] Excel rendering working
+- [ ] Format selector in the frontend
+- [ ] Acceptable performance (<2s for a medium report)
+- [ ] Cache implemented
 
 ## 🚀 Future Sprints
 - Sprint B5: Template Versioning & History

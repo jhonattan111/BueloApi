@@ -1,39 +1,39 @@
 # Sprint B1: Core Rendering Engine - QuestPDF Foundation
 
-## 🎯 Objetivo
-Estabelecer a base sólida para rendering de relatórios usando QuestPDF puro com C#. Remover completamente a complexidade do DSL Buelo e focar em templates C# IDocument bem estruturados.
+## 🎯 Objective
+Establish a solid foundation for report rendering using pure QuestPDF with C#. Completely remove the complexity of the Buelo DSL and focus on well-structured C# IDocument templates.
 
-## ✅ Tarefas
+## ✅ Tasks
 
 ### Backend
 
 #### 1. TemplateEngine Refactor
-- [x] Remover todas as referências a BueloDsl (parser, compiler, engine)
-- [x] Atualizar TemplateMode para usar apenas `FullClass`
-- [x] Simplificar RenderAsync() para lidar com C# puro
-- [ ] Implementar validação básica de templates (IDocument check)
-- [ ] Setup para compilação dinâmica com Roslyn (futuro)
+- [x] Remove all references to BueloDsl (parser, compiler, engine)
+- [x] Update TemplateMode to use only `FullClass`
+- [x] Simplify RenderAsync() to handle pure C#
+- [ ] Implement basic template validation (IDocument check)
+- [ ] Setup for dynamic compilation with Roslyn (future)
 
-#### 2. Contrato de Dados
-- [x] Remover TemplatePath e DataSourcePath de ReportRequest
-- [x] Simplificar ReportRequest para: Template, FileName, Data, PageSettings
-- [x] Atualizar defaults em TemplateRecord e ValidationResult
-- [ ] Criar exemplos de modelos de dados simples
+#### 2. Data Contract
+- [x] Remove TemplatePath and DataSourcePath from ReportRequest
+- [x] Simplify ReportRequest to: Template, FileName, Data, PageSettings
+- [x] Update defaults in TemplateRecord and ValidationResult
+- [ ] Create simple data model examples
 
-#### 3. ReportController Validação
-- [ ] Testar POST /api/report/validate com template C# válido
-- [ ] Testar POST /api/report/validate com template C# inválido
-- [ ] Verificar que erros são retornados corretamente
+#### 3. ReportController Validation
+- [ ] Test POST /api/report/validate with a valid C# template
+- [ ] Test POST /api/report/validate with an invalid C# template
+- [ ] Verify that errors are returned correctly
 
 ### Frontend
 
 #### 1. Report Editor UI
-- [ ] Atualizar Monaco Editor para C# language highlighting
-- [ ] Remover referencias a buelo-language
-- [ ] Mostrar modo "C# Template" em vez de "Buelo DSL"
+- [ ] Update Monaco Editor for C# language highlighting
+- [ ] Remove references to buelo-language
+- [ ] Show "C# Template" mode instead of "Buelo DSL"
 
 #### 2. Report Settings Panel
-- [ ] Implementar página de Report Settings
+- [ ] Implement Report Settings page
   - Data Source selector (JSON)
   - Page Size dropdown (A4, Letter, etc)
   - Margin controls (top, right, bottom, left)
@@ -41,10 +41,10 @@ Estabelecer a base sólida para rendering de relatórios usando QuestPDF puro co
   - Background color picker
   - Default font size input
 
-## 📚 Referências de Saída
-- Exemplo simples de template QuestPDF: `InvoiceDocument.cs`
-- Exemplo com KPIs: `FinancialDashboardDocument.cs`
-- Exemplo com tabelas: ver referência de SalesPerformanceDocument
+## 📚 Output References
+- Simple QuestPDF template example: `InvoiceDocument.cs`
+- Example with KPIs: `FinancialDashboardDocument.cs`
+- Example with tables: see SalesPerformanceDocument reference
 
-## 🚀 Próximo Sprint
+## 🚀 Next Sprint
 Sprint B2: Report API & Data Flow (mock data rendering)
