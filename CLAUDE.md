@@ -40,6 +40,8 @@ dotnet run --project Buelo.Api        # sobe a API em http://localhost:5238
 
 **Após qualquer mudança, `dotnet build` e `dotnet test` devem passar com zero erros antes de considerar a tarefa concluída.**
 
+**Commit & push:** com `dotnet build` + `dotnet test` verdes, faça `git commit` e `git push` (não acumule trabalho local); depois bumpe o ponteiro no guarda-chuva e dê push lá também. Se algum teste falhar, conserte antes de commitar/pushar. Ver [`../CLAUDE.md`](../CLAUDE.md) (§Política de commit & push).
+
 ## Conceito central: templates são classes C# `IDocument`
 
 Um template é uma classe C# completa e compilável implementando `QuestPDF.Infrastructure.IDocument`. O construtor recebe os dados (e opcionalmente `PageSettings`):
