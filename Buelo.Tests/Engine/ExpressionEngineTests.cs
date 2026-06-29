@@ -46,7 +46,7 @@ public class ExpressionEngineTests
     public void Pipe_is_sugar_for_call()
     {
         var scope = Dict(("v", 1234.5));
-        Assert.Equal(Eval("moeda(v)", scope), Eval("v | moeda", scope));
+        Assert.Equal(Eval("currency(v)", scope), Eval("v | currency", scope));
     }
 
     [Fact]
@@ -71,9 +71,9 @@ public class ExpressionEngineTests
     }
 
     [Fact]
-    public void Moeda_formats_as_brl()
+    public void Currency_formats_as_brl()
     {
-        var result = Eval("moeda(1234.5)", Empty) as string;
+        var result = Eval("currency(1234.5)", Empty) as string;
         Assert.NotNull(result);
         Assert.StartsWith("R$", result);
         Assert.Contains("1.234", result);

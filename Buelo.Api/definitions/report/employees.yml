@@ -14,8 +14,8 @@ content:
       rowStyle: { paddingY: 4, borderBottom: "1px #EEEEEE" }
       group:
         header: { text: "{{ group.key }}", style: { bold: true, background: "#EEEEEE", size: 12 } }
-        footer: { text: "Subtotal {{ group.key }}: {{ moeda(sum(group.items, 'salary')) }}", style: { align: right, bold: true } }
+        footer: { text: "Subtotal {{ group.key }}: {{ currency(sum(group.items, 'salary')) }}", style: { align: right, bold: true } }
       columns:
         - { width: 3*, header: "Name",   cell: "{{ item.name }}" }
         - { width: 2*, header: "Role",   cell: "{{ item.role }}" }
-        - { width: 1*, header: "Salary", cell: "{{ moeda(item.salary) }}", class: monetary }
+        - { width: 1*, header: "Salary", cell: "{{ currency(item.salary) }}", class: monetary }

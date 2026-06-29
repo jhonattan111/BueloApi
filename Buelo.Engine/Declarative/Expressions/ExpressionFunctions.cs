@@ -18,13 +18,13 @@ internal static class ExpressionFunctions
 
         return name switch
         {
-            "moeda" => Convert.ToDecimal(ExpressionValues.ToDouble(Arg(0))).ToString("C", Br),
+            "currency" => Convert.ToDecimal(ExpressionValues.ToDouble(Arg(0))).ToString("C", Br),
             "percent" => ExpressionValues.ToDouble(Arg(0)).ToString("N2", Br) + "%",
-            "data" => FormatDate(Arg(0), Arg(1) as string),
+            "date" => FormatDate(Arg(0), Arg(1) as string),
             "cpf" => Mask(Digits(Arg(0)), "###.###.###-##"),
             "cnpj" => Mask(Digits(Arg(0)), "##.###.###/####-##"),
             "cep" => Mask(Digits(Arg(0)), "#####-###"),
-            "telefone" => FormatPhone(Digits(Arg(0))),
+            "phone" => FormatPhone(Digits(Arg(0))),
             "mask" => Mask(Digits(Arg(0)), ExpressionValues.Stringify(Arg(1))),
             "digits" => Digits(Arg(0)),
             "upper" => ExpressionValues.Stringify(Arg(0)).ToUpperInvariant(),

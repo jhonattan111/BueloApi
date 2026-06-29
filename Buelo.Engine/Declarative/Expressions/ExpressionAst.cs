@@ -14,7 +14,7 @@ internal sealed record MemberExpr(Expr Target, string Name) : Expr;
 
 internal sealed record IndexExpr(Expr Target, Expr Index) : Expr;
 
-/// <summary>A function call by name: <c>moeda(x)</c>, <c>sum(list, 'expr')</c>. Pipes desugar into this.</summary>
+/// <summary>A function call by name: <c>currency(x)</c>, <c>sum(list, 'expr')</c>. Pipes desugar into this.</summary>
 internal sealed record CallExpr(string Name, IReadOnlyList<Expr> Args) : Expr;
 
 internal sealed record UnaryExpr(string Op, Expr Operand) : Expr;

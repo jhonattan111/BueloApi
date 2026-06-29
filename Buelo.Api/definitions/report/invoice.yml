@@ -19,9 +19,9 @@ content:
       columns:
         - { width: 24px, header: "#",         cell: "{{ index + 1 }}" }
         - { width: 4*,   header: "Product",   cell: "{{ item.name }}" }
-        - { width: 1*,   header: "Unit",      cell: "{{ moeda(item.price) }}", class: monetary }
+        - { width: 1*,   header: "Unit",      cell: "{{ currency(item.price) }}", class: monetary }
         - { width: 1*,   header: "Qty",       cell: "{{ item.qty }}", align: right }
-        - { width: 2*,   header: "Total",     cell: "{{ moeda(item.price * item.qty) }}", class: monetary }
+        - { width: 2*,   header: "Total",     cell: "{{ currency(item.price * item.qty) }}", class: monetary }
       footer:
         - { span: 4, text: "Invoice total", class: totalLabel }
-        - { text: "{{ moeda(sum(data.items, 'price * qty')) }}", class: monetary }
+        - { text: "{{ currency(sum(data.items, 'price * qty')) }}", class: monetary }

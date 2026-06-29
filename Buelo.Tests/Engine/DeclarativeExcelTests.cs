@@ -23,10 +23,10 @@ public class DeclarativeExcelTests
                   data: data.items
                   columns:
                     - { header: "Product", cell: "{{ item.name }}" }
-                    - { header: "Total",   cell: "{{ moeda(item.price) }}" }
+                    - { header: "Total",   cell: "{{ currency(item.price) }}" }
                   footer:
                     - { span: 1, text: "Total" }
-                    - { text: "{{ moeda(sum(data.items, 'price')) }}" }
+                    - { text: "{{ currency(sum(data.items, 'price')) }}" }
             """;
         var data = Data(new { items = new[] { new { name = "Table", price = 100 }, new { name = "Chair", price = 50 } } });
 

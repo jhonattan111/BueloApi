@@ -30,10 +30,10 @@ public class DeclarativeEjectTests
               data: data.items
               columns:
                 - { width: 3*, header: "Product", cell: "{{ item.name }}" }
-                - { width: 1*, header: "Total", cell: "{{ moeda(item.price) }}", align: right }
+                - { width: 1*, header: "Total", cell: "{{ currency(item.price) }}", align: right }
               footer:
                 - { span: 1, text: "Total" }
-                - { text: "{{ moeda(sum(data.items, 'price')) }}" }
+                - { text: "{{ currency(sum(data.items, 'price')) }}" }
         footer:
           - text: { value: "Page {{ page }} of {{ pageCount }}", style: { align: center } }
         """;

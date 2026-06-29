@@ -61,24 +61,24 @@ Save the binary response as a `.pdf` file to view it.
 ## Architecture Overview
 
 ```
-Buelo.Contracts   â€“ interfaces and models (IReport, IHelperRegistry, ITemplateStore, TemplateRecord, PageSettings, â€¦)
-Buelo.Engine      â€“ Roslyn-based compiler, DSL parsers, InMemoryTemplateStore, FileSystemTemplateStore
-Buelo.Api         â€“ ASP.NET Core controllers, DI wiring, QuestPDF license bootstrap
-Buelo.Tests       â€“ xUnit test suite covering engine, store, and API layers
+Buelo.Contracts   — interfaces and models (IReport, IHelperRegistry, ITemplateStore, TemplateRecord, PageSettings, …)
+Buelo.Engine      — Roslyn-based compiler, DSL parsers, InMemoryTemplateStore, FileSystemTemplateStore
+Buelo.Api         — ASP.NET Core controllers, DI wiring, QuestPDF license bootstrap
+Buelo.Tests       — xUnit test suite covering engine, store, and API layers
 ```
 
 ### Rendering pipeline
 
 ```
 POST /api/report/render
-  â†’ ReportController
-    â†’ TemplateEngine.RenderAsync()
+  → ReportController
+    → TemplateEngine.RenderAsync()
       1. Parse header directives (@data, @settings, @schema, @helper, @import)
       2. Resolve @import partials from store
       3. Build BueloGeneratedHelpers preamble from @helper directives / artefacts
       4. Wrap sections into a full IReport class
       5. Compile with Roslyn CSharpScript (cached by SHA-256 of generated code)
-      6. Execute GenerateReport(context) â†’ byte[] PDF via QuestPDF
+      6. Execute GenerateReport(context) → byte[] PDF via QuestPDF
 ```
 
 ---
@@ -195,7 +195,7 @@ page.Footer().AlignCenter().Text(x => {
 | `showFooter` | `true` | Whether the footer slot is rendered |
 | `watermarkText` | `null` | Watermark text (null = no watermark) |
 | `watermarkColor` | `"#CCCCCC"` | Watermark colour |
-| `watermarkOpacity` | `0.3` | Watermark opacity (0â€“1) |
+| `watermarkOpacity` | `0.3` | Watermark opacity (0—1) |
 | `watermarkFontSize` | `60` | Watermark font size |
 
 **Static factory methods:**
@@ -259,7 +259,7 @@ Persists templates to disk. Each template gets its own directory with separate f
 ```
 templates/
   {template-id}/
-    template.record.json     # metadata (id, name, mode, dataSchema, â€¦)
+    template.record.json     # metadata (id, name, mode, dataSchema, …)
     template.report.cs       # template source code
     {artefactName}{.ext}     # one file per artefact
     versions/
@@ -297,11 +297,11 @@ Render a template inline (not persisted).
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `template` | `string` | âœ… | Template source in Sections DSL |
-| `data` | `object` | âœ… | Arbitrary JSON, available as `data` (dynamic) |
-| `fileName` | `string` | âŒ | Output file name. Default: `report.pdf` |
-| `mode` | `"Sections"` \| `"Partial"` | âŒ | Template mode. Auto-detected when omitted. |
-| `pageSettings` | `PageSettings` | âŒ | Page layout overrides |
+| `template` | `string` | ✅ | Template source in Sections DSL |
+| `data` | `object` | ✅ | Arbitrary JSON, available as `data` (dynamic) |
+| `fileName` | `string` | ❌ | Output file name. Default: `report.pdf` |
+| `mode` | `"Sections"` \| `"Partial"` | ❌ | Template mode. Auto-detected when omitted. |
+| `pageSettings` | `PageSettings` | ❌ | Page layout overrides |
 
 Returns `application/pdf`.
 
@@ -311,8 +311,8 @@ Compile a template without rendering. Returns all Roslyn diagnostics.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `template` | `string` | âœ… | Template source |
-| `mode` | `"Sections"` \| `"Partial"` | âŒ | Template mode |
+| `template` | `string` | ✅ | Template source |
+| `mode` | `"Sections"` \| `"Partial"` | ❌ | Template mode |
 
 Response: `{ "valid": true, "errors": [] }` — always `200 OK`.
 
@@ -322,10 +322,10 @@ Render a saved template by its GUID.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `data` | `object` | âŒ | Render data. Falls back to template `MockData` |
-| `fileName` | `string` | âŒ | Falls back to template `DefaultFileName` |
-| `pageSettings` | `PageSettings` | âŒ | Falls back to template `PageSettings` |
-| `version` (query) | `int` | âŒ | Render a historical version snapshot |
+| `data` | `object` | ❌ | Render data. Falls back to template `MockData` |
+| `fileName` | `string` | ❌ | Falls back to template `DefaultFileName` |
+| `pageSettings` | `PageSettings` | ❌ | Falls back to template `PageSettings` |
+| `version` (query) | `int` | ❌ | Render a historical version snapshot |
 
 Returns `application/pdf`, `404` if unknown, `400` if no data is available.
 
@@ -398,7 +398,7 @@ Every `PUT /api/templates/{id}` auto-snapshots the current state before overwrit
 Downloads a ZIP archive: `{name}-{id}.zip`
 
 ```
-template.record.json   # metadata (id, name, mode, dataSchema, mockData, â€¦)
+template.record.json   # metadata (id, name, mode, dataSchema, mockData, …)
 template.report.cs     # template source
 {artefactName}{.ext}   # one entry per artefact
 ```
@@ -427,7 +427,7 @@ dotnet test Buelo.slnx --collect:"XPlat Code Coverage"
 |------|------|
 | Template engine (Sections rendering, auto-detection) | `Engine/TemplateEngineTests.cs` |
 | Sections DSL parser | `Engine/SectionsTemplateParserTests.cs` |
-| Header directive parser (`@data`, `@settings`, `@helper`, â€¦) | `Engine/TemplateHeaderParserTests.cs` |
+| Header directive parser (`@data`, `@settings`, `@helper`, …) | `Engine/TemplateHeaderParserTests.cs` |
 | PageSettings factories and rendering | `Engine/PageSettingsEngineTests.cs` |
 | Version history | `Engine/TemplateVersioningTests.cs` |
 | InMemoryTemplateStore CRUD + versioning | `Engine/InMemoryTemplateStoreTests.cs` |
@@ -504,11 +504,11 @@ The default `InMemoryTemplateStore` is suitable for development and testing. The
 
 | Criteria | PostgreSQL | SQLite | SQL Server |
 |----------|-----------|--------|------------|
-| Open source | âœ… | âœ… | âŒ |
-| Production-ready | âœ… | âš ï¸ (single-writer) | âœ… |
-| Cloud-managed | âœ… (Supabase, Neon, Railway, Azure, AWS RDS) | âŒ | âœ… |
-| Native JSON column | âœ… (`jsonb`) | âš ï¸ | âœ… |
-| .NET EF Core | âœ… | âœ… | âœ… |
+| Open source | ✅ | ✅ | ❌ |
+| Production-ready | ✅ | ⚠️ (single-writer) | ✅ |
+| Cloud-managed | ✅ (Supabase, Neon, Railway, Azure, AWS RDS) | ❌ | ✅ |
+| Native JSON column | ✅ (`jsonb`) | ⚠️ | ✅ |
+| .NET EF Core | ✅ | ✅ | ✅ |
 
 ---
 

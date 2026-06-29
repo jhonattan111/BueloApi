@@ -59,13 +59,13 @@ Each item in a band (or in a container's `content`/`items`) is a map with exactl
     columns:
       - { width: 24px, header: "#",     cell: "{{ index + 1 }}" }
       - { width: 4*,   header: "Name",  cell: "{{ item.name }}" }
-      - { width: 1*,   header: "Total", cell: "{{ moeda(item.price * item.qty) }}", align: right }
+      - { width: 1*,   header: "Total", cell: "{{ currency(item.price * item.qty) }}", align: right }
     group:                            # only with groupBy
       header: { text: "{{ group.key }}", style: { bold: true, background: "#EEEEEE" } }
-      footer: { text: "Subtotal: {{ moeda(sum(group.items, 'price')) }}", style: { align: right, bold: true } }
+      footer: { text: "Subtotal: {{ currency(sum(group.items, 'price')) }}", style: { align: right, bold: true } }
     footer:                           # grand-total row (cells)
       - { span: 4, text: "Total", style: { bold: true, align: right } }
-      - { text: "{{ moeda(sum(data.items, 'price * qty')) }}", style: { bold: true, align: right } }
+      - { text: "{{ currency(sum(data.items, 'price * qty')) }}", style: { bold: true, align: right } }
 ```
 
 - Column `width`: `*` (fill), `3*` (relative weight), `120px`, `40%`, `2cm`. Default `*`.
@@ -111,13 +111,13 @@ Scopes/vars:
 
 Formatting/utility functions (call as `fn(x)` or pipe as `x | fn`):
 
-`moeda` (currency), `data` (date), `cpf`, `cnpj`, `percent`, `upper`, `join`, `mask`, `if`, `coalesce`.
+`currency`, `date`, `cpf`, `cnpj`, `percent`, `upper`, `join`, `mask`, `if`, `coalesce`.
 
 Aggregation over an array with a sub-expression evaluated per element:
 
 `sum(arr, 'expr')`, `avg(arr, 'expr')`, `count(arr)`, `min(arr, 'expr')`, `max(arr, 'expr')`.
 
-Example: `{{ moeda(sum(data.items, 'price * qty')) }}`.
+Example: `{{ currency(sum(data.items, 'price * qty')) }}`.
 
 ## Minimal complete examples
 
@@ -136,10 +136,10 @@ content:
       columns:
         - { width: 4*, header: "Product", cell: "{{ item.name }}" }
         - { width: 1*, header: "Qty",     cell: "{{ item.qty }}", align: right }
-        - { width: 2*, header: "Total",   cell: "{{ moeda(item.price * item.qty) }}", align: right }
+        - { width: 2*, header: "Total",   cell: "{{ currency(item.price * item.qty) }}", align: right }
       footer:
         - { span: 2, text: "Total", style: { bold: true, align: right } }
-        - { text: "{{ moeda(sum(data.items, 'price * qty')) }}", style: { bold: true, align: right } }
+        - { text: "{{ currency(sum(data.items, 'price * qty')) }}", style: { bold: true, align: right } }
 footer:
   - text: { value: "Page {{ page }} of {{ pageCount }}", style: { align: center, size: 9 } }
 ```
@@ -159,12 +159,12 @@ content:
             style: { background: "#F1F5F9", padding: 10 }
             content:
               - text: { value: "Revenue", style: { size: 9, color: "#64748B" } }
-              - text: { value: "{{ moeda(data.revenue) }}", style: { bold: true, size: 16 } }
+              - text: { value: "{{ currency(data.revenue) }}", style: { bold: true, size: 16 } }
         - card:
             style: { background: "#F1F5F9", padding: 10 }
             content:
               - text: { value: "Profit", style: { size: 9, color: "#64748B" } }
-              - text: { value: "{{ moeda(data.revenue - data.expenses) }}", style: { bold: true, size: 16 } }
+              - text: { value: "{{ currency(data.revenue - data.expenses) }}", style: { bold: true, size: 16 } }
 ```
 
 Data: `{ "revenue": 48200, "expenses": 31750 }`
@@ -174,6 +174,6 @@ Data: `{ "revenue": 48200, "expenses": 31750 }`
 1. Start with `kind: report` and a `name`.
 2. Keep it **self-contained** — inline `style:`, no `import:`/`use:`/`class:`.
 3. Reference data only through `{{ data.* }}`, `item`, `index`, `group.*`.
-4. Use real stdlib names (`moeda`, `cnpj`, `sum`, …) — they are fixed by the engine.
+4. Use real stdlib names (`currency`, `cnpj`, `sum`, …) — they are fixed by the engine.
 5. Make sure the YAML is valid and every `{{ }}` resolves against the provided data shape.
 6. The matching data JSON is selected as the report's **Data source** in the editor.

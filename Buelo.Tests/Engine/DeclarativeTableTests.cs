@@ -28,10 +28,10 @@ public class DeclarativeTableTests
               columns:
                 - { width: 25px, header: "#",        cell: "{{ index + 1 }}" }
                 - { width: 3*,   header: "Product",  cell: "{{ item.name }}" }
-                - { width: 1*,   header: "Total",    cell: "{{ moeda(item.price * item.qty) }}", align: right }
+                - { width: 1*,   header: "Total",    cell: "{{ currency(item.price * item.qty) }}", align: right }
               footer:
                 - { span: 2, text: "Total", style: { bold: true, align: right } }
-                - { text: "{{ moeda(sum(data.items, 'price * qty')) }}", align: right }
+                - { text: "{{ currency(sum(data.items, 'price * qty')) }}", align: right }
         """;
 
     private static JsonElement InvoiceData() => Data(new
@@ -59,7 +59,7 @@ public class DeclarativeTableTests
         Assert.Equal(2, rows.Count);
         Assert.Equal("1", rows[0].Cells[0].Text);          // index + 1
         Assert.Equal("Chair", rows[0].Cells[1].Text);      // item.name
-        Assert.Contains("20,00", rows[0].Cells[2].Text);   // moeda(10 * 2)
+        Assert.Contains("20,00", rows[0].Cells[2].Text);   // currency(10 * 2)
         Assert.Equal("2", rows[1].Cells[0].Text);
         Assert.Equal(TextAlign.Right, rows[0].Cells[2].Style.Align);
         Assert.Equal(4f, rows[0].RowStyle.PaddingVertical);
@@ -89,10 +89,10 @@ public class DeclarativeTableTests
                   groupBy: department
                   group:
                     header: { text: "{{ group.key }}", style: { bold: true } }
-                    footer: { text: "Subtotal: {{ moeda(sum(group.items, 'salary')) }}" }
+                    footer: { text: "Subtotal: {{ currency(sum(group.items, 'salary')) }}" }
                   columns:
                     - { header: "Name",   cell: "{{ item.name }}" }
-                    - { header: "Salary", cell: "{{ moeda(item.salary) }}", align: right }
+                    - { header: "Salary", cell: "{{ currency(item.salary) }}", align: right }
             """;
 
         var data = Data(new
@@ -139,10 +139,10 @@ public class DeclarativeTableTests
                   groupBy: department
                   group:
                     header: { text: "{{ group.key }}", style: { bold: true, background: "#EEEEEE" } }
-                    footer: { text: "Subtotal: {{ moeda(sum(group.items, 'salary')) }}", align: right }
+                    footer: { text: "Subtotal: {{ currency(sum(group.items, 'salary')) }}", align: right }
                   columns:
                     - { width: 3*, header: "Name",   cell: "{{ item.name }}" }
-                    - { width: 1*, header: "Salary", cell: "{{ moeda(item.salary) }}", align: right }
+                    - { width: 1*, header: "Salary", cell: "{{ currency(item.salary) }}", align: right }
             """;
 
         var data = Data(new
