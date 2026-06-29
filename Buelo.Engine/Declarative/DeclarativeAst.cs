@@ -19,6 +19,9 @@ public sealed class ReportDefinition
     public string? Use { get; set; }
     public Dictionary<string, string>? With { get; set; }
 
+    /// <summary>Pre-render validation gate: expression → validator name. Fails the render (400) if invalid.</summary>
+    public Dictionary<string, string> Validate { get; set; } = [];
+
     // Page bands. Header/footer repeat on every page; content is the main flow.
     public List<ContentBlock> Header { get; set; } = [];
     public List<ContentBlock> Content { get; set; } = [];
@@ -53,6 +56,7 @@ public sealed class ContentBlock
 
     public TextBlock? Text { get; set; }
     public string? Markdown { get; set; }
+    public string? Html { get; set; }
     public TableBlock? Table { get; set; }
     public RowBlock? Row { get; set; }
     public ColumnBlock? Column { get; set; }

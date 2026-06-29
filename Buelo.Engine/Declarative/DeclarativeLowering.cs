@@ -92,6 +92,7 @@ internal sealed partial class DeclarativeLowering
             { Use: { } use } => LowerComponentUse(use, block.With, scope),
             { Text: { } text } => LowerText(text, scope),
             { Markdown: { } markdown } => LowerMarkdown(markdown, scope),
+            { Html: { } html } => LowerHtml(html, scope),
             { Table: { } table } => LowerTable(table, scope),
             { Row: { } row } => LowerRow(row, scope, slots),
             { Column: { } column } => LowerColumn(column, scope, slots),
@@ -113,6 +114,9 @@ internal sealed partial class DeclarativeLowering
 
     private Node LowerMarkdown(string markdown, IDictionary<string, object?> scope)
         => new ColumnNode { Spacing = 4, Children = MarkdownLowering.Parse(Interpolate(markdown, scope)) };
+
+    private Node LowerHtml(string html, IDictionary<string, object?> scope)
+        => new ColumnNode { Spacing = 4, Children = HtmlLowering.Parse(Interpolate(html, scope)) };
 
     private Node LowerRow(RowBlock row, IDictionary<string, object?> scope, IReadOnlyDictionary<string, IReadOnlyList<Node>> slots)
         => new RowNode

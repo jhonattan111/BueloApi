@@ -69,18 +69,20 @@ public class ReportController(
     /// The definition is YAML; the data is JSON. Produces a PDF.
     /// </summary>
     [HttpPost("render-declarative")]
-    public async Task<IActionResult> RenderDeclarative([FromBody] DeclarativeReportRequest request)
+    public async Task<IActionResult> RenderDeclarative([FromBody] DeclarativeReportRequest request, [FromQuery] string format = "pdf")
     {
         if (string.IsNullOrWhiteSpace(request.Definition))
             return BadRequest(new { error = "Report definition is required." });
 
+        var excel = IsExcel(format);
         var baseName = Path.GetFileNameWithoutExtension(request.FileName);
         try
         {
-            var bytes = await RenderWithTimeoutAsync(
-                () => Task.FromResult(declarative.RenderPdf(request.Definition, request.Data, request.Modules)));
-            await renderLog.LogAsync(Event(baseName, bytes.Length, success: true));
-            return File(bytes, "application/pdf", baseName + ".pdf");
+            var bytes = await RenderWithTimeoutAsync(() => Task.FromResult(excel
+                ? declarative.RenderExcel(request.Definition, request.Data, request.Modules)
+                : declarative.RenderPdf(request.Definition, request.Data, request.Modules)));
+            await renderLog.LogAsync(Event(baseName, bytes.Length, success: true, format: excel ? "excel" : "pdf"));
+            return File(bytes, ContentType(excel), baseName + Extension(excel));
         }
         catch (TimeoutException)
         {
@@ -94,11 +96,15 @@ public class ReportController(
         }
     }
 
-    private static RenderEvent Event(string reportName, int byteCount, bool success, string? error = null) => new()
+    private static bool IsExcel(string? format) => string.Equals(format, "excel", StringComparison.OrdinalIgnoreCase);
+    private static string ContentType(bool excel) => excel ? BueloDocumentExcelRenderer.ContentType : "application/pdf";
+    private static string Extension(bool excel) => excel ? ".xlsx" : ".pdf";
+
+    private static RenderEvent Event(string reportName, int byteCount, bool success, string? error = null, string format = "pdf") => new()
     {
         ReportName = reportName,
         Engine = "declarative",
-        Format = "pdf",
+        Format = format,
         ByteCount = byteCount,
         Success = success,
         Error = error,
@@ -130,14 +136,17 @@ public class ReportController(
     /// definition store. Produces a PDF.
     /// </summary>
     [HttpPost("render-stored/{name}")]
-    public async Task<IActionResult> RenderStored(string name, [FromBody] StoredReportRequest? request = null)
+    public async Task<IActionResult> RenderStored(string name, [FromBody] StoredReportRequest? request = null, [FromQuery] string format = "pdf")
     {
+        var excel = IsExcel(format);
         try
         {
-            var bytes = await RenderWithTimeoutAsync(() => declarative.RenderStoredAsync(name, request?.Data, definitions));
-            await renderLog.LogAsync(Event(name, bytes.Length, success: true));
+            var bytes = await RenderWithTimeoutAsync(() => excel
+                ? declarative.RenderStoredExcelAsync(name, request?.Data, definitions)
+                : declarative.RenderStoredAsync(name, request?.Data, definitions));
+            await renderLog.LogAsync(Event(name, bytes.Length, success: true, format: excel ? "excel" : "pdf"));
             var baseName = Path.GetFileNameWithoutExtension(request?.FileName ?? name);
-            return File(bytes, "application/pdf", baseName + ".pdf");
+            return File(bytes, ContentType(excel), baseName + Extension(excel));
         }
         catch (TimeoutException)
         {

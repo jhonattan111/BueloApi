@@ -29,10 +29,18 @@ public static class PersistenceExtensions
         return services;
     }
 
-    /// <summary>Creates the operational schema if it doesn't exist (dev convenience; prod uses migrations).</summary>
+    /// <summary>
+    /// Brings the operational schema up to date. When migrations are present (prod path), applies them;
+    /// otherwise creates the schema directly (dev/self-host convenience). So adding migrations later
+    /// switches the app over automatically, no startup change needed.
+    /// </summary>
     public static void EnsureBueloDatabase(this IServiceProvider services)
     {
         using var scope = services.CreateScope();
-        scope.ServiceProvider.GetRequiredService<BueloDbContext>().Database.EnsureCreated();
+        var db = scope.ServiceProvider.GetRequiredService<BueloDbContext>();
+        if (db.Database.GetMigrations().Any())
+            db.Database.Migrate();
+        else
+            db.Database.EnsureCreated();
     }
 }
