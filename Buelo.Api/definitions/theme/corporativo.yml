@@ -1,6 +1,0 @@
-kind: theme
-name: corporativo
-# Bundle de page defaults + classes (aplicadas com precedência menor que styles).
-page: { size: A4, margin: "2cm" }
-styles:
-  nota: { background: "#F8F8F8", padding: 8 }

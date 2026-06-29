@@ -33,7 +33,7 @@ public class DeclarativeMocksTests
     [Theory]
     [InlineData("hello", "hello.json")]
     [InlineData("invoice", "invoice.json")]
-    [InlineData("colaboradores", "colaboradores.json")]
+    [InlineData("employees", "employees.json")]
     public async Task Mock_report_renders_to_pdf(string report, string dataFile)
     {
         var root = DefinitionsRoot();

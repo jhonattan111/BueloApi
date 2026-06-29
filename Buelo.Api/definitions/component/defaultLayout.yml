@@ -1,0 +1,14 @@
+kind: component
+name: defaultLayout
+# Default layout by composition (replaces inheritance): company header + title,
+# then injects the report content into the "content" slot.
+params:
+  title:   { type: string }
+  company: { type: string, default: "Contar Consulting and Accounting" }
+slots: [content]
+body:
+  - text: { value: "{{ company }}", class: company }
+  - text: { value: "{{ title }}", class: title }
+  - divider: { color: "#CCCCCC", thickness: 1 }
+  - spacer: 8
+  - slot: content

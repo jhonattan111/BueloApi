@@ -1,0 +1,7 @@
+kind: lib
+name: sales
+# Named pure expressions, evaluated in the row scope (item fields at the top level).
+# Usage in a table cell: cell: "{{ sales.lineTotal }}".
+expr:
+  lineTotal:  "{{ price * qty }}"
+  finalPrice: "{{ price * (1 - discount) }}"

@@ -1,0 +1,6 @@
+kind: theme
+name: corporate
+# Bundle of page defaults + classes (applied with lower precedence than styles).
+page: { size: A4, margin: "2cm" }
+styles:
+  note: { background: "#F8F8F8", padding: 8 }

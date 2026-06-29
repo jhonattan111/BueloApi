@@ -1,17 +1,17 @@
 kind: report
 name: hello
-# Report declarativo mínimo: conteúdo rico (markdown) + rodapé com numeração de página.
+# Minimal declarative report: rich content (markdown) + footer with page numbering.
 meta:
   page: { size: A4, margin: "2cm" }
 footer:
-  - text: { value: "Página {{ page }} de {{ pageCount }}", style: { align: center, size: 9, color: "#999999" } }
+  - text: { value: "Page {{ page }} of {{ pageCount }}", style: { align: center, size: 9, color: "#999999" } }
 content:
   - markdown: |
-      # Olá, {{ data.nome }}!
+      # Hello, {{ data.name }}!
 
-      Este é um relatório **declarativo** do Buelo — escrito em YAML e renderizado
-      com QuestPDF, *sem C#*.
+      This is a **declarative** Buelo report — written in YAML and rendered
+      with QuestPDF, *without C#*.
 
-      - Conteúdo rico via markdown
-      - Expressões `{{ }}` resolvidas contra os dados
-      - Numeração de página no rodapé
+      - Rich content via markdown
+      - `{{ }}` expressions resolved against the data
+      - Page numbering in the footer

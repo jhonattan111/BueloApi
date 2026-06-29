@@ -1,0 +1,10 @@
+kind: styles
+name: corporate
+# Reusable named classes. Resolution precedence: inline > class > theme.
+classes:
+  base:       { color: "#222222" }
+  company:    { extends: base, size: 13, bold: true }
+  title:      { extends: base, size: 18, bold: true }
+  subtitle:   { extends: base, size: 10, color: "#666666" }
+  monetary:   { align: right }
+  totalLabel: { bold: true, align: right }

@@ -1,0 +1,9 @@
+{
+  "employees": [
+    { "name": "Ana Souza",    "role": "Analyst",     "department": "Accounting", "salary": 4200 },
+    { "name": "Bruno Lima",   "role": "Assistant",   "department": "Accounting", "salary": 3100 },
+    { "name": "Carla Dias",   "role": "Manager",     "department": "Tax",        "salary": 7800 },
+    { "name": "Diego Alves",  "role": "Analyst",     "department": "Tax",        "salary": 4500 },
+    { "name": "Eva Martins",  "role": "Coordinator", "department": "HR",         "salary": 6200 }
+  ]
+}

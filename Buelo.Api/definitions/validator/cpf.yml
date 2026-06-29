@@ -1,7 +1,7 @@
 kind: validator
 name: cpf
-# Degrau 1 (declarativo): formato + 11 dígitos + checksum mod11 do 1º dígito verificador.
-# Use via POST api/validate-data { validator: "cpf", value: "...", modules: [<este yaml>] }.
+# Tier 1 (declarative): format + 11 digits + mod11 checksum of the 1st check digit.
+# Use via POST api/validate-data { validator: "cpf", value: "...", modules: [<this yaml>] }.
 format: "###.###.###-##"
 rules:
   - { digits: 11 }

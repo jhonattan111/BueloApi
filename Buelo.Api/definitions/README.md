@@ -7,14 +7,14 @@ Mocks in the **declarative standard** (YAML), read by the `FileSystemDefinitionS
 
 ```
 definitions/
-  report/        complete reports (renderable)        → hello, invoice, colaboradores
-  component/     reusable components (use/slots)       → layoutPadrao
-  styles/        style classes (+ extends)             → corporativo
-  theme/         page defaults + classes               → corporativo
+  report/        complete reports (renderable)        → hello, invoice, employees
+  component/     reusable components (use/slots)       → defaultLayout
+  styles/        style classes (+ extends)             → corporate
+  theme/         page defaults + classes               → corporate
   formats/       named masks                           → br
-  lib/           named pure expressions                → vendas
+  lib/           named pure expressions                → sales
   validator/     validators (3 tiers)                  → cpf
-  data/          mock data (JSON) for each report      → hello/invoice/colaboradores
+  data/          mock data (JSON) for each report      → hello/invoice/employees
 ```
 
 `report/*.yml` declare their `import:` (resolved by the store); `data/` is **not** a kind — it is just the
@@ -28,9 +28,9 @@ curl -X POST http://localhost:5238/api/report/render-stored/invoice \
   -H "Content-Type: application/json" \
   -d '{ "data": '"$(cat definitions/data/invoice.json)"' }' --output invoice.pdf
 
-curl -X POST http://localhost:5238/api/report/render-stored/colaboradores \
+curl -X POST http://localhost:5238/api/report/render-stored/employees \
   -H "Content-Type: application/json" \
-  -d '{ "data": '"$(cat definitions/data/colaboradores.json)"' }' --output colaboradores.pdf
+  -d '{ "data": '"$(cat definitions/data/employees.json)"' }' --output employees.pdf
 ```
 
 You can also render inline YAML (`POST api/report/render-declarative`), eject to C#
@@ -40,8 +40,8 @@ You can also render inline YAML (`POST api/report/render-declarative`), eject to
 ## What each report exercises
 
 - **hello** — markdown (heading/bold/italic/list) + page numbering in the footer.
-- **invoice** — `use: layoutPadrao` (component + slot), `styles`/`theme`, §5 table with `*`/`px`
-  columns, `class`, the `| cnpj` pipe, and a footer with `sum(data.itens, 'preco * qtd')`.
-- **colaboradores** — table with `groupBy: departamento`, header/subtotal per group.
+- **invoice** — `use: defaultLayout` (component + slot), `styles`/`theme`, §5 table with `*`/`px`
+  columns, `class`, the `| cnpj` pipe, and a footer with `sum(data.items, 'price * qty')`.
+- **employees** — table with `groupBy: department`, header/subtotal per group.
 
 > All three are verified by `Buelo.Tests/Engine/DeclarativeMocksTests` (renders from disk → PDF).

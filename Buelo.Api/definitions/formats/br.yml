@@ -1,5 +1,5 @@
 kind: formats
 name: br
-# Máscaras custom (cnpj/cpf/cep já são da stdlib). Uso via pipe: {{ data.codigo | protocolo }}.
+# Custom masks (cnpj/cpf/cep are already in the stdlib). Usage via pipe: {{ data.code | protocol }}.
 formats:
-  protocolo: "####-####"
+  protocol: "####-####"

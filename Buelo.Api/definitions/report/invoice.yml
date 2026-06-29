@@ -1,27 +1,27 @@
 kind: report
 name: invoice
-# Fatura: layout padrão (component) + tabela de itens com total agregado (blueprint §5).
+# Invoice: default layout (component) + item table with aggregated total (blueprint §5).
 import:
-  - styles: corporativo
-  - component: layoutPadrao
-  - theme: corporativo
-use: layoutPadrao
+  - styles: corporate
+  - component: defaultLayout
+  - theme: corporate
+use: defaultLayout
 with:
-  titulo: "Fatura #{{ data.numero }}"
+  title: "Invoice #{{ data.invoiceNumber }}"
 content:
   - text:
-      value: "Cliente: {{ data.cliente.nome }}  ·  CNPJ {{ data.cliente.cnpj | cnpj }}"
-      class: subtitulo
+      value: "Customer: {{ data.customer.name }}  ·  CNPJ {{ data.customer.cnpj | cnpj }}"
+      class: subtitle
   - spacer: 10
   - table:
-      data: data.itens
+      data: data.items
       rowStyle: { paddingY: 5, borderBottom: "1px #DDDDDD" }
       columns:
-        - { width: 24px, header: "#",        cell: "{{ index + 1 }}" }
-        - { width: 4*,   header: "Produto",  cell: "{{ item.nome }}" }
-        - { width: 1*,   header: "Unitário", cell: "{{ moeda(item.preco) }}", class: monetario }
-        - { width: 1*,   header: "Qtd",      cell: "{{ item.qtd }}", align: right }
-        - { width: 2*,   header: "Total",    cell: "{{ moeda(item.preco * item.qtd) }}", class: monetario }
+        - { width: 24px, header: "#",         cell: "{{ index + 1 }}" }
+        - { width: 4*,   header: "Product",   cell: "{{ item.name }}" }
+        - { width: 1*,   header: "Unit",      cell: "{{ moeda(item.price) }}", class: monetary }
+        - { width: 1*,   header: "Qty",       cell: "{{ item.qty }}", align: right }
+        - { width: 2*,   header: "Total",     cell: "{{ moeda(item.price * item.qty) }}", class: monetary }
       footer:
-        - { span: 4, text: "Total da fatura", class: totalLabel }
-        - { text: "{{ moeda(sum(data.itens, 'preco * qtd')) }}", class: monetario }
+        - { span: 4, text: "Invoice total", class: totalLabel }
+        - { text: "{{ moeda(sum(data.items, 'price * qty')) }}", class: monetary }
