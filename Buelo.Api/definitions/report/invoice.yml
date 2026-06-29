@@ -1,0 +1,27 @@
+kind: report
+name: invoice
+# Fatura: layout padrão (component) + tabela de itens com total agregado (blueprint §5).
+import:
+  - styles: corporativo
+  - component: layoutPadrao
+  - theme: corporativo
+use: layoutPadrao
+with:
+  titulo: "Fatura #{{ data.numero }}"
+content:
+  - text:
+      value: "Cliente: {{ data.cliente.nome }}  ·  CNPJ {{ data.cliente.cnpj | cnpj }}"
+      class: subtitulo
+  - spacer: 10
+  - table:
+      data: data.itens
+      rowStyle: { paddingY: 5, borderBottom: "1px #DDDDDD" }
+      columns:
+        - { width: 24px, header: "#",        cell: "{{ index + 1 }}" }
+        - { width: 4*,   header: "Produto",  cell: "{{ item.nome }}" }
+        - { width: 1*,   header: "Unitário", cell: "{{ moeda(item.preco) }}", class: monetario }
+        - { width: 1*,   header: "Qtd",      cell: "{{ item.qtd }}", align: right }
+        - { width: 2*,   header: "Total",    cell: "{{ moeda(item.preco * item.qtd) }}", class: monetario }
+      footer:
+        - { span: 4, text: "Total da fatura", class: totalLabel }
+        - { text: "{{ moeda(sum(data.itens, 'preco * qtd')) }}", class: monetario }

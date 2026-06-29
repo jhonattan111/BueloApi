@@ -1,0 +1,5 @@
+kind: formats
+name: br
+# Máscaras custom (cnpj/cpf/cep já são da stdlib). Uso via pipe: {{ data.codigo | protocolo }}.
+formats:
+  protocolo: "####-####"

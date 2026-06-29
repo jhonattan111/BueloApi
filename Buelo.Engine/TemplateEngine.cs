@@ -3,9 +3,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Collections.Concurrent;
 using System.Dynamic;
 using System.Globalization;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 
 namespace Buelo.Engine;
@@ -113,7 +116,19 @@ public class TemplateEngine
 
     // ── Roslyn helpers ────────────────────────────────────────────────────────
 
+    // Roslyn compilation is expensive; identical sources compile to the same assembly. Cache by
+    // content hash so repeated renders of a template skip recompilation (hardening, handoff §12).
+    private static readonly ConcurrentDictionary<string, Assembly> AssemblyCache = new();
+
+    internal static int CachedAssemblyCount => AssemblyCache.Count;
+
     private static Assembly CompileTemplate(string source)
+    {
+        var key = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(source)));
+        return AssemblyCache.GetOrAdd(key, _ => CompileTemplateUncached(source));
+    }
+
+    private static Assembly CompileTemplateUncached(string source)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
         var compilation = CSharpCompilation.Create(

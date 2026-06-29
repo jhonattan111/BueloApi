@@ -4,7 +4,10 @@ Guia para agentes de IA (Claude Code) trabalhando neste repositório. É o **doc
 
 ## O que é
 
-`BueloApi` é a **API de geração de relatórios** do produto Buelo. Recebe **código C# de template em runtime**, compila com **Roslyn**, instancia uma classe que implementa `QuestPDF.Infrastructure.IDocument` e retorna **PDF** (ou **Excel** via ClosedXML).
+`BueloApi` é a **API de geração de relatórios** do produto Buelo. Tem **dois caminhos de autoria**:
+
+1. **C# (`IDocument`)** — recebe código C# em runtime, compila com **Roslyn**, instancia uma classe `QuestPDF.Infrastructure.IDocument` e retorna **PDF** (ou **Excel** via ClosedXML). É o "escape hatch" de poder total.
+2. **Declarativo (YAML)** — recebe uma definição declarativa, faz *lowering* para um IR tipado (`BueloDocument`) e compõe via QuestPDF — **sem Roslyn**. É o caminho principal de autoria. Ver [`docs/blueprint-schema-canonico.md`](../docs/blueprint-schema-canonico.md) e a seção **Engine declarativo** abaixo.
 
 > Faz parte do produto Buelo, junto do front [`BueloWeb`](../BueloWeb). O repo guarda-chuva é [`Buelo`](..) (submodules). O front consome esta API em `http://localhost:5238`.
 
@@ -74,15 +77,31 @@ public class InvoiceDocument : IDocument
 
 `ValidateAsync` compila e retorna `ValidationResult { Valid, Errors[] }` (linha/coluna) **sem** executar — nunca lança.
 
+## Engine declarativo (YAML → IR → QuestPDF)
+
+Pipeline: **YAML → `DeclarativeParser` (YamlDotNet) → `DeclarativeInterpreter`/`DeclarativeLowering` (avalia `{{ }}`, resolve diretivas e estilos) → `BueloDocument` (IR tipado) → `BueloDocumentRenderer` (compõe QuestPDF) → PDF.** Código em `Buelo.Engine/Declarative/`, `Buelo.Engine/Ir/`, `Buelo.Engine/Renderers/BueloDocumentRenderer.cs`. Orquestrador: `DeclarativeReportEngine` (singleton).
+
+- **Kinds** (`kind:` no topo do YAML): `report` (renderável), `component` (params + slots + `use`/`with`), `styles` (classes + `extends`), `theme`, `formats` (máscaras), `lib` (expressões nomeadas), `validator` (3 degraus). Módulos indexados por `Declarative/Modules/ModuleRegistry`.
+- **Blocos de layout** (`Declarative/DeclarativeAst.cs`): `text`, `markdown`, `table` (data-oriented, `groupBy`, footer com agregação), `row`, `column`, `card`/`panel`, `image`, `spacer`, `divider`, `pageBreak`; bandas `header`/`content`/`footer`; context vars `now`/`today`/`page`/`pageCount`/`report.name`.
+- **Expressões `{{ }}`** (`Declarative/Expressions/`): lexer + parser recursivo + avaliador. Aritmética, comparação, lógico, ternário, `??`, pipes, chamadas; stdlib (`moeda`/`data`/`cpf`/`cnpj`/`percent`/`upper`/`join`/`mask`/`if`/`coalesce`…) + agregação `sum`/`avg`/`count`/`min`/`max`.
+- **Persistência das definições:** `IDefinitionStore` (`{kind}/{name}.yml`) — `FileSystemDefinitionStore` (default, git-friendly) e `InMemoryDefinitionStore` (testes). Raiz via config `Buelo:DefinitionStorePath` (fallback `definitions`).
+- **Operacional (EF Core):** `BueloDbContext` + `IRenderLog` (histórico de render). SQLite (dev) / Postgres (prod) por `Buelo:Database:Provider`. `AddBueloPersistence(config)` + `EnsureBueloDatabase()` no startup. Default sem DB = `NullRenderLog`.
+- **Eject:** `CSharpEjector` gera um `IDocument` C# a partir do IR (graduação declarativo→código).
+- **Exemplos:** `Buelo.Api/definitions/` (reports `hello`/`invoice`/`colaboradores` + módulos + dados mock em `data/`). Ver `Buelo.Api/definitions/README.md`.
+
 ## Superfície da API (rotas reais)
 
 | Controller | Base | Rotas |
 |---|---|---|
-| `ReportController` | `api/report` | `POST render`, `POST validate`, `POST render/{id}`, `POST preview/{id}`, `GET formats` |
+| `ReportController` | `api/report` | C#: `POST render`, `POST validate`, `POST render/{id}`, `POST preview/{id}`, `GET formats` · Declarativo: `POST render-declarative`, `POST render-stored/{name}`, `POST eject` |
+| `SchemasController` | `api/schemas` | `GET` (lista kinds), `GET {kind}` (JSON Schema do kind) |
+| `DeclarativeValidationController` | `api/validate-data` | `POST` (valida um valor contra um `kind: validator`) |
+| `RenderHistoryController` | `api/render-history` | `GET` (histórico de render do EF store) |
 | `TemplatesController` | `api/templates` | CRUD + `{id}/artefacts[/{name}]`, `{id}/files`, `{id}/versions[/{n}[/restore]]` |
 | `GlobalArtefactsController` | `api/artefacts` | CRUD + `GET by-name/{name}` |
 | `WorkspaceController` | `api/workspace` | `GET tree`, `POST folders`, `POST/GET/PUT files[/content]`, `DELETE nodes`, `GET types` |
 | `ValidateController` | `api/validate` | `POST` (1 arquivo), `POST project` |
+| *(minimal)* | `/ping` | `GET` (liveness público; aberto mesmo com API key) |
 
 Render/preview retornam `application/pdf` (ou Excel). Use `?format=` quando aplicável. Erros: `404` (id não encontrado), `400` (sem dados).
 
@@ -108,7 +127,10 @@ Render/preview retornam `application/pdf` (ou Excel). Use `?format=` quando apli
 - Controllers usam **primary constructor injection**; retornem tipos explícitos (`Ok`, `NotFound`, `BadRequest`).
 - `ITemplateStore` é **async** em tudo (`Task<T>`), mesmo a impl in-memory.
 - Todo novo endpoint precisa de teste em `Buelo.Tests/Api/` (happy path + not found + bad input). Componentes de engine: teste em `Buelo.Tests/Engine/`.
-- `Program.cs`: CORS liberado para `http://localhost:5173` (o front); OpenAPI só em Development; licença QuestPDF Community.
+- `Program.cs`: `AddBueloEngine()` + `AddBueloPersistence(config)`; CORS p/ `http://localhost:5173`; OpenAPI só em Development; licença QuestPDF Community; `EnsureBueloDatabase()`; `/ping` público; `ApiKeyMiddleware` (gate opt-in).
+- **Config (env/appsettings):** `Buelo:ApiKey` (Bearer opt-in; vazio = auth off), `Buelo:RenderTimeoutSeconds` (default 30; 0 desliga), `Buelo:DefinitionStorePath` (default `definitions`), `Buelo:Database:Provider` (`sqlite`|`postgres`) + `Buelo:Database:ConnectionString`.
+- **Cache de assembly Roslyn** por hash de conteúdo no `TemplateEngine` (renders repetidos do mesmo template C# pulam recompilação).
+- **Modelo self-hosted:** sem sandbox/multi-tenant; quem tem a API key é confiável (ver blueprint).
 
 ## Histórico e referência
 

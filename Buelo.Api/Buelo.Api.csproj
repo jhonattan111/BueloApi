@@ -7,14 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
   </ItemGroup>
 
-  <!-- Exclude the templates storage folder from compilation and hot-reload watch.
-       Template source code is stored as string content inside template.record.json
-       and compiled at runtime by Roslyn — it must NOT be picked up by MSBuild. -->
+  <!-- Declarative definitions (definitions/**: report/component/styles/... as YAML) and any
+       runtime storage are content read at runtime, not build inputs — keep them out of the
+       hot-reload watch so editing a report doesn't trigger a rebuild. -->
   <ItemGroup>
-    <Compile Remove="templates\**\*.cs" />
+    <Watch Remove="definitions\**" />
     <Watch Remove="templates\**" />
   </ItemGroup>
 

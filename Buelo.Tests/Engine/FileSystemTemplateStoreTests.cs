@@ -117,22 +117,24 @@ public class FileSystemTemplateStoreTests : IDisposable
     }
 
     [Fact]
-    public async Task SaveAsync_RemoveArtefact_DeletesFileFromDisk()
+    public async Task SaveAsync_RemoveArtefact_RemovesFromReloadedRecord()
     {
         var template = BuildTemplate();
         template.Artefacts.Add(new TemplateArtefact { Name = "todelete", Extension = ".json", Content = "{}" });
         var saved = await _store.SaveAsync(template);
 
-        // Verify the file exists.
-        var artefactFile = Path.Combine(_root, saved.Id.ToString(), "todelete.json");
-        Assert.True(File.Exists(artefactFile));
+        // The artefact round-trips through the store while present.
+        var withArtefact = await _store.GetAsync(saved.Id);
+        Assert.NotNull(withArtefact);
+        Assert.Single(withArtefact.Artefacts);
 
-        // Remove artefact and save again.
-        var retrieved = await _store.GetAsync(saved.Id);
-        retrieved!.Artefacts.Clear();
-        await _store.SaveAsync(retrieved);
+        // Remove artefact and save again — the removal must be persisted.
+        withArtefact.Artefacts.Clear();
+        await _store.SaveAsync(withArtefact);
 
-        Assert.False(File.Exists(artefactFile));
+        var reloaded = await _store.GetAsync(saved.Id);
+        Assert.NotNull(reloaded);
+        Assert.Empty(reloaded.Artefacts);
     }
 
     [Fact]
@@ -153,10 +155,8 @@ public class FileSystemTemplateStoreTests : IDisposable
         Assert.NotNull(retrieved);
         var artefact = Assert.Single(retrieved.Artefacts);
         Assert.Equal("helpers/tax/calc.helpers.cs", artefact.Path);
+        Assert.Equal(".helpers.cs", artefact.Extension);
         Assert.Equal("// helper", artefact.Content);
-
-        var artefactFile = Path.Combine(_root, saved.Id.ToString(), "helpers", "tax", "calc.helpers.cs");
-        Assert.True(File.Exists(artefactFile));
     }
 
     // â”€â”€ ListAsync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

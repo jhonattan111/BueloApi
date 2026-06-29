@@ -1,4 +1,6 @@
 using Buelo.Contracts;
+using Buelo.Engine.Declarative;
+using Buelo.Engine.Persistence;
 using Buelo.Engine.Renderers;
 using Buelo.Engine.Validators;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +29,8 @@ public static class EngineExtensions
         // TryAdd so that AddBueloFileSystemStore() (or any custom store) registered first takes precedence.
         services.TryAddSingleton<ITemplateStore, InMemoryTemplateStore>();
         services.TryAddSingleton<IGlobalArtefactStore, InMemoryGlobalArtefactStore>();
+        // Declarative definition store (report/component/styles/... as YAML). Default: file-system (git-friendly, §13).
+        services.TryAddSingleton<IDefinitionStore>(sp => new FileSystemDefinitionStore(ResolveDefinitionPath(sp)));
         services.TryAddSingleton<IWorkspaceStore>(sp =>
             new FileSystemWorkspaceStore(ResolveStorePath(sp, rootPath: null)));
         services.TryAddSingleton<IWorkspaceFileEnumerator>(sp =>
@@ -38,6 +42,14 @@ public static class EngineExtensions
         services.AddSingleton<IOutputRenderer, PdfRenderer>();
         services.AddSingleton<IOutputRenderer, ExcelRenderer>();
         services.AddSingleton<OutputRendererRegistry>();
+
+        // Declarative engine: YAML → IR (BueloDocument) → QuestPDF recipe.
+        services.AddSingleton<DeclarativeInterpreter>();
+        services.AddSingleton<DeclarativeReportEngine>();
+        services.AddSingleton<DeclarativeValidator>();
+        services.TryAddSingleton<IValidatorExtensions, ValidatorExtensions>();
+        // No-op render log by default; AddBueloPersistence() swaps in the EF-backed one.
+        services.TryAddScoped<IRenderLog, NullRenderLog>();
         return services;
     }
 
@@ -80,5 +92,9 @@ public static class EngineExtensions
         => rootPath
             ?? sp.GetService<Microsoft.Extensions.Configuration.IConfiguration>()?["Buelo:TemplateStorePath"]
             ?? "templates";
+
+    private static string ResolveDefinitionPath(IServiceProvider sp)
+        => sp.GetService<Microsoft.Extensions.Configuration.IConfiguration>()?["Buelo:DefinitionStorePath"]
+            ?? "definitions";
 }
 

@@ -2,7 +2,10 @@
 using Buelo.Api.Controllers;
 using Buelo.Contracts;
 using Buelo.Engine;
+using Buelo.Engine.Declarative;
+using Buelo.Engine.Persistence;
 using Buelo.Engine.Renderers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using QuestPDF;
 using QuestPDF.Infrastructure;
@@ -102,7 +105,7 @@ public class ReportControllerTests
         });
 
         var engine = new TemplateEngine(new DefaultHelperRegistry());
-        var controller = new ReportController(engine, store, CreateRegistry(engine));
+        var controller = new ReportController(engine, store, CreateRegistry(engine), CreateDeclarativeEngine(), new InMemoryDefinitionStore(), new NullRenderLog(), new ConfigurationBuilder().Build());
 
         var result = await controller.RenderById(template.Id);
 
@@ -169,12 +172,65 @@ public class ReportControllerTests
     private static OutputRendererRegistry CreateRegistry(TemplateEngine engine)
         => new([new PdfRenderer(engine), new ExcelRenderer()]);
 
+    [Fact]
+    public async Task RenderDeclarative_ValidDefinition_ReturnsPdfFile()
+    {
+        var controller = CreateController();
+        var request = new DeclarativeReportRequest
+        {
+            Definition = """
+                kind: report
+                name: hello
+                content:
+                  - text: { value: "Hello {{ data.name }}", style: { bold: true } }
+                """,
+            Data = CreateJsonData("World"),
+            FileName = "hello.pdf",
+        };
+
+        var result = await controller.RenderDeclarative(request);
+
+        var file = Assert.IsType<FileContentResult>(result);
+        Assert.Equal("application/pdf", file.ContentType);
+        Assert.EndsWith(".pdf", file.FileDownloadName, StringComparison.OrdinalIgnoreCase);
+        Assert.NotEmpty(file.FileContents);
+    }
+
+    [Fact]
+    public async Task RenderDeclarative_EmptyDefinition_ReturnsBadRequest()
+    {
+        var controller = CreateController();
+        var request = new DeclarativeReportRequest { Definition = "", Data = CreateJsonData("x") };
+
+        var result = await controller.RenderDeclarative(request);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task RenderDeclarative_InvalidYaml_ReturnsBadRequest()
+    {
+        var controller = CreateController();
+        var request = new DeclarativeReportRequest
+        {
+            Definition = "kind: report\ncontent: [ unterminated",
+            Data = CreateJsonData("x"),
+        };
+
+        var result = await controller.RenderDeclarative(request);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
     private static ReportController CreateController()
     {
         var store = new InMemoryTemplateStore();
         var engine = new TemplateEngine(new DefaultHelperRegistry());
-        return new ReportController(engine, store, CreateRegistry(engine));
+        return new ReportController(engine, store, CreateRegistry(engine), CreateDeclarativeEngine(), new InMemoryDefinitionStore(), new NullRenderLog(), new ConfigurationBuilder().Build());
     }
+
+    private static DeclarativeReportEngine CreateDeclarativeEngine()
+        => new(new DeclarativeInterpreter());
 
     private static JsonElement CreateJsonData(string name)
     {

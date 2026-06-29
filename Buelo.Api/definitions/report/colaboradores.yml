@@ -1,0 +1,21 @@
+kind: report
+name: colaboradores
+# Relação de colaboradores agrupada por departamento, com subtotal por grupo (groupBy).
+import:
+  - styles: corporativo
+  - component: layoutPadrao
+use: layoutPadrao
+with:
+  titulo: "Relação de Colaboradores"
+content:
+  - table:
+      data: data.colaboradores
+      groupBy: departamento
+      rowStyle: { paddingY: 4, borderBottom: "1px #EEEEEE" }
+      group:
+        header: { text: "{{ group.key }}", style: { bold: true, background: "#EEEEEE", size: 12 } }
+        footer: { text: "Subtotal {{ group.key }}: {{ moeda(sum(group.items, 'salario')) }}", style: { align: right, bold: true } }
+      columns:
+        - { width: 3*, header: "Nome",    cell: "{{ item.nome }}" }
+        - { width: 2*, header: "Cargo",   cell: "{{ item.cargo }}" }
+        - { width: 1*, header: "Salário", cell: "{{ moeda(item.salario) }}", class: monetario }

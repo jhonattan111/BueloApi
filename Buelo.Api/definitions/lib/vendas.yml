@@ -1,0 +1,7 @@
+kind: lib
+name: vendas
+# Expressões puras nomeadas, avaliadas no escopo da linha (campos do item no topo).
+# Uso numa célula de tabela: cell: "{{ vendas.totalItem }}".
+expr:
+  totalItem:  "{{ preco * qtd }}"
+  precoFinal: "{{ preco * (1 - desconto) }}"

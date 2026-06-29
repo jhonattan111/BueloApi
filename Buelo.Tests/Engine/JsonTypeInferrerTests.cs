@@ -199,7 +199,9 @@ public class JsonTypeInferrerTests
     [Fact]
     public void InvalidJson_ThrowsJsonException()
     {
-        Assert.Throws<JsonException>(() =>
+        // JsonDocument.Parse throws JsonReaderException, a subclass of JsonException,
+        // so accept any JsonException-derived type rather than an exact match.
+        Assert.ThrowsAny<JsonException>(() =>
             JsonTypeInferrer.InferCSharpTypes("{ name: missing_quotes }"));
     }
 

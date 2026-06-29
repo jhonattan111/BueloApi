@@ -1,14 +1,35 @@
 ﻿using Buelo.Contracts;
 using Buelo.Engine;
+using Buelo.Engine.Declarative;
 using Buelo.Engine.Renderers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace Buelo.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(TemplateEngine engine, ITemplateStore store, OutputRendererRegistry renderers) : ControllerBase
+public class ReportController(
+    TemplateEngine engine,
+    ITemplateStore store,
+    OutputRendererRegistry renderers,
+    DeclarativeReportEngine declarative,
+    IDefinitionStore definitions,
+    IRenderLog renderLog,
+    IConfiguration configuration) : ControllerBase
 {
+    /// <summary>
+    /// Runs a render on a background task bounded by <c>Buelo:RenderTimeoutSeconds</c> (default 30;
+    /// 0 disables). Best-effort: QuestPDF is synchronous, so a timed-out render is abandoned, not
+    /// cancelled — the cap protects the caller's wait time (handoff §12 hardening).
+    /// </summary>
+    private async Task<byte[]> RenderWithTimeoutAsync(Func<Task<byte[]>> render)
+    {
+        var seconds = configuration.GetValue("Buelo:RenderTimeoutSeconds", 30);
+        return seconds <= 0
+            ? await render()
+            : await Task.Run(render).WaitAsync(TimeSpan.FromSeconds(seconds));
+    }
     /// <summary>
     /// Renders a report from a C# IDocument template supplied in the request body.
     /// Use ?format=pdf (default) or ?format=excel to select output format.
@@ -36,6 +57,92 @@ public class ReportController(TemplateEngine engine, ITemplateStore store, Outpu
             var bytes = await renderer.RenderAsync(input);
             var baseName = Path.GetFileNameWithoutExtension(request.FileName);
             return File(bytes, renderer.ContentType, baseName + renderer.FileExtension);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Renders a report from a declarative YAML definition (engine: declarative).
+    /// The definition is YAML; the data is JSON. Produces a PDF.
+    /// </summary>
+    [HttpPost("render-declarative")]
+    public async Task<IActionResult> RenderDeclarative([FromBody] DeclarativeReportRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Definition))
+            return BadRequest(new { error = "Report definition is required." });
+
+        var baseName = Path.GetFileNameWithoutExtension(request.FileName);
+        try
+        {
+            var bytes = await RenderWithTimeoutAsync(
+                () => Task.FromResult(declarative.RenderPdf(request.Definition, request.Data, request.Modules)));
+            await renderLog.LogAsync(Event(baseName, bytes.Length, success: true));
+            return File(bytes, "application/pdf", baseName + ".pdf");
+        }
+        catch (TimeoutException)
+        {
+            await renderLog.LogAsync(Event(baseName, 0, success: false, "Render timed out."));
+            return StatusCode(503, new { error = "Render timed out." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            await renderLog.LogAsync(Event(baseName, 0, success: false, ex.Message));
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    private static RenderEvent Event(string reportName, int byteCount, bool success, string? error = null) => new()
+    {
+        ReportName = reportName,
+        Engine = "declarative",
+        Format = "pdf",
+        ByteCount = byteCount,
+        Success = success,
+        Error = error,
+        CreatedAt = DateTimeOffset.UtcNow,
+    };
+
+    /// <summary>
+    /// Ejects an equivalent C# IDocument from a declarative report (graduation path, blueprint §10).
+    /// </summary>
+    [HttpPost("eject")]
+    public IActionResult Eject([FromBody] DeclarativeReportRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Definition))
+            return BadRequest(new { error = "Report definition is required." });
+
+        try
+        {
+            var source = declarative.EjectCSharp(request.Definition, request.Data, request.Modules);
+            return Ok(new { source });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Renders a stored declarative report by name, resolving its imported modules from the
+    /// definition store. Produces a PDF.
+    /// </summary>
+    [HttpPost("render-stored/{name}")]
+    public async Task<IActionResult> RenderStored(string name, [FromBody] StoredReportRequest? request = null)
+    {
+        try
+        {
+            var bytes = await RenderWithTimeoutAsync(() => declarative.RenderStoredAsync(name, request?.Data, definitions));
+            await renderLog.LogAsync(Event(name, bytes.Length, success: true));
+            var baseName = Path.GetFileNameWithoutExtension(request?.FileName ?? name);
+            return File(bytes, "application/pdf", baseName + ".pdf");
+        }
+        catch (TimeoutException)
+        {
+            await renderLog.LogAsync(Event(name, 0, success: false, "Render timed out."));
+            return StatusCode(503, new { error = "Render timed out." });
         }
         catch (InvalidOperationException ex)
         {

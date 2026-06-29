@@ -363,3 +363,8 @@ MigrationBackup/
 FodyWeavers.xsd
 # Claude Code — settings pessoais
 .claude/settings.local.json
+
+# Banco operacional SQLite (runtime, gerado por EnsureCreated)
+buelo-operational.db
+buelo-operational.db-shm
+buelo-operational.db-wal

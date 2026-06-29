@@ -1,0 +1,9 @@
+{
+  "colaboradores": [
+    { "nome": "Ana Souza",    "cargo": "Analista",     "departamento": "Contábil", "salario": 4200 },
+    { "nome": "Bruno Lima",   "cargo": "Assistente",   "departamento": "Contábil", "salario": 3100 },
+    { "nome": "Carla Dias",   "cargo": "Gerente",      "departamento": "Fiscal",   "salario": 7800 },
+    { "nome": "Diego Alves",  "cargo": "Analista",     "departamento": "Fiscal",   "salario": 4500 },
+    { "nome": "Eva Martins",  "cargo": "Coordenadora", "departamento": "RH",       "salario": 6200 }
+  ]
+}
