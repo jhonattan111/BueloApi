@@ -166,7 +166,7 @@ Parse (but do not act on) a new `@format` directive:
 ```yaml
 @format
   excel:
-    sheetName: Colaboradores
+    sheetName: Employees
     freezeHeader: true
 ```
 

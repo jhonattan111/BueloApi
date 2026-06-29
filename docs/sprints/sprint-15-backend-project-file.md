@@ -33,8 +33,8 @@ File name: `project.bueloproject` (stored at `{TemplateStorePath}/project.buelop
     "watermarkText": null
   },
   "mockData": {
-    "empresa": "ACME Corp",
-    "dataGeracao": "2026-04-20T00:00:00Z"
+    "company": "ACME Corp",
+    "generatedAt": "2026-04-20T00:00:00Z"
   },
   "defaultOutputFormat": "pdf",
   "createdAt": "2026-04-20T00:00:00Z",

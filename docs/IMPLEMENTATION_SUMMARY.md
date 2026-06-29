@@ -135,8 +135,8 @@ Document.Create(container => {
 var request = new ReportRequest
 {
     Template = template,
-    FileName = "meu-relatorio.pdf",
-    Data = new { name = "Relatório Importante" },
+    FileName = "my-report.pdf",
+    Data = new { name = "Important Report" },
     PageSettings = new PageSettings
     {
         PageSize = "A4",
@@ -144,7 +144,7 @@ var request = new ReportRequest
         MarginVertical = 2.0f,
         BackgroundColor = "#F5F5F5",
         DefaultFontSize = 20,
-        WatermarkText = "CONFIDENCIAL"
+        WatermarkText = "CONFIDENTIAL"
     }
 };
 ```
@@ -170,7 +170,7 @@ var settings = PageSettings.WithWatermark("DRAFT");
 ```csharp
 var template = new TemplateRecord
 {
-    Name = "Relatório de Vendas",
+    Name = "Sales Report",
     Template = /* your template here */,
     Mode = TemplateMode.Builder,
     PageSettings = new PageSettings
@@ -178,7 +178,7 @@ var template = new TemplateRecord
         PageSize = "A4",
         MarginHorizontal = 2.0f,
         MarginVertical = 2.5f,
-        WatermarkText = "CONFIDENCIAL"
+        WatermarkText = "CONFIDENTIAL"
     }
 };
 
@@ -263,7 +263,7 @@ new PageSettings
 new PageSettings
 {
     PageSize = "A4",
-    WatermarkText = "CONFIDENCIAL",
+    WatermarkText = "CONFIDENTIAL",
     WatermarkOpacity = 0.1f,
     BackgroundColor = "#FFF8DC"
 }

@@ -35,14 +35,14 @@ A `.buelo` file is a YAML-like document composed of **directives** (at the top) 
 # invoices.buelo — Example report
 
 import { FormatCNPJ, FormatCurrency } from "formatters"
-@data from "colaborador.json"
+@data from "employee.json"
 @settings
   size: A4
   orientation: Portrait
   margin: 2cm
 
 report title:
-  text: "Relatório de Colaboradores"
+  text: "Employees Report"
   style:
     fontSize: 18
     bold: true
@@ -50,13 +50,13 @@ report title:
     align: center
 
 page header:
-  text: "Sistema de RH — {{ data.empresa }}"
+  text: "HR System — {{ data.company }}"
   style:
     fontSize: 10
     color: "#666666"
 
 page footer:
-  text: "Página {{ page }} de {{ pageCount }}"
+  text: "Page {{ page }} of {{ pageCount }}"
   style:
     align: center
     fontSize: 9
@@ -64,19 +64,19 @@ page footer:
 data:
   table:
     columns:
-      - field: nome
-        label: Nome Completo
+      - field: name
+        label: Full Name
         width: 40%
-      - field: cargo
-        label: Cargo
+      - field: role
+        label: Role
         width: 30%
-      - field: salario
-        label: Salário
+      - field: salary
+        label: Salary
         width: 30%
         format: currency
 
     group header:
-      field: departamento
+      field: department
       text: "{{ value }}"
       style:
         bold: true
@@ -94,8 +94,8 @@ report resume:
     style:
       border: 1px solid "#CCCCCC"
       padding: 8px
-    text: "Total de colaboradores: {{ count }}"
-    text: "Gerado em: {{ FormatDate(now) }}"
+    text: "Total employees: {{ count }}"
+    text: "Generated on: {{ FormatDate(now) }}"
 ```
 
 ---

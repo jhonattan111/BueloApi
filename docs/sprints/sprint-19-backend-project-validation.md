@@ -44,7 +44,7 @@ public class ProjectValidationResult
 /// <summary>Validation result for a single workspace file.</summary>
 public class FileValidationEntry
 {
-    /// <summary>Workspace-relative file path, e.g. "relatorio_1/relatorio_1.buelo".</summary>
+    /// <summary>Workspace-relative file path, e.g. "report_1/report_1.buelo".</summary>
     public string Path { get; set; } = string.Empty;
 
     /// <summary>File extension (e.g. ".buelo", ".json", ".csx").</summary>
@@ -180,7 +180,7 @@ Response 200:
   "totalWarnings": 0,
   "files": [
     {
-      "path": "relatorio_1/relatorio_1.buelo",
+      "path": "report_1/report_1.buelo",
       "extension": ".buelo",
       "result": {
         "valid": false,
@@ -191,7 +191,7 @@ Response 200:
       }
     },
     {
-      "path": "data/colaboradores.json",
+      "path": "data/employees.json",
       "extension": ".json",
       "result": { "valid": true, "errors": [], "warnings": [] }
     }

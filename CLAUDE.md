@@ -89,7 +89,7 @@ Pipeline: **YAML → `DeclarativeParser` (YamlDotNet) → `DeclarativeInterprete
 - **Definition persistence:** `IDefinitionStore` (`{kind}/{name}.yml`) — `FileSystemDefinitionStore` (default, git-friendly) and `InMemoryDefinitionStore` (tests). Root via config `Buelo:DefinitionStorePath` (fallback `definitions`).
 - **Operational (EF Core):** `BueloDbContext` + `IRenderLog` (render history). SQLite (dev) / Postgres (prod) via `Buelo:Database:Provider`. `AddBueloPersistence(config)` + `EnsureBueloDatabase()` at startup. Default without DB = `NullRenderLog`.
 - **Eject:** `CSharpEjector` generates a C# `IDocument` from the IR (declarative→code graduation).
-- **Examples:** `Buelo.Api/definitions/` (reports `hello`/`invoice`/`colaboradores` + modules + mock data in `data/`). See `Buelo.Api/definitions/README.md`.
+- **Examples:** `Buelo.Api/definitions/` (reports `hello`/`invoice`/`employees` + modules + mock data in `data/`). See `Buelo.Api/definitions/README.md`.
 
 ## API surface (real routes)
 

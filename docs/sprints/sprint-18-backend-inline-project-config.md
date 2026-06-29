@@ -221,12 +221,12 @@ File: `Buelo.Tests/Engine/PageSettingsEngineTests.cs` — add tests:
   showHeader: true
   showFooter: false
 
-@data data/funcionarios.json
+@data data/employees.json
 @settings
   size: A4
 
 report title:
-  text: Relatório de Funcionários
+  text: Employees Report
     style: { fontSize: 18, bold: true }
 ```
 

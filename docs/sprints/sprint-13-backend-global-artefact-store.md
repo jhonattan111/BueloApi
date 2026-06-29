@@ -1,7 +1,7 @@
 # Sprint 13 — Backend: Global Artefact Store (Shared Files)
 
 ## Goal
-Allow files to exist **independently from any specific template**. A `colaborador.json` data file, a `shared-header.buelo` partial, or a `formatters.csx` helper can be created once and referenced by any report, eliminating duplication across templates.
+Allow files to exist **independently from any specific template**. An `employee.json` data file, a `shared-header.buelo` partial, or a `formatters.csx` helper can be created once and referenced by any report, eliminating duplication across templates.
 
 ## Status
 `[x] done`
@@ -35,7 +35,7 @@ File: `Buelo.Contracts/GlobalArtefact.cs`
 public class GlobalArtefact
 {
     public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;       // slug-safe, e.g. "colaborador"
+    public string Name { get; set; } = string.Empty;       // slug-safe, e.g. "employee"
     public string Extension { get; set; } = string.Empty;  // e.g. ".json", ".buelo", ".csx"
     public string Content { get; set; } = string.Empty;
     public string? Description { get; set; }
@@ -45,7 +45,7 @@ public class GlobalArtefact
 }
 ```
 
-Full file name = `Name + Extension`, e.g. `colaborador.json`, `shared-header.buelo`, `formatters.csx`.
+Full file name = `Name + Extension`, e.g. `employee.json`, `shared-header.buelo`, `formatters.csx`.
 
 ---
 
@@ -84,8 +84,8 @@ Implements `IGlobalArtefactStore`. Stores global artefacts in a flat directory:
 
 ```
 {root}/_global/
-  colaborador.json
-  colaborador.json.meta.json     ← { id, description, tags, createdAt, updatedAt }
+  employee.json
+  employee.json.meta.json        ← { id, description, tags, createdAt, updatedAt }
   shared-header.buelo
   shared-header.buelo.meta.json
   formatters.csx
@@ -132,11 +132,11 @@ New controller:
 Request body for POST/PUT:
 ```json
 {
-  "name": "colaborador",
+  "name": "employee",
   "extension": ".json",
-  "content": "{ \"nome\": \"João\" }",
-  "description": "Dados de colaborador para testes",
-  "tags": ["rh", "mock"]
+  "content": "{ \"name\": \"John\" }",
+  "description": "Employee data for testing",
+  "tags": ["hr", "mock"]
 }
 ```
 

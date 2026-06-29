@@ -78,14 +78,14 @@ Document.Create(c =>
         p.Content()
             .Column(x => 
             {
-                x.Item().Text(""Conteúdo aqui"");
+                x.Item().Text(""Content here"");
             });
             
         p.Footer()
             .AlignCenter()
             .Text(x => 
             {
-                x.Span(""Página "");
+                x.Span(""Page "");
                 x.CurrentPageNumber();
             });
     });
@@ -96,15 +96,15 @@ Document.Create(c =>
 var request = new ReportRequest
 {
     Template = template,
-    FileName = "meu-relatorio.pdf",
-    Data = new { name = "Relatório Importante" },
+    FileName = "my-report.pdf",
+    Data = new { name = "Important Report" },
     PageSettings = new PageSettings
     {
         PageSize = "A4",
         MarginHorizontal = 2.0f,
         MarginVertical = 2.0f,
         BackgroundColor = "#F5F5F5",
-        WatermarkText = "CONFIDENCIAL",
+        WatermarkText = "CONFIDENTIAL",
         WatermarkOpacity = 0.2f
     }
 };
@@ -128,19 +128,19 @@ page.Content()
     {
         x.Spacing(8);
         x.Item().Text((string)data.name);
-        x.Item().Text(""Relatório gerado em modo Sections"");
+        x.Item().Text(""Report generated in Sections mode"");
     });
 
 page.Footer()
     .AlignCenter()
-    .Text(x => { x.Span(""Página ""); x.CurrentPageNumber(); });
+    .Text(x => { x.Span(""Page ""); x.CurrentPageNumber(); });
 ";
 
 var request = new ReportRequest
 {
     Template = sectionsTemplate,
     Mode = TemplateMode.Sections,
-    Data = new { name = "Relatório Comercial" },
+    Data = new { name = "Commercial Report" },
     PageSettings = new PageSettings
     {
         PageSize = "Letter",
@@ -210,12 +210,12 @@ public class Report : IReport
 ```csharp
 var template = new TemplateRecord
 {
-    Name = "Relatório de Vendas",
-    Description = "Relatório mensal com marca d'água",
+    Name = "Sales Report",
+    Description = "Monthly report with watermark",
     Template = @"Document.Create(...).GeneratePdf()",
     Mode = TemplateMode.Builder,
     MockData = new { /* ... */ },
-    DefaultFileName = "vendas.pdf",
+    DefaultFileName = "sales.pdf",
     
     // Settings that will be the default
     PageSettings = new PageSettings
@@ -224,7 +224,7 @@ var template = new TemplateRecord
         MarginHorizontal = 2.0f,
         MarginVertical = 2.5f,
         BackgroundColor = "#FFFFFF",
-        WatermarkText = "CÓPIA INTERNA",
+        WatermarkText = "INTERNAL COPY",
         WatermarkColor = "#DEDEDE",
         WatermarkOpacity = 0.15f,
         WatermarkFontSize = 50,
@@ -246,7 +246,7 @@ await store.SaveAsync(template);
 var overrides = new TemplateRenderRequest
 {
     Data = new { /* data */ },
-    FileName = "especial.pdf",
+    FileName = "special.pdf",
     
     // Overrides the template's settings
     PageSettings = new PageSettings
@@ -355,7 +355,7 @@ new PageSettings
 new PageSettings
 {
     PageSize = "A4",
-    WatermarkText = "CONFIDENCIAL",
+    WatermarkText = "CONFIDENTIAL",
     WatermarkOpacity = 0.1f,
     BackgroundColor = "#FFF8DC"
 }
