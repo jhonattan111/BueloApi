@@ -120,7 +120,7 @@ public sealed class DividerBlock
 /// <summary>A data-oriented table block (blueprint §5).</summary>
 public sealed class TableBlock
 {
-    /// <summary>Expression yielding the row array, e.g. <c>data.itens</c> (no <c>{{ }}</c>).</summary>
+    /// <summary>Expression yielding the row array, e.g. <c>data.items</c> (no <c>{{ }}</c>).</summary>
     public string Data { get; set; } = string.Empty;
 
     /// <summary>Optional field name to group rows by.</summary>
@@ -137,7 +137,7 @@ public sealed class ColumnDef
     /// <summary>Width: <c>*</c>, <c>3*</c>, <c>120px</c>, <c>40%</c>, <c>2cm</c>. Default <c>*</c>.</summary>
     public string? Width { get; set; }
     public string Header { get; set; } = string.Empty;
-    /// <summary>Per-row cell expression, e.g. <c>"{{ item.nome }}"</c>.</summary>
+    /// <summary>Per-row cell expression, e.g. <c>"{{ item.name }}"</c>.</summary>
     public string Cell { get; set; } = string.Empty;
     public string? Class { get; set; }
     public string? Align { get; set; }

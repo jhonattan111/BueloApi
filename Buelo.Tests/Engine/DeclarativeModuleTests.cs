@@ -28,14 +28,14 @@ public class DeclarativeModuleTests
             name: corp
             classes:
               base: { size: 12, color: "#333333" }
-              titulo: { extends: base, size: 18, bold: true }
+              title: { extends: base, size: 18, bold: true }
             """;
         const string report = """
             kind: report
             name: r
             content:
-              - text: { value: "T", class: titulo }
-              - text: { value: "I", class: titulo, style: { color: "#FF0000" } }
+              - text: { value: "T", class: title }
+              - text: { value: "I", class: title, style: { color: "#FF0000" } }
             """;
 
         var document = CreateEngine().Build(report, Data(new { }), [styles]);
@@ -64,10 +64,10 @@ public class DeclarativeModuleTests
             kind: report
             name: r
             content:
-              - text: { value: "{{ data.codigo | doc4 }}" }
+              - text: { value: "{{ data.code | doc4 }}" }
             """;
 
-        var document = CreateEngine().Build(report, Data(new { codigo = "1234" }), [formats]);
+        var document = CreateEngine().Build(report, Data(new { code = "1234" }), [formats]);
 
         Assert.Equal("12-34", Concat(Assert.IsType<TextNode>(Assert.Single(document.Page.Content))));
     }
@@ -77,21 +77,21 @@ public class DeclarativeModuleTests
     {
         const string lib = """
             kind: lib
-            name: vendas
+            name: sales
             expr:
-              precoFinal: "{{ price * (1 - desconto) }}"
+              finalPrice: "{{ price * (1 - discount) }}"
             """;
         const string report = """
             kind: report
             name: r
             content:
               - table:
-                  data: data.itens
+                  data: data.items
                   columns:
-                    - { header: "Final", cell: "{{ vendas.precoFinal }}" }
+                    - { header: "Final", cell: "{{ sales.finalPrice }}" }
             """;
 
-        var document = CreateEngine().Build(report, Data(new { itens = new[] { new { price = 100, desconto = 0.1 } } }), [lib]);
+        var document = CreateEngine().Build(report, Data(new { items = new[] { new { price = 100, discount = 0.1 } } }), [lib]);
 
         var table = Assert.IsType<TableNode>(Assert.Single(document.Page.Content));
         Assert.Equal("90", table.Sections[0].Rows[0].Cells[0].Text);
@@ -105,13 +105,13 @@ public class DeclarativeModuleTests
             name: corp
             page: { size: Letter, margin: "3cm" }
             styles:
-              titulo: { size: 20, bold: true }
+              title: { size: 20, bold: true }
             """;
         const string report = """
             kind: report
             name: r
             content:
-              - text: { value: "T", class: titulo }
+              - text: { value: "T", class: title }
             """;
 
         var document = CreateEngine().Build(report, Data(new { }), [theme]);
@@ -128,33 +128,33 @@ public class DeclarativeModuleTests
     {
         const string component = """
             kind: component
-            name: layoutPadrao
+            name: defaultLayout
             params:
-              titulo: { type: string }
-              empresa: { type: string, default: "Contar" }
+              title: { type: string }
+              company: { type: string, default: "Contar" }
             slots: [content]
             body:
-              - text: { value: "{{ empresa }} — {{ titulo }}", style: { bold: true } }
+              - text: { value: "{{ company }} — {{ title }}", style: { bold: true } }
               - divider: {}
               - slot: content
             """;
         const string report = """
             kind: report
             name: r
-            use: layoutPadrao
-            with: { titulo: "Relatório X" }
+            use: defaultLayout
+            with: { title: "Report X" }
             content:
-              - text: { value: "corpo" }
+              - text: { value: "body" }
             """;
 
         var document = CreateEngine().Build(report, Data(new { }), [component]);
 
         Assert.Equal(3, document.Page.Content.Count);
-        Assert.Equal("Contar — Relatório X", Concat(Assert.IsType<TextNode>(document.Page.Content[0])));
+        Assert.Equal("Contar — Report X", Concat(Assert.IsType<TextNode>(document.Page.Content[0])));
         Assert.IsType<DividerNode>(document.Page.Content[1]);
 
         var slot = Assert.IsType<ColumnNode>(document.Page.Content[2]);
-        Assert.Equal("corpo", Concat(Assert.IsType<TextNode>(Assert.Single(slot.Children))));
+        Assert.Equal("body", Concat(Assert.IsType<TextNode>(Assert.Single(slot.Children))));
     }
 
     [Fact]
@@ -162,31 +162,31 @@ public class DeclarativeModuleTests
     {
         const string component = """
             kind: component
-            name: cabecalho
+            name: header
             params:
-              empresa: { type: string }
+              company: { type: string }
             body:
-              - text: { value: "Empresa: {{ empresa }}" }
+              - text: { value: "Company: {{ company }}" }
             """;
         const string report = """
             kind: report
             name: r
             content:
-              - use: cabecalho
-                with: { empresa: "ACME" }
+              - use: header
+                with: { company: "ACME" }
             """;
 
         var document = CreateEngine().Build(report, Data(new { }), [component]);
 
         var wrap = Assert.IsType<ColumnNode>(Assert.Single(document.Page.Content));
-        Assert.Equal("Empresa: ACME", Concat(Assert.IsType<TextNode>(Assert.Single(wrap.Children))));
+        Assert.Equal("Company: ACME", Concat(Assert.IsType<TextNode>(Assert.Single(wrap.Children))));
     }
 
     [Fact]
     public void Duplicate_style_class_across_modules_throws()
     {
-        const string a = "kind: styles\nname: a\nclasses:\n  titulo: { size: 1 }";
-        const string b = "kind: styles\nname: b\nclasses:\n  titulo: { size: 2 }";
+        const string a = "kind: styles\nname: a\nclasses:\n  title: { size: 1 }";
+        const string b = "kind: styles\nname: b\nclasses:\n  title: { size: 2 }";
         const string report = "kind: report\nname: r\ncontent: []";
 
         Assert.Throws<InvalidOperationException>(() => CreateEngine().Build(report, Data(new { }), [a, b]));
@@ -195,23 +195,23 @@ public class DeclarativeModuleTests
     [Fact]
     public void Renders_with_modules_to_pdf()
     {
-        const string styles = "kind: styles\nname: s\nclasses:\n  titulo: { size: 18, bold: true }";
+        const string styles = "kind: styles\nname: s\nclasses:\n  title: { size: 18, bold: true }";
         const string component = """
             kind: component
             name: layout
-            params: { titulo: { type: string } }
+            params: { title: { type: string } }
             slots: [content]
             body:
-              - text: { value: "{{ titulo }}", class: titulo }
+              - text: { value: "{{ title }}", class: title }
               - slot: content
             """;
         const string report = """
             kind: report
             name: r
             use: layout
-            with: { titulo: "Relatório" }
+            with: { title: "Report" }
             content:
-              - text: { value: "corpo" }
+              - text: { value: "body" }
             """;
 
         var bytes = CreateEngine().RenderPdf(report, Data(new { }), [styles, component]);

@@ -267,8 +267,8 @@ internal sealed partial class DeclarativeLowering
         var rows = new List<TableRow>(items.Count);
         for (var i = 0; i < items.Count; i++)
         {
-            // The item's own fields are exposed at top level (so `{{ nome }}` works, and lib
-            // expressions like `price * (1 - desconto)` resolve) alongside `item`/index/first/last.
+            // The item's own fields are exposed at top level (so `{{ name }}` works, and lib
+            // expressions like `price * (1 - discount)` resolve) alongside `item`/index/first/last.
             var rowScope = new Dictionary<string, object?>(rootScope);
             foreach (var (key, value) in ExpressionValues.ToScope(items[i]))
                 rowScope[key] = value;

@@ -17,18 +17,18 @@ public class DeclarativeHtmlTests
     public void Parses_headings_paragraph_list_and_inline()
     {
         var nodes = HtmlLowering.Parse(
-            "<h1>Título</h1><p>Texto com <b>negrito</b> e <i>itálico</i>.</p><ul><li>um</li><li>dois</li></ul>");
+            "<h1>Title</h1><p>Text with <b>bold</b> and <i>italic</i>.</p><ul><li>one</li><li>two</li></ul>");
 
         Assert.Equal(4, nodes.Count); // h1, p, li, li
 
         var heading = Assert.IsType<TextNode>(nodes[0]);
         Assert.True(heading.Style.Bold);
         Assert.Equal(22f, heading.Style.Size);
-        Assert.Equal("Título", string.Concat(heading.Runs.Select(r => r.Text)));
+        Assert.Equal("Title", string.Concat(heading.Runs.Select(r => r.Text)));
 
         var paragraph = Assert.IsType<TextNode>(nodes[1]);
-        Assert.Contains(paragraph.Runs, r => r.Text == "negrito" && r.Style.Bold == true);
-        Assert.Contains(paragraph.Runs, r => r.Text == "itálico" && r.Style.Italic == true);
+        Assert.Contains(paragraph.Runs, r => r.Text == "bold" && r.Style.Bold == true);
+        Assert.Contains(paragraph.Runs, r => r.Text == "italic" && r.Style.Italic == true);
 
         var bullet = Assert.IsType<TextNode>(nodes[2]);
         Assert.StartsWith("•", bullet.Runs[0].Text);
@@ -42,9 +42,9 @@ public class DeclarativeHtmlTests
             kind: report
             name: r
             content:
-              - html: "<h2>{{ data.titulo }}</h2><p>Olá <b>mundo</b></p>"
+              - html: "<h2>{{ data.title }}</h2><p>Hello <b>world</b></p>"
             """;
-        var data = JsonSerializer.Deserialize<JsonElement>("""{ "titulo": "Relatório" }""");
+        var data = JsonSerializer.Deserialize<JsonElement>("""{ "title": "Report" }""");
 
         var bytes = engine.RenderPdf(yaml, data);
 

@@ -24,13 +24,13 @@ public class EfRenderLogTests
         try
         {
             var log = new EfRenderLog(db);
-            await log.LogAsync(new RenderEvent { ReportName = "fatura", ByteCount = 123, Success = true, CreatedAt = DateTimeOffset.UtcNow });
-            await log.LogAsync(new RenderEvent { ReportName = "folha", Success = false, Error = "boom", CreatedAt = DateTimeOffset.UtcNow });
+            await log.LogAsync(new RenderEvent { ReportName = "invoice", ByteCount = 123, Success = true, CreatedAt = DateTimeOffset.UtcNow });
+            await log.LogAsync(new RenderEvent { ReportName = "payroll", Success = false, Error = "boom", CreatedAt = DateTimeOffset.UtcNow });
 
             var recent = await log.RecentAsync(10);
 
             Assert.Equal(2, recent.Count);
-            Assert.Equal("folha", recent[0].ReportName); // newest first
+            Assert.Equal("payroll", recent[0].ReportName); // newest first
             Assert.False(recent[0].Success);
             Assert.Equal("boom", recent[0].Error);
             Assert.True(recent[1].Success);

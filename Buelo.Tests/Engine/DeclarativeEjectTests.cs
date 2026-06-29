@@ -21,27 +21,27 @@ public class DeclarativeEjectTests
 
     private const string ReportYaml = """
         kind: report
-        name: fatura
+        name: invoice
         header:
-          - text: { value: "Fatura {{ data.numero }}", style: { bold: true, size: 16 } }
+          - text: { value: "Invoice {{ data.number }}", style: { bold: true, size: 16 } }
           - divider: {}
         content:
           - table:
-              data: data.itens
+              data: data.items
               columns:
-                - { width: 3*, header: "Produto", cell: "{{ item.nome }}" }
-                - { width: 1*, header: "Total", cell: "{{ moeda(item.preco) }}", align: right }
+                - { width: 3*, header: "Product", cell: "{{ item.name }}" }
+                - { width: 1*, header: "Total", cell: "{{ moeda(item.price) }}", align: right }
               footer:
                 - { span: 1, text: "Total" }
-                - { text: "{{ moeda(sum(data.itens, 'preco')) }}" }
+                - { text: "{{ moeda(sum(data.items, 'price')) }}" }
         footer:
-          - text: { value: "Página {{ page }} de {{ pageCount }}", style: { align: center } }
+          - text: { value: "Page {{ page }} of {{ pageCount }}", style: { align: center } }
         """;
 
     private static JsonElement InvoiceData() => Data(new
     {
-        numero = 42,
-        itens = new[] { new { nome = "Mesa", preco = 100 }, new { nome = "Cadeira", preco = 50 } },
+        number = 42,
+        items = new[] { new { name = "Table", price = 100 }, new { name = "Chair", price = 50 } },
     });
 
     [Fact]

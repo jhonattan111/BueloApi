@@ -22,7 +22,7 @@ public class TemplateVersioningTests : IDisposable
             Directory.Delete(_fsRoot, recursive: true);
     }
 
-    // â”€â”€ InMemoryTemplateStore â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- InMemoryTemplateStore ---------------------------------------------------
 
     [Fact]
     public async Task InMemory_FirstSave_CreatesNoVersions()
@@ -127,7 +127,7 @@ public class TemplateVersioningTests : IDisposable
         Assert.Empty(versions);
     }
 
-    // â”€â”€ FileSystemTemplateStore â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- FileSystemTemplateStore -------------------------------------------------
 
     [Fact]
     public async Task FileSystem_FirstSave_NoVersionDirectory()
@@ -182,7 +182,7 @@ public class TemplateVersioningTests : IDisposable
         Assert.Null(result);
     }
 
-    // â”€â”€ Restore via API-layer simulation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Restore via API-layer simulation ----------------------------------------
 
     [Fact]
     public async Task InMemory_RestoreVersion_RewindsTemplateAndCreatesNewVersion()
@@ -212,7 +212,7 @@ public class TemplateVersioningTests : IDisposable
         Assert.Equal(2, allVersions.Count);
     }
 
-    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Helpers -----------------------------------------------------------------
 
     private static TemplateRecord Build(string templateSource) => new()
     {

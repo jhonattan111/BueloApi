@@ -99,7 +99,7 @@ internal static class ExpressionRuntime
 
     private static object? EvalMember(MemberExpr member, IDictionary<string, object?> scope, ExpressionContext ctx)
     {
-        // Lib resolution: `vendas.precoFinal` — when `vendas` isn't a scope value, treat it as a lib
+        // Lib resolution: `sales.finalPrice` — when `sales` isn't a scope value, treat it as a lib
         // module and evaluate its named expression in the current scope (item/data available).
         if (member.Target is IdentifierExpr id && !scope.ContainsKey(id.Name)
             && ctx.TryGetLibExpr(id.Name, member.Name, out var libExpr))

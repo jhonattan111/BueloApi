@@ -20,7 +20,7 @@ public class FileSystemTemplateStoreTests : IDisposable
             Directory.Delete(_root, recursive: true);
     }
 
-    // â”€â”€ SaveAsync / GetAsync round-trip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- SaveAsync / GetAsync round-trip -----------------------------------------
 
     [Fact]
     public async Task SaveAsync_NewTemplate_AssignsIdAndPersists()
@@ -58,7 +58,7 @@ public class FileSystemTemplateStoreTests : IDisposable
         Assert.Equal("{ \"type\": \"object\" }", retrieved.DataSchema);
     }
 
-    // â”€â”€ Artefact persistence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Artefact persistence ----------------------------------------------------
 
     [Fact]
     public async Task SaveAsync_WithArtefacts_PersistsAndReloads()
@@ -159,7 +159,7 @@ public class FileSystemTemplateStoreTests : IDisposable
         Assert.Equal("// helper", artefact.Content);
     }
 
-    // â”€â”€ ListAsync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- ListAsync ---------------------------------------------------------------
 
     [Fact]
     public async Task ListAsync_ReturnsAllSavedTemplates()
@@ -183,7 +183,7 @@ public class FileSystemTemplateStoreTests : IDisposable
         Assert.Empty(all);
     }
 
-    // â”€â”€ DeleteAsync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- DeleteAsync -------------------------------------------------------------
 
     [Fact]
     public async Task DeleteAsync_ExistingTemplate_RemovesDirectory()
@@ -206,7 +206,7 @@ public class FileSystemTemplateStoreTests : IDisposable
         Assert.False(result);
     }
 
-    // â”€â”€ GetAsync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- GetAsync ----------------------------------------------------------------
 
     [Fact]
     public async Task GetAsync_NonExistentId_ReturnsNull()
@@ -215,7 +215,7 @@ public class FileSystemTemplateStoreTests : IDisposable
         Assert.Null(result);
     }
 
-    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // -- Helpers -----------------------------------------------------------------
 
     private static TemplateRecord BuildTemplate(string name = "Test Template") => new()
     {

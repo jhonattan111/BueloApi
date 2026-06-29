@@ -20,26 +20,26 @@ public class DeclarativeTableTests
 
     private const string InvoiceYaml = """
         kind: report
-        name: fatura
+        name: invoice
         content:
           - table:
-              data: data.itens
+              data: data.items
               rowStyle: { paddingY: 4, borderBottom: "1px #DDD" }
               columns:
                 - { width: 25px, header: "#",        cell: "{{ index + 1 }}" }
-                - { width: 3*,   header: "Produto",  cell: "{{ item.nome }}" }
-                - { width: 1*,   header: "Total",    cell: "{{ moeda(item.preco * item.qtd) }}", align: right }
+                - { width: 3*,   header: "Product",  cell: "{{ item.name }}" }
+                - { width: 1*,   header: "Total",    cell: "{{ moeda(item.price * item.qty) }}", align: right }
               footer:
                 - { span: 2, text: "Total", style: { bold: true, align: right } }
-                - { text: "{{ moeda(sum(data.itens, 'preco * qtd')) }}", align: right }
+                - { text: "{{ moeda(sum(data.items, 'price * qty')) }}", align: right }
         """;
 
     private static JsonElement InvoiceData() => Data(new
     {
-        itens = new[]
+        items = new[]
         {
-            new { nome = "Cadeira", preco = 10, qtd = 2 },
-            new { nome = "Mesa", preco = 5, qtd = 3 },
+            new { name = "Chair", price = 10, qty = 2 },
+            new { name = "Table", price = 5, qty = 3 },
         },
     });
 
@@ -58,7 +58,7 @@ public class DeclarativeTableTests
         var rows = Assert.Single(table.Sections).Rows;
         Assert.Equal(2, rows.Count);
         Assert.Equal("1", rows[0].Cells[0].Text);          // index + 1
-        Assert.Equal("Cadeira", rows[0].Cells[1].Text);    // item.nome
+        Assert.Equal("Chair", rows[0].Cells[1].Text);      // item.name
         Assert.Contains("20,00", rows[0].Cells[2].Text);   // moeda(10 * 2)
         Assert.Equal("2", rows[1].Cells[0].Text);
         Assert.Equal(TextAlign.Right, rows[0].Cells[2].Style.Align);
@@ -74,7 +74,7 @@ public class DeclarativeTableTests
         Assert.Equal(2, table.Footer.Count);
         Assert.Equal(2, table.Footer[0].Span);
         Assert.Equal("Total", table.Footer[0].Text);
-        Assert.Contains("35,00", table.Footer[1].Text);    // sum(preco*qtd) = 20 + 15
+        Assert.Contains("35,00", table.Footer[1].Text);    // sum(price*qty) = 20 + 15
     }
 
     [Fact]
@@ -82,38 +82,38 @@ public class DeclarativeTableTests
     {
         const string yaml = """
             kind: report
-            name: folha
+            name: payroll
             content:
               - table:
-                  data: data.colaboradores
-                  groupBy: departamento
+                  data: data.employees
+                  groupBy: department
                   group:
                     header: { text: "{{ group.key }}", style: { bold: true } }
-                    footer: { text: "Subtotal: {{ moeda(sum(group.items, 'salario')) }}" }
+                    footer: { text: "Subtotal: {{ moeda(sum(group.items, 'salary')) }}" }
                   columns:
-                    - { header: "Nome",    cell: "{{ item.nome }}" }
-                    - { header: "Salário", cell: "{{ moeda(item.salario) }}", align: right }
+                    - { header: "Name",   cell: "{{ item.name }}" }
+                    - { header: "Salary", cell: "{{ moeda(item.salary) }}", align: right }
             """;
 
         var data = Data(new
         {
-            colaboradores = new[]
+            employees = new[]
             {
-                new { nome = "Ana", departamento = "TI", salario = 100 },
-                new { nome = "Bia", departamento = "RH", salario = 200 },
-                new { nome = "Caio", departamento = "TI", salario = 300 },
+                new { name = "Ana", department = "IT", salary = 100 },
+                new { name = "Bia", department = "HR", salary = 200 },
+                new { name = "Caio", department = "IT", salary = 300 },
             },
         });
 
         var document = CreateEngine().Build(yaml, data);
         var table = Assert.IsType<TableNode>(Assert.Single(document.Page.Content));
 
-        Assert.Equal(2, table.Sections.Count);                       // TI, RH (first-seen order)
-        Assert.Equal("TI", table.Sections[0].Header!.Text);
+        Assert.Equal(2, table.Sections.Count);                       // IT, HR (first-seen order)
+        Assert.Equal("IT", table.Sections[0].Header!.Text);
         Assert.Equal(2, table.Sections[0].Header!.Span);             // spans both columns
         Assert.Equal(2, table.Sections[0].Rows.Count);              // Ana, Caio
         Assert.Contains("400,00", table.Sections[0].Footer!.Text);  // 100 + 300
-        Assert.Equal("RH", table.Sections[1].Header!.Text);
+        Assert.Equal("HR", table.Sections[1].Header!.Text);
         Assert.Single(table.Sections[1].Rows);
         Assert.Contains("200,00", table.Sections[1].Footer!.Text);
     }
@@ -132,26 +132,26 @@ public class DeclarativeTableTests
     {
         const string yaml = """
             kind: report
-            name: folha
+            name: payroll
             content:
               - table:
-                  data: data.colaboradores
-                  groupBy: departamento
+                  data: data.employees
+                  groupBy: department
                   group:
                     header: { text: "{{ group.key }}", style: { bold: true, background: "#EEEEEE" } }
-                    footer: { text: "Subtotal: {{ moeda(sum(group.items, 'salario')) }}", align: right }
+                    footer: { text: "Subtotal: {{ moeda(sum(group.items, 'salary')) }}", align: right }
                   columns:
-                    - { width: 3*, header: "Nome",    cell: "{{ item.nome }}" }
-                    - { width: 1*, header: "Salário", cell: "{{ moeda(item.salario) }}", align: right }
+                    - { width: 3*, header: "Name",   cell: "{{ item.name }}" }
+                    - { width: 1*, header: "Salary", cell: "{{ moeda(item.salary) }}", align: right }
             """;
 
         var data = Data(new
         {
-            colaboradores = new[]
+            employees = new[]
             {
-                new { nome = "Ana", departamento = "TI", salario = 100 },
-                new { nome = "Caio", departamento = "TI", salario = 300 },
-                new { nome = "Bia", departamento = "RH", salario = 200 },
+                new { name = "Ana", department = "IT", salary = 100 },
+                new { name = "Caio", department = "IT", salary = 300 },
+                new { name = "Bia", department = "HR", salary = 200 },
             },
         });
 

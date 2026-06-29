@@ -24,15 +24,15 @@ public class ExpressionEngineTests
     [Fact]
     public void Resolves_nested_member_paths()
     {
-        var scope = Dict(("data", Dict(("cliente", Dict(("nome", "Contar"))))));
-        Assert.Equal("Contar", Eval("data.cliente.nome", scope));
+        var scope = Dict(("data", Dict(("client", Dict(("name", "Contar"))))));
+        Assert.Equal("Contar", Eval("data.client.name", scope));
     }
 
     [Fact]
     public void Indexing_into_list()
     {
-        var scope = Dict(("data", Dict(("itens", new List<object?> { "a", "b", "c" }))));
-        Assert.Equal("b", Eval("data.itens[1]", scope));
+        var scope = Dict(("data", Dict(("items", new List<object?> { "a", "b", "c" }))));
+        Assert.Equal("b", Eval("data.items[1]", scope));
     }
 
     [Fact]
@@ -52,22 +52,22 @@ public class ExpressionEngineTests
     [Fact]
     public void Sum_aggregation_over_subexpression()
     {
-        var itens = new List<object?>
+        var items = new List<object?>
         {
-            Dict(("preco", 10.0), ("qtd", 2.0)),
-            Dict(("preco", 5.0), ("qtd", 3.0)),
+            Dict(("price", 10.0), ("qty", 2.0)),
+            Dict(("price", 5.0), ("qty", 3.0)),
         };
-        var scope = Dict(("data", Dict(("itens", itens))));
-        Assert.Equal(35d, Eval("sum(data.itens, 'preco * qtd')", scope));
+        var scope = Dict(("data", Dict(("items", items))));
+        Assert.Equal(35d, Eval("sum(data.items, 'price * qty')", scope));
     }
 
     [Fact]
     public void Count_and_avg_aggregations()
     {
-        var itens = new List<object?> { Dict(("x", 2.0)), Dict(("x", 4.0)) };
-        var scope = Dict(("data", Dict(("itens", itens))));
-        Assert.Equal(2d, Eval("count(data.itens)", scope));
-        Assert.Equal(3d, Eval("avg(data.itens, 'x')", scope));
+        var items = new List<object?> { Dict(("x", 2.0)), Dict(("x", 4.0)) };
+        var scope = Dict(("data", Dict(("items", items))));
+        Assert.Equal(2d, Eval("count(data.items)", scope));
+        Assert.Equal(3d, Eval("avg(data.items, 'x')", scope));
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class ExpressionEngineTests
     [Fact]
     public void Unknown_function_throws()
     {
-        var ex = Assert.Throws<InvalidOperationException>(() => Eval("naoexiste(1)", Empty));
-        Assert.Contains("naoexiste", ex.Message);
+        var ex = Assert.Throws<InvalidOperationException>(() => Eval("nonexistent(1)", Empty));
+        Assert.Contains("nonexistent", ex.Message);
     }
 
     private static Dictionary<string, object?> Dict(params (string Key, object? Value)[] entries)

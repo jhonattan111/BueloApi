@@ -20,12 +20,12 @@ public class GlobalArtefactStoreTests
     public async Task InMemory_SaveAndRetrieve_ById_ReturnsArtefact()
     {
         var store = new InMemoryGlobalArtefactStore();
-        var saved = await store.SaveAsync(MakeArtefact("colaborador", ".json"));
+        var saved = await store.SaveAsync(MakeArtefact("employee", ".json"));
 
         Assert.NotEqual(Guid.Empty, saved.Id);
         var loaded = await store.GetAsync(saved.Id);
         Assert.NotNull(loaded);
-        Assert.Equal("colaborador", loaded!.Name);
+        Assert.Equal("employee", loaded!.Name);
         Assert.Equal(".json", loaded.Extension);
     }
 
@@ -33,11 +33,11 @@ public class GlobalArtefactStoreTests
     public async Task InMemory_SaveAndRetrieve_ByName_ReturnsArtefact_CaseInsensitive()
     {
         var store = new InMemoryGlobalArtefactStore();
-        await store.SaveAsync(MakeArtefact("Colaborador", ".JSON"));
+        await store.SaveAsync(MakeArtefact("Employee", ".JSON"));
 
-        var loaded = await store.GetByNameAsync("colaborador", ".json");
+        var loaded = await store.GetByNameAsync("employee", ".json");
         Assert.NotNull(loaded);
-        Assert.Equal("Colaborador", loaded!.Name);
+        Assert.Equal("Employee", loaded!.Name);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class GlobalArtefactStoreTests
     public async Task InMemory_Delete_ExistingArtefact_ReturnsTrue()
     {
         var store = new InMemoryGlobalArtefactStore();
-        var saved = await store.SaveAsync(MakeArtefact("colaborador", ".json"));
+        var saved = await store.SaveAsync(MakeArtefact("employee", ".json"));
 
         var deleted = await store.DeleteAsync(saved.Id);
         Assert.True(deleted);
@@ -103,13 +103,13 @@ public class GlobalArtefactStoreTests
         using var dir = new TempDirectory();
         var store = new FileSystemGlobalArtefactStore(dir.Path);
 
-        var saved = await store.SaveAsync(MakeArtefact("colaborador", ".json", "{\"nome\":\"João\"}"));
+        var saved = await store.SaveAsync(MakeArtefact("employee", ".json", "{\"name\":\"John\"}"));
         Assert.NotEqual(Guid.Empty, saved.Id);
 
         var loaded = await store.GetAsync(saved.Id);
         Assert.NotNull(loaded);
-        Assert.Equal("colaborador", loaded!.Name);
-        Assert.Equal("{\"nome\":\"João\"}", loaded.Content);
+        Assert.Equal("employee", loaded!.Name);
+        Assert.Equal("{\"name\":\"John\"}", loaded.Content);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class GlobalArtefactStoreTests
     {
         using var dir = new TempDirectory();
         var store = new FileSystemGlobalArtefactStore(dir.Path);
-        var saved = await store.SaveAsync(MakeArtefact("colaborador", ".json"));
+        var saved = await store.SaveAsync(MakeArtefact("employee", ".json"));
 
         var deleted = await store.DeleteAsync(saved.Id);
         Assert.True(deleted);

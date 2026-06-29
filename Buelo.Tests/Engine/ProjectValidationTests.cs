@@ -15,8 +15,8 @@ public class ProjectValidationTests
             Directory.CreateDirectory(Path.Combine(root, "reports"));
             Directory.CreateDirectory(Path.Combine(root, "data"));
 
-            await File.WriteAllTextAsync(Path.Combine(root, "reports", "relatorio.buelo"), "report title:\n  text: Hello");
-            await File.WriteAllTextAsync(Path.Combine(root, "data", "colaboradores.json"), "{ invalid }");
+            await File.WriteAllTextAsync(Path.Combine(root, "reports", "report.buelo"), "report title:\n  text: Hello");
+            await File.WriteAllTextAsync(Path.Combine(root, "data", "employees.json"), "{ invalid }");
 
             var enumerator = new FileSystemWorkspaceFileEnumerator(root);
             var registry = CreateRegistry();
@@ -41,8 +41,8 @@ public class ProjectValidationTests
             Directory.CreateDirectory(Path.Combine(root, "reports"));
             Directory.CreateDirectory(Path.Combine(root, "data"));
 
-            await File.WriteAllTextAsync(Path.Combine(root, "reports", "relatorio.buelo"), "report title:\n  text: Hello");
-            await File.WriteAllTextAsync(Path.Combine(root, "data", "colaboradores.json"), "{\"ok\": true}");
+            await File.WriteAllTextAsync(Path.Combine(root, "reports", "report.buelo"), "report title:\n  text: Hello");
+            await File.WriteAllTextAsync(Path.Combine(root, "data", "employees.json"), "{\"ok\": true}");
 
             var enumerator = new FileSystemWorkspaceFileEnumerator(root);
             var registry = CreateRegistry();

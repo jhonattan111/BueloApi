@@ -46,13 +46,13 @@ public class DeclarativeReportEngineTests
             kind: report
             name: nested
             content:
-              - text: { value: "Cliente: {{ data.cliente.nome }}" }
+              - text: { value: "Client: {{ data.client.name }}" }
             """;
 
-        var document = CreateEngine().Build(yaml, Data(new { cliente = new { nome = "Contar" } }));
+        var document = CreateEngine().Build(yaml, Data(new { client = new { name = "Contar" } }));
 
         var text = Assert.IsType<TextNode>(Assert.Single(document.Page.Content));
-        Assert.Equal("Cliente: Contar", string.Concat(text.Runs.Select(r => r.Text)));
+        Assert.Equal("Client: Contar", string.Concat(text.Runs.Select(r => r.Text)));
     }
 
     [Fact]
@@ -62,13 +62,13 @@ public class DeclarativeReportEngineTests
             kind: report
             name: missing
             content:
-              - text: { value: "Valor: {{ data.naoexiste }}" }
+              - text: { value: "Value: {{ data.nonexistent }}" }
             """;
 
         var document = CreateEngine().Build(yaml, Data(new { name = "x" }));
 
         var text = Assert.IsType<TextNode>(Assert.Single(document.Page.Content));
-        Assert.Equal("Valor: ", string.Concat(text.Runs.Select(r => r.Text)));
+        Assert.Equal("Value: ", string.Concat(text.Runs.Select(r => r.Text)));
     }
 
     [Fact]

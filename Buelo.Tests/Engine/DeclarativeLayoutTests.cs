@@ -20,14 +20,14 @@ public class DeclarativeLayoutTests
 
     private const string FullReportYaml = """
         kind: report
-        name: completo
+        name: complete
         meta:
           page: { size: A4, margin: 2cm, orientation: portrait }
         header:
-          - text: { value: "Relatório {{ report.name }}", style: { bold: true, size: 16 } }
+          - text: { value: "Report {{ report.name }}", style: { bold: true, size: 16 } }
           - divider: { color: "#CCCCCC", thickness: 1 }
         content:
-          - markdown: "# Título\n\nTexto com **negrito**.\n\n- item 1\n- item 2"
+          - markdown: "# Title\n\nText with **bold**.\n\n- item 1\n- item 2"
           - spacer: 10
           - row:
               spacing: 8
@@ -36,16 +36,16 @@ public class DeclarativeLayoutTests
                   card:
                     style: { background: "#F5F5F5", padding: 8, border: "1px #DDD" }
                     content:
-                      - text: { value: "Coluna esquerda" }
+                      - text: { value: "Left column" }
                 - width: 1*
                   column:
                     content:
                       - text: { value: "A" }
                       - text: { value: "B" }
           - pageBreak: true
-          - text: { value: "Página 2" }
+          - text: { value: "Page 2" }
         footer:
-          - text: { value: "Página {{ page }} de {{ pageCount }}", style: { align: center } }
+          - text: { value: "Page {{ page }} of {{ pageCount }}", style: { align: center } }
         """;
 
     [Fact]
@@ -58,7 +58,7 @@ public class DeclarativeLayoutTests
         // Header: text + divider
         Assert.Equal(2, document.Page.Header.Count);
         var title = Assert.IsType<TextNode>(document.Page.Header[0]);
-        Assert.Equal("Relatório completo", string.Concat(title.Runs.Select(r => r.Text)));
+        Assert.Equal("Report complete", string.Concat(title.Runs.Select(r => r.Text)));
         Assert.IsType<DividerNode>(document.Page.Header[1]);
 
         // Content: markdown(Column) + spacer + row + pageBreak + text
@@ -100,15 +100,15 @@ public class DeclarativeLayoutTests
     [Fact]
     public void Markdown_parses_headings_and_inline()
     {
-        var nodes = MarkdownLowering.Parse("# Título\n\nTexto com **negrito** aqui.\n\n- item");
+        var nodes = MarkdownLowering.Parse("# Title\n\nText with **bold** here.\n\n- item");
 
         var heading = Assert.IsType<TextNode>(nodes[0]);
         Assert.True(heading.Style.Bold);
         Assert.Equal(22f, heading.Style.Size);
-        Assert.Equal("Título", string.Concat(heading.Runs.Select(r => r.Text)));
+        Assert.Equal("Title", string.Concat(heading.Runs.Select(r => r.Text)));
 
         var paragraph = Assert.IsType<TextNode>(nodes[1]);
-        Assert.Contains(paragraph.Runs, r => r.Text == "negrito" && r.Style.Bold == true);
+        Assert.Contains(paragraph.Runs, r => r.Text == "bold" && r.Style.Bold == true);
 
         var bullet = Assert.IsType<TextNode>(nodes[2]);
         Assert.StartsWith("•", bullet.Runs[0].Text);
@@ -128,7 +128,7 @@ public class DeclarativeLayoutTests
     {
         const string yaml = """
             kind: report
-            name: paisagem
+            name: landscape
             meta:
               page: { size: A4, orientation: landscape }
             content:

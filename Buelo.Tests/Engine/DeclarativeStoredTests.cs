@@ -21,10 +21,10 @@ public class DeclarativeStoredTests
     private const string ComponentYaml = """
         kind: component
         name: layout
-        params: { titulo: { type: string } }
+        params: { title: { type: string } }
         slots: [content]
         body:
-          - text: { value: "{{ titulo }}", class: titulo }
+          - text: { value: "{{ title }}", class: title }
           - slot: content
         """;
 
@@ -32,19 +32,19 @@ public class DeclarativeStoredTests
         kind: styles
         name: corp
         classes:
-          titulo: { size: 16, bold: true }
+          title: { size: 16, bold: true }
         """;
 
     private const string ReportYaml = """
         kind: report
-        name: fatura
+        name: invoice
         import:
           - styles: corp
           - component: layout
         use: layout
-        with: { titulo: "Fatura" }
+        with: { title: "Invoice" }
         content:
-          - text: { value: "corpo", class: titulo }
+          - text: { value: "body", class: title }
         """;
 
     private static async Task<InMemoryDefinitionStore> SeedStore()
@@ -52,7 +52,7 @@ public class DeclarativeStoredTests
         var store = new InMemoryDefinitionStore();
         await store.SaveAsync("component", "layout", ComponentYaml);
         await store.SaveAsync("styles", "corp", StylesYaml);
-        await store.SaveAsync("report", "fatura", ReportYaml);
+        await store.SaveAsync("report", "invoice", ReportYaml);
         return store;
     }
 
@@ -61,9 +61,9 @@ public class DeclarativeStoredTests
     {
         var store = await SeedStore();
 
-        var (definition, modules) = await CreateEngine().LoadProjectAsync("fatura", store);
+        var (definition, modules) = await CreateEngine().LoadProjectAsync("invoice", store);
 
-        Assert.Equal("fatura", definition.Name);
+        Assert.Equal("invoice", definition.Name);
         Assert.Equal(2, modules.Count); // styles + component
     }
 
@@ -72,7 +72,7 @@ public class DeclarativeStoredTests
     {
         var store = await SeedStore();
 
-        var bytes = await CreateEngine().RenderStoredAsync("fatura", Data(new { }), store);
+        var bytes = await CreateEngine().RenderStoredAsync("invoice", Data(new { }), store);
 
         Assert.Equal("%PDF"u8.ToArray(), bytes.AsSpan(0, 4).ToArray());
     }
@@ -83,17 +83,17 @@ public class DeclarativeStoredTests
         var store = new InMemoryDefinitionStore();
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => CreateEngine().RenderStoredAsync("naoexiste", null, store));
+            () => CreateEngine().RenderStoredAsync("nonexistent", null, store));
     }
 
     [Fact]
     public async Task RenderStored_missing_import_throws()
     {
         var store = new InMemoryDefinitionStore();
-        await store.SaveAsync("report", "r", "kind: report\nname: r\nimport:\n  - styles: faltando\ncontent: []");
+        await store.SaveAsync("report", "r", "kind: report\nname: r\nimport:\n  - styles: missing\ncontent: []");
 
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(
             () => CreateEngine().RenderStoredAsync("r", null, store));
-        Assert.Contains("faltando", ex.Message);
+        Assert.Contains("missing", ex.Message);
     }
 }

@@ -16,19 +16,19 @@ public class DeclarativeExcelTests
     {
         const string yaml = """
             kind: report
-            name: fatura
+            name: invoice
             content:
-              - text: { value: "Itens" }
+              - text: { value: "Items" }
               - table:
-                  data: data.itens
+                  data: data.items
                   columns:
-                    - { header: "Produto", cell: "{{ item.nome }}" }
-                    - { header: "Total",   cell: "{{ moeda(item.preco) }}" }
+                    - { header: "Product", cell: "{{ item.name }}" }
+                    - { header: "Total",   cell: "{{ moeda(item.price) }}" }
                   footer:
                     - { span: 1, text: "Total" }
-                    - { text: "{{ moeda(sum(data.itens, 'preco')) }}" }
+                    - { text: "{{ moeda(sum(data.items, 'price')) }}" }
             """;
-        var data = Data(new { itens = new[] { new { nome = "Mesa", preco = 100 }, new { nome = "Cadeira", preco = 50 } } });
+        var data = Data(new { items = new[] { new { name = "Table", price = 100 }, new { name = "Chair", price = 50 } } });
 
         var bytes = CreateEngine().RenderExcel(yaml, data);
 
@@ -37,10 +37,10 @@ public class DeclarativeExcelTests
 
         using var workbook = new XLWorkbook(new MemoryStream(bytes));
         var sheet = workbook.Worksheet(1);
-        Assert.Equal("Itens", sheet.Cell(1, 1).GetString());      // text node
-        Assert.Equal("Produto", sheet.Cell(2, 1).GetString());    // table header
-        Assert.Equal("Mesa", sheet.Cell(3, 1).GetString());       // row 1
-        Assert.Equal("Cadeira", sheet.Cell(4, 1).GetString());    // row 2
+        Assert.Equal("Items", sheet.Cell(1, 1).GetString());      // text node
+        Assert.Equal("Product", sheet.Cell(2, 1).GetString());    // table header
+        Assert.Equal("Table", sheet.Cell(3, 1).GetString());      // row 1
+        Assert.Equal("Chair", sheet.Cell(4, 1).GetString());      // row 2
         Assert.Contains("150", sheet.Cell(5, 2).GetString());     // footer aggregate
     }
 }

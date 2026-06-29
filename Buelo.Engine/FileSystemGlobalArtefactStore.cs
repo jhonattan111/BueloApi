@@ -10,8 +10,8 @@ namespace Buelo.Engine;
 /// Global artefacts are stored in a flat <c>_global/</c> subdirectory under the configured root:
 /// <code>
 /// {root}/_global/
-///   colaborador.json
-///   colaborador.json.meta.json     — { id, description, tags, createdAt, updatedAt }
+///   employee.json
+///   employee.json.meta.json        — { id, description, tags, createdAt, updatedAt }
 ///   shared-header.buelo
 ///   shared-header.buelo.meta.json
 ///   formatters.csx
