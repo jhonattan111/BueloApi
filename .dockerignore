@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/TestResults/
+**/coverage-report/
+*.db
+*.db-shm
+*.db-wal
+.git/
+.github/
+.vs/
+.idea/

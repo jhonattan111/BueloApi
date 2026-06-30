@@ -112,7 +112,7 @@ Pipeline: **YAML → `DeclarativeParser` (YamlDotNet) → `DeclarativeInterprete
 | `GlobalArtefactsController` | `api/artefacts` | CRUD + `GET by-name/{name}` |
 | `WorkspaceController` | `api/workspace` | `GET tree`, `POST folders`, `POST/GET/PUT files[/content]`, `DELETE nodes`, `GET types` |
 | `ValidateController` | `api/validate` | `POST` (1 file), `POST project` |
-| *(minimal)* | `/ping` | `GET` (public liveness; open even with API key) |
+| *(minimal)* | `/ping`, `/health` | `GET /ping` (liveness) · `GET /health` (readiness — checks the DB). Public, open even with the API key gate |
 
 Render/preview return `application/pdf` (or Excel). Use `?format=` when applicable. Errors: `404` (id not found), `400` (no data).
 
@@ -139,7 +139,7 @@ Render/preview return `application/pdf` (or Excel). Use `?format=` when applicab
 - `ITemplateStore` is **async** in everything (`Task<T>`), even the in-memory impl.
 - Every new endpoint needs a test in `Buelo.Tests/Api/` (happy path + not found + bad input). Engine components: test in `Buelo.Tests/Engine/`.
 - `Program.cs`: `AddBueloEngine()` + `AddBueloPersistence(config)`; CORS for `http://localhost:5173`; OpenAPI only in Development; QuestPDF Community license; `EnsureBueloDatabase()` then `SeedBueloContentFromDiskAsync(config)` (first-run example import); public `/ping`; `ApiKeyMiddleware` (opt-in gate).
-- **Config (env/appsettings):** `Buelo:ApiKey` (Bearer opt-in; empty = auth off), `Buelo:RenderTimeoutSeconds` (default 30; 0 disables), `Buelo:DefinitionStorePath` (default `definitions`), `Buelo:Database:Provider` (`sqlite`|`postgres`) + `Buelo:Database:ConnectionString`.
+- **Config (env/appsettings):** `Buelo:ApiKey` (Bearer opt-in; empty = auth off), `Buelo:RenderTimeoutSeconds` (default 30; 0 disables), `Buelo:DefinitionStorePath` (default `definitions`), `Buelo:Database:Provider` (`sqlite`|`postgres`) + `Buelo:Database:ConnectionString`, `Buelo:Cors:Origins` (comma-separated; default `http://localhost:5173`).
 - **Roslyn assembly cache** by content hash in `TemplateEngine` (repeated renders of the same C# template skip recompilation).
 - **Self-hosted model:** no sandbox/multi-tenant; whoever has the API key is trusted (see blueprint).
 
