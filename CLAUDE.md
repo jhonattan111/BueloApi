@@ -22,11 +22,12 @@ Guide for AI agents (Claude Code) working in this repository. It is the **canoni
 ## Solution structure (`Buelo.slnx`)
 
 ```
-Buelo.Contracts    ← interfaces, models, enums. NO business logic, NO QuestPDF, NO Roslyn, NO EF
-Buelo.Engine       ← Roslyn compilation, render (PDF/Excel), in-memory/file-system stores, validators. NO EF
-Buelo.Persistence  ← EF Core: DbContext + migrations + DB-backed stores (definitions/workspace/templates/artefacts/render log). Contracts + EF only, NO Roslyn
-Buelo.Api          ← ASP.NET Core controllers + Program.cs
-Buelo.Tests        ← xUnit (Engine/, Api/, Persistence/)
+Buelo.Contracts            ← interfaces, models, enums. NO business logic, NO QuestPDF, NO Roslyn, NO EF
+Buelo.Engine               ← Roslyn compilation, render (PDF/Excel), in-memory/file-system stores, validators. NO EF
+Buelo.Persistence          ← EF Core: DbContext + SQLite migrations + DB-backed stores (definitions/workspace/templates/artefacts/render log). Contracts + EF only, NO Roslyn
+Buelo.Persistence.Postgres ← EF Core: the PostgreSQL migrations assembly (provider-specific SQL). References Persistence
+Buelo.Api                  ← ASP.NET Core controllers + Program.cs
+Buelo.Tests                ← xUnit (Engine/, Api/, Persistence/)
 ```
 
 **Dependency direction (never invert):** `Buelo.Api → { Buelo.Engine, Buelo.Persistence } → Buelo.Contracts`. `Engine` and `Persistence` are **siblings** — both depend on `Contracts`, never on each other. This split is deliberate: `Persistence` carries the EF Core **Design** tooling (for migrations) without colliding with `Engine`'s `Microsoft.CodeAnalysis.CSharp` (Roslyn).
@@ -88,7 +89,7 @@ Pipeline: **YAML → `DeclarativeParser` (YamlDotNet) → `DeclarativeInterprete
 - **Layout blocks** (`Declarative/DeclarativeAst.cs`): `text`, `markdown`, `table` (data-oriented, `groupBy`, footer with aggregation), `row`, `column`, `card`/`panel`, `image`, `spacer`, `divider`, `pageBreak`; `header`/`content`/`footer` bands; context vars `now`/`today`/`page`/`pageCount`/`report.name`.
 - **`{{ }}` expressions** (`Declarative/Expressions/`): lexer + recursive parser + evaluator. Arithmetic, comparison, logical, ternary, `??`, pipes, calls; stdlib (`currency`/`date`/`cpf`/`cnpj`/`percent`/`upper`/`join`/`mask`/`if`/`coalesce`…) + aggregation `sum`/`avg`/`count`/`min`/`max`.
 - **Persistence (default: database).** `AddBueloPersistence(config)` (in `Buelo.Persistence`) makes EF Core the **source of truth for all durable content** — declarative definitions, the editor workspace, C# templates (+ version history), global artefacts — and the render log. It `Replace`s the in-memory/file-system defaults from `AddBueloEngine()`, so call it **after**. Stores are singletons over `IDbContextFactory<BueloDbContext>` (a short-lived context per op → safe to inject into the singleton engine; no captive dependency).
-- **Provider:** `Buelo:Database:Provider` = `sqlite` (default — single file `buelo.db`, zero server) or `postgres`; connection via `Buelo:Database:ConnectionString`. One entity model for both. Schema at startup via `EnsureBueloDatabase()`: SQLite ships **migrations** (`Buelo.Persistence/Migrations/`, applied with `Migrate()`); Postgres uses `EnsureCreated()` until Npgsql migrations are added. Add/refresh migrations with `dotnet ef migrations add <Name> -p Buelo.Persistence -s Buelo.Persistence` (works because `Persistence` has no Roslyn).
+- **Provider:** `Buelo:Database:Provider` = `sqlite` (default — single file `buelo.db`, zero server) or `postgres`; connection via `Buelo:Database:ConnectionString`. One entity model for both. **Both providers ship migrations** (provider-specific SQL, so two assemblies): SQLite in `Buelo.Persistence/Migrations/`, Postgres in `Buelo.Persistence.Postgres/Migrations/`, selected via `MigrationsAssembly(...)` in `AddBueloPersistence`. `EnsureBueloDatabase()` runs `Migrate()` when the active provider's migrations are present (else `EnsureCreated()`). Add/refresh: `dotnet ef migrations add <Name> -p Buelo.Persistence -s Buelo.Persistence` (SQLite) / `… -p Buelo.Persistence.Postgres -s Buelo.Persistence.Postgres` (Postgres) — works because neither project has Roslyn.
 - **Seeding:** first boot imports the shipped `definitions/{kind}/{name}.*` examples into the DB (idempotent, gated by a `_system/seeded` marker — user deletions don't resurrect). The on-disk `definitions/` thus becomes seed data; the DB is authoritative after.
 - **Alternative stores (not default):** the `FileSystem*` / `InMemory*` stores in `Buelo.Engine` remain for tests and opt-in (`AddBueloFileSystemStore()`); `NullRenderLog` is the no-DB fallback. On-disk `IDefinitionStore` layout = `{kind}/{name}.yml`, root via `Buelo:DefinitionStorePath` (fallback `definitions`).
 - **Eject:** `CSharpEjector` generates a C# `IDocument` from the IR (declarative→code graduation).

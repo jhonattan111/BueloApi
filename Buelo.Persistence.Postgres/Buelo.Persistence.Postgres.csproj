@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!--
+    PostgreSQL migrations assembly. EF migrations carry provider-specific SQL, so Postgres needs its
+    own set, separate from the SQLite migrations that live in Buelo.Persistence. The active provider
+    is pointed at the right assembly via MigrationsAssembly(...) in AddBueloPersistence. The Design
+    package is design-time only (PrivateAssets=all) — it powers `dotnet ef` and never flows to the
+    app, keeping the EF-vs-Roslyn split intact.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Buelo.Persistence\Buelo.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

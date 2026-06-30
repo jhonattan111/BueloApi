@@ -12,9 +12,11 @@ engine lowers to a typed IR (`BueloDocument`) and renders with QuestPDF — **no
 
 - The editor sends the YAML + a JSON **data** object to `POST /api/report/render-declarative?format=pdf|excel`.
 - Inside the YAML, dynamic values come from `{{ ... }}` expressions evaluated against `data`.
-- **Keep reports self-contained**: rendering from the editor does not pass external modules, so do
-  **not** use `import:` / `use:` / `class:` (those need a styles/component module). Use inline
-  `style: { ... }` instead.
+- **Modules are supported.** When a report `import:`s modules, the editor gathers the workspace's
+  `*.{styles,component,theme,formats,lib,validator}.yml` definitions and sends them in the request's
+  `Modules`, so `import:` / `use:` / `class:` resolve. For a **standalone** report (e.g. one an AI
+  generates without shipping companion module files), prefer inline `style: { ... }` and skip
+  `import:` — a self-contained report always renders on its own.
 
 ## Top-level shape
 
@@ -172,7 +174,7 @@ Data: `{ "revenue": 48200, "expenses": 31750 }`
 ## Generation checklist (for an AI)
 
 1. Start with `kind: report` and a `name`.
-2. Keep it **self-contained** — inline `style:`, no `import:`/`use:`/`class:`.
+2. For a standalone report, keep it **self-contained** — inline `style:`, no `import:`/`use:`/`class:`. Use modules only when the matching `*.<kind>.yml` files exist in the workspace.
 3. Reference data only through `{{ data.* }}`, `item`, `index`, `group.*`.
 4. Use real stdlib names (`currency`, `cnpj`, `sum`, …) — they are fixed by the engine.
 5. Make sure the YAML is valid and every `{{ }}` resolves against the provided data shape.

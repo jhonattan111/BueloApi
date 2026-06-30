@@ -32,8 +32,11 @@ public static class PersistenceExtensions
         services.AddDbContextFactory<BueloDbContext>(options =>
         {
             if (provider is "postgres" or "postgresql" or "npgsql")
-                options.UseNpgsql(connectionString ?? "Host=localhost;Database=buelo");
+                // Npgsql migrations live in their own assembly (loaded via Buelo.Api's reference).
+                options.UseNpgsql(connectionString ?? "Host=localhost;Database=buelo",
+                    npgsql => npgsql.MigrationsAssembly("Buelo.Persistence.Postgres"));
             else
+                // SQLite migrations live here in Buelo.Persistence (the default assembly).
                 options.UseSqlite(connectionString ?? "Data Source=buelo.db");
         });
 
@@ -49,9 +52,10 @@ public static class PersistenceExtensions
     }
 
     /// <summary>
-    /// Brings the database schema up to date at startup. SQLite (the default) ships with migrations
-    /// and is migrated; other providers (Postgres) create the schema directly from the model until
-    /// provider-specific migrations are added. Idempotent — safe to call on every boot.
+    /// Brings the database schema up to date at startup. Both providers ship migrations (SQLite in
+    /// <c>Buelo.Persistence</c>, Postgres in <c>Buelo.Persistence.Postgres</c>), applied with
+    /// <c>Migrate()</c>; if the active provider's migrations assembly isn't present it falls back to
+    /// <c>EnsureCreated()</c>. Idempotent — safe to call on every boot.
     /// </summary>
     public static void EnsureBueloDatabase(this IServiceProvider services)
     {
@@ -59,7 +63,7 @@ public static class PersistenceExtensions
         var factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<BueloDbContext>>();
         using var db = factory.CreateDbContext();
 
-        if (db.Database.IsSqlite() && db.Database.GetMigrations().Any())
+        if (db.Database.GetMigrations().Any())
             db.Database.Migrate();
         else
             db.Database.EnsureCreated();

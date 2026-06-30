@@ -21,6 +21,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Buelo.Engine\Buelo.Engine.csproj" />
     <ProjectReference Include="..\Buelo.Persistence\Buelo.Persistence.csproj" />
+    <!-- Loaded so the PostgreSQL migrations assembly is available at runtime when that provider is selected. -->
+    <ProjectReference Include="..\Buelo.Persistence.Postgres\Buelo.Persistence.Postgres.csproj" />
   </ItemGroup>
 
 </Project>
