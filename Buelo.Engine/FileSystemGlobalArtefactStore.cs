@@ -55,17 +55,22 @@ public class FileSystemGlobalArtefactStore : IGlobalArtefactStore
 
     public async Task<GlobalArtefact?> GetByNameAsync(string name, string extension)
     {
-        var fileName = name + extension;
-        var contentPath = Path.Combine(_globalDir, fileName);
-        if (!File.Exists(contentPath))
-            return null;
+        // Case-insensitive lookup — matches InMemoryGlobalArtefactStore and stays correct on
+        // case-sensitive file systems (Linux), where a direct File.Exists would miss "Foo" vs "foo".
+        var targetFileName = name + extension;
+        foreach (var metaPath in Directory.EnumerateFiles(_globalDir, $"*{MetaSuffix}"))
+        {
+            var contentPath = metaPath[..^MetaSuffix.Length];
+            if (!string.Equals(Path.GetFileName(contentPath), targetFileName, StringComparison.OrdinalIgnoreCase))
+                continue;
 
-        var metaPath = contentPath + MetaSuffix;
-        var meta = await ReadMetaAsync(metaPath);
-        if (meta is null)
-            return null;
+            var meta = await ReadMetaAsync(metaPath);
+            if (meta is null)
+                continue;
 
-        return await BuildArtefactAsync(meta, contentPath);
+            return await BuildArtefactAsync(meta, contentPath);
+        }
+        return null;
     }
 
     public async Task<IReadOnlyList<GlobalArtefact>> ListAsync(string? extensionFilter = null)
