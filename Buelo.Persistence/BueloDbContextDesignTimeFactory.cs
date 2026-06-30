@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -8,6 +9,7 @@ namespace Buelo.Persistence;
 /// app. Migrations are authored against SQLite (the default provider); generate/update them with:
 /// <code>dotnet ef migrations add &lt;Name&gt; -p Buelo.Persistence -s Buelo.Persistence</code>
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class BueloDbContextDesignTimeFactory : IDesignTimeDbContextFactory<BueloDbContext>
 {
     public BueloDbContext CreateDbContext(string[] args)

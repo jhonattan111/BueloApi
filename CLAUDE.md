@@ -38,7 +38,12 @@ Buelo.Tests                ← xUnit (Engine/, Api/, Persistence/)
 dotnet build                          # from the repo root (uses Buelo.slnx)
 dotnet test                           # runs Buelo.Tests
 dotnet run --project Buelo.Api        # starts the API at http://localhost:5238
+
+# coverage (Cobertura → TestResults/**/coverage.cobertura.xml); exclusions in coverlet.runsettings
+dotnet test --collect:"XPlat Code Coverage" --settings coverlet.runsettings
 ```
+
+CI runs build + test + coverage on push/PR to `master` (`.github/workflows/ci.yml`).
 
 **After any change, `dotnet build` and `dotnet test` must pass with zero errors before considering the task done.**
 

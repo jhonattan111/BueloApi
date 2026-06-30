@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Code-coverage settings for "dotnet test". Run it with:
+    dotnet test (collect:"XPlat Code Coverage") (settings coverlet.runsettings)
+  Produces a Cobertura report under TestResults/<guid>/coverage.cobertura.xml.
+
+  Excludes code that doesn't carry testable logic, so the metric reflects real behavior:
+  composition root (Program), EF migrations (generated), the Postgres migrations assembly,
+  and anything marked [ExcludeFromCodeCoverage] / [GeneratedCode] / [CompilerGenerated].
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <ExcludeByFile>**/Migrations/**/*.cs</ExcludeByFile>
+          <Exclude>[Buelo.Api]Program,[Buelo.Persistence.Postgres]*</Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
