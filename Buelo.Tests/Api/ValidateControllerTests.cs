@@ -92,7 +92,7 @@ public class ValidateControllerTests
     }
 
     [Fact]
-    public async Task PostValidate_UnknownExtension_ReturnsInfoWarning()
+    public async Task PostValidate_UnknownExtension_ReturnsValidWithNoDiagnostics()
     {
         var controller = CreateController();
 
@@ -104,8 +104,9 @@ public class ValidateControllerTests
 
         var ok = Assert.IsType<OkObjectResult>(result);
         var validation = Assert.IsType<FileValidationResult>(ok.Value);
-        Assert.True(validation.Valid); // no errors, just a warning
-        Assert.Contains(validation.Warnings, w => w.Severity == "info");
+        Assert.True(validation.Valid);
+        Assert.Empty(validation.Errors);
+        Assert.Empty(validation.Warnings); // no "no validator" noise for unsupported extensions (e.g. YAML)
     }
 
     [Fact]

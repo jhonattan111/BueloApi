@@ -20,20 +20,10 @@ public class FileValidatorRegistry
         var validator = GetValidator(extension);
         if (validator is null)
         {
-            return new FileValidationResult
-            {
-                Valid = true,
-                Warnings =
-                [
-                    new ValidationDiagnostic
-                    {
-                        Message = $"No validator available for extension '{extension}'.",
-                        Line = 0,
-                        Column = 0,
-                        Severity = "info"
-                    }
-                ]
-            };
+            // No server-side validator for this extension (e.g. YAML, which the editor validates
+            // client-side via monaco-yaml + JSON Schemas). Treat as valid with no diagnostics —
+            // emitting a "no validator" warning here is just noise in the UI.
+            return new FileValidationResult { Valid = true };
         }
 
         // CsharpFileValidator supports both .cs and .csx with different parse modes.
