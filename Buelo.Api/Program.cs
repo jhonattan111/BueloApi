@@ -1,6 +1,6 @@
 using Buelo.Api;
 using Buelo.Engine;
-using Buelo.Engine.Persistence;
+using Buelo.Persistence;
 using QuestPDF.Infrastructure;
 using System.Text.Json.Serialization;
 
@@ -19,7 +19,9 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddBueloEngine();
 
-// Operational persistence (render history/audit): SQLite (dev) / PostgreSQL (prod) by config.
+// Database-backed persistence for all durable content (definitions, workspace, templates, global
+// artefacts, render history): SQLite (default, single-file) / PostgreSQL by config. Replaces the
+// in-memory / file-system defaults registered by AddBueloEngine().
 builder.Services.AddBueloPersistence(builder.Configuration);
 
 builder.Services.AddCors(opt =>
@@ -36,8 +38,11 @@ builder.Services.AddCors(opt =>
 
 var app = builder.Build();
 
-// Create the operational schema if missing (dev convenience; prod manages this with migrations).
+// Bring the database schema up to date (migrations on SQLite; EnsureCreated on Postgres).
 app.Services.EnsureBueloDatabase();
+
+// First-run import of the shipped example definitions into the database.
+await app.Services.SeedBueloContentFromDiskAsync(builder.Configuration);
 
 
 // Configure the HTTP request pipeline.

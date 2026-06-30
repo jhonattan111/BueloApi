@@ -22,13 +22,14 @@ Guide for AI agents (Claude Code) working in this repository. It is the **canoni
 ## Solution structure (`Buelo.slnx`)
 
 ```
-Buelo.Contracts   ← interfaces, models, enums. NO business logic, NO QuestPDF, NO Roslyn
-Buelo.Engine      ← Roslyn compilation, render (PDF/Excel), stores, validators
-Buelo.Api         ← ASP.NET Core controllers + Program.cs
-Buelo.Tests       ← xUnit (Engine/ and Api/)
+Buelo.Contracts    ← interfaces, models, enums. NO business logic, NO QuestPDF, NO Roslyn, NO EF
+Buelo.Engine       ← Roslyn compilation, render (PDF/Excel), in-memory/file-system stores, validators. NO EF
+Buelo.Persistence  ← EF Core: DbContext + migrations + DB-backed stores (definitions/workspace/templates/artefacts/render log). Contracts + EF only, NO Roslyn
+Buelo.Api          ← ASP.NET Core controllers + Program.cs
+Buelo.Tests        ← xUnit (Engine/, Api/, Persistence/)
 ```
 
-**Dependency direction (never invert):** `Buelo.Api → Buelo.Engine → Buelo.Contracts`
+**Dependency direction (never invert):** `Buelo.Api → { Buelo.Engine, Buelo.Persistence } → Buelo.Contracts`. `Engine` and `Persistence` are **siblings** — both depend on `Contracts`, never on each other. This split is deliberate: `Persistence` carries the EF Core **Design** tooling (for migrations) without colliding with `Engine`'s `Microsoft.CodeAnalysis.CSharp` (Roslyn).
 
 ## Commands
 
@@ -86,8 +87,10 @@ Pipeline: **YAML → `DeclarativeParser` (YamlDotNet) → `DeclarativeInterprete
 - **Kinds** (`kind:` at the top of the YAML): `report` (renderable), `component` (params + slots + `use`/`with`), `styles` (classes + `extends`), `theme`, `formats` (masks), `lib` (named expressions), `validator` (3 tiers). Modules indexed by `Declarative/Modules/ModuleRegistry`.
 - **Layout blocks** (`Declarative/DeclarativeAst.cs`): `text`, `markdown`, `table` (data-oriented, `groupBy`, footer with aggregation), `row`, `column`, `card`/`panel`, `image`, `spacer`, `divider`, `pageBreak`; `header`/`content`/`footer` bands; context vars `now`/`today`/`page`/`pageCount`/`report.name`.
 - **`{{ }}` expressions** (`Declarative/Expressions/`): lexer + recursive parser + evaluator. Arithmetic, comparison, logical, ternary, `??`, pipes, calls; stdlib (`currency`/`date`/`cpf`/`cnpj`/`percent`/`upper`/`join`/`mask`/`if`/`coalesce`…) + aggregation `sum`/`avg`/`count`/`min`/`max`.
-- **Definition persistence:** `IDefinitionStore` (`{kind}/{name}.yml`) — `FileSystemDefinitionStore` (default, git-friendly) and `InMemoryDefinitionStore` (tests). Root via config `Buelo:DefinitionStorePath` (fallback `definitions`).
-- **Operational (EF Core):** `BueloDbContext` + `IRenderLog` (render history). SQLite (dev) / Postgres (prod) via `Buelo:Database:Provider`. `AddBueloPersistence(config)` + `EnsureBueloDatabase()` at startup. Default without DB = `NullRenderLog`.
+- **Persistence (default: database).** `AddBueloPersistence(config)` (in `Buelo.Persistence`) makes EF Core the **source of truth for all durable content** — declarative definitions, the editor workspace, C# templates (+ version history), global artefacts — and the render log. It `Replace`s the in-memory/file-system defaults from `AddBueloEngine()`, so call it **after**. Stores are singletons over `IDbContextFactory<BueloDbContext>` (a short-lived context per op → safe to inject into the singleton engine; no captive dependency).
+- **Provider:** `Buelo:Database:Provider` = `sqlite` (default — single file `buelo.db`, zero server) or `postgres`; connection via `Buelo:Database:ConnectionString`. One entity model for both. Schema at startup via `EnsureBueloDatabase()`: SQLite ships **migrations** (`Buelo.Persistence/Migrations/`, applied with `Migrate()`); Postgres uses `EnsureCreated()` until Npgsql migrations are added. Add/refresh migrations with `dotnet ef migrations add <Name> -p Buelo.Persistence -s Buelo.Persistence` (works because `Persistence` has no Roslyn).
+- **Seeding:** first boot imports the shipped `definitions/{kind}/{name}.*` examples into the DB (idempotent, gated by a `_system/seeded` marker — user deletions don't resurrect). The on-disk `definitions/` thus becomes seed data; the DB is authoritative after.
+- **Alternative stores (not default):** the `FileSystem*` / `InMemory*` stores in `Buelo.Engine` remain for tests and opt-in (`AddBueloFileSystemStore()`); `NullRenderLog` is the no-DB fallback. On-disk `IDefinitionStore` layout = `{kind}/{name}.yml`, root via `Buelo:DefinitionStorePath` (fallback `definitions`).
 - **Eject:** `CSharpEjector` generates a C# `IDocument` from the IR (declarative→code graduation).
 - **Examples:** `Buelo.Api/definitions/` (reports `hello`/`invoice`/`employees` + modules + mock data in `data/`). See `Buelo.Api/definitions/README.md`.
 
@@ -121,7 +124,7 @@ Render/preview return `application/pdf` (or Excel). Use `?format=` when applicab
 `builder.Services.AddBueloEngine();` registers as singletons: `TemplateEngine`, `ITemplateStore → InMemoryTemplateStore`, `IGlobalArtefactStore → InMemory...`, `IWorkspaceStore/Enumerator → FileSystem...`, validators (`Json`, `Csharp`) + `FileValidatorRegistry`, renderers (`Pdf`, `Excel`) + `OutputRendererRegistry`, `IHelperRegistry → DefaultHelperRegistry`.
 
 - Uses `TryAdd` → register your own `IHelperRegistry`/`ITemplateStore` **first** to override.
-- Disk persistence: `AddBueloFileSystemStore()` (opt-in); root via `appsettings` `Buelo:TemplateStorePath` (fallback: `./templates`).
+- **Default app wiring:** `Program.cs` calls `AddBueloPersistence(config)` **after** `AddBueloEngine()`, which `Replace`s the content stores + render log with the EF-backed ones (DB becomes the source of truth). The in-memory/file-system registrations above are the fallback used by tests and `AddBueloFileSystemStore()` (opt-in; root via `Buelo:TemplateStorePath`, fallback `./templates`).
 
 ## Conventions
 
@@ -129,7 +132,7 @@ Render/preview return `application/pdf` (or Excel). Use `?format=` when applicab
 - Controllers use **primary constructor injection**; return explicit types (`Ok`, `NotFound`, `BadRequest`).
 - `ITemplateStore` is **async** in everything (`Task<T>`), even the in-memory impl.
 - Every new endpoint needs a test in `Buelo.Tests/Api/` (happy path + not found + bad input). Engine components: test in `Buelo.Tests/Engine/`.
-- `Program.cs`: `AddBueloEngine()` + `AddBueloPersistence(config)`; CORS for `http://localhost:5173`; OpenAPI only in Development; QuestPDF Community license; `EnsureBueloDatabase()`; public `/ping`; `ApiKeyMiddleware` (opt-in gate).
+- `Program.cs`: `AddBueloEngine()` + `AddBueloPersistence(config)`; CORS for `http://localhost:5173`; OpenAPI only in Development; QuestPDF Community license; `EnsureBueloDatabase()` then `SeedBueloContentFromDiskAsync(config)` (first-run example import); public `/ping`; `ApiKeyMiddleware` (opt-in gate).
 - **Config (env/appsettings):** `Buelo:ApiKey` (Bearer opt-in; empty = auth off), `Buelo:RenderTimeoutSeconds` (default 30; 0 disables), `Buelo:DefinitionStorePath` (default `definitions`), `Buelo:Database:Provider` (`sqlite`|`postgres`) + `Buelo:Database:ConnectionString`.
 - **Roslyn assembly cache** by content hash in `TemplateEngine` (repeated renders of the same C# template skip recompilation).
 - **Self-hosted model:** no sandbox/multi-tenant; whoever has the API key is trusted (see blueprint).

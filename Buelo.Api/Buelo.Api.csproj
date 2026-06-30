@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Buelo.Engine\Buelo.Engine.csproj" />
+    <ProjectReference Include="..\Buelo.Persistence\Buelo.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

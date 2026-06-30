@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Buelo.Api\Buelo.Api.csproj" />
     <ProjectReference Include="..\Buelo.Contracts\Buelo.Contracts.csproj" />
     <ProjectReference Include="..\Buelo.Engine\Buelo.Engine.csproj" />
+    <ProjectReference Include="..\Buelo.Persistence\Buelo.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>

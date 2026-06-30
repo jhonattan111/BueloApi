@@ -361,10 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-# Claude Code — settings pessoais
+# Claude Code — personal settings
 .claude/settings.local.json
 
-# Banco operacional SQLite (runtime, gerado por EnsureCreated)
+# SQLite database (runtime, created at startup by migrations / EnsureCreated)
+buelo.db
+buelo.db-shm
+buelo.db-wal
 buelo-operational.db
 buelo-operational.db-shm
 buelo-operational.db-wal
