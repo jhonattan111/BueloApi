@@ -8,6 +8,12 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    ignore:
+      # Microsoft.OpenApi is pinned to 2.x on purpose: AspNetCore.OpenApi 10.0.9 references the
+      # 2.x API, and 3.x breaks the build. Stay on 2.x (patch/minor still flow) until AspNetCore
+      # ships a build against Microsoft.OpenApi 3.x. See Buelo.Api.csproj.
+      - dependency-name: "Microsoft.OpenApi"
+        update-types: ["version-update:semver-major"]
     groups:
       # Batch the Microsoft/EF/ASP.NET families so version-locked packages bump together.
       dotnet-platform:
