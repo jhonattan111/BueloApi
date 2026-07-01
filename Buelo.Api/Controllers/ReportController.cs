@@ -1,4 +1,4 @@
-﻿using Buelo.Contracts;
+using Buelo.Contracts;
 using Buelo.Engine;
 using Buelo.Engine.Declarative;
 using Buelo.Engine.Renderers;

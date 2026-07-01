@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Buelo.Contracts;
 using Buelo.Engine;
 using QuestPDF;

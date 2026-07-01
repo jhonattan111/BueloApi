@@ -1,4 +1,4 @@
-﻿using Buelo.Contracts;
+using Buelo.Contracts;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using QuestPDF.Fluent;

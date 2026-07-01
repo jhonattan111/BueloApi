@@ -1,4 +1,4 @@
-﻿using Buelo.Contracts;
+using Buelo.Contracts;
 using Buelo.Engine;
 
 namespace Buelo.Tests.Engine;

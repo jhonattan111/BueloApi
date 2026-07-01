@@ -1,4 +1,4 @@
-﻿namespace Buelo.Contracts;
+namespace Buelo.Contracts;
 
 public class ReportContext
 {

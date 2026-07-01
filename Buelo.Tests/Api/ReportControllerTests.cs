@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Buelo.Api.Controllers;
 using Buelo.Contracts;
 using Buelo.Engine;

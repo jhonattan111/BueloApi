@@ -1,0 +1,19 @@
+# EditorConfig — baseline formatting conventions for the solution, enforced in CI by
+# `dotnet format --verify-no-changes`. Kept intentionally minimal (formatting only) so it matches
+# the existing code exactly; code-style analyzer rules can be promoted to warnings later.
+root = true
+
+[*]
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+
+[*.cs]
+indent_size = 4
+
+[*.{csproj,props,targets,slnx}]
+indent_size = 2
+
+[*.{json,yml,yaml}]
+indent_size = 2

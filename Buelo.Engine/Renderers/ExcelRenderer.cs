@@ -1,4 +1,4 @@
-﻿using Buelo.Contracts;
+using Buelo.Contracts;
 using ClosedXML.Excel;
 
 namespace Buelo.Engine.Renderers;
