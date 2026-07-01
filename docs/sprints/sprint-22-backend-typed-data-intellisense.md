@@ -17,30 +17,25 @@ Also covers: **report settings persistence** — replacing `sessionStorage` (los
 
 ## Dependencies
 
-- Sprint 21 backend complete ✅ (workspace filesystem + `WorkspaceController`)
-- Sprint 22 frontend workspace UX complete ✅ (multi-tabs, data source picker)
-
----
+- Sprint 21 backend (workspace filesystem + `WorkspaceController`)
+- Sprint 22 frontend workspace UX (multi-tabs, data source picker)
 
 ## Scope
 
-### In scope
+In scope: JSON schema inference from workspace files, C# typed class/record generation from
+inferred schema, new endpoint exposing generated type declarations, documented type-injection
+conventions for MonacoEditor.
 
-- JSON schema inference from workspace files
-- C# typed class/record generation from inferred schema
-- New endpoint exposing generated type declarations
-- Document type-injection conventions for MonacoEditor
+Out of scope: full Roslyn language server / LSP integration, type generation from external /
+uploaded JSON schemas (JSON Schema `.json`), recursive circular reference detection beyond
+depth-10 guard, automated round-trip tests with Monaco (frontend unit test).
 
-### Out of scope
+- [x] BE-22.1 — `JsonTypeInferrer` — JSON → C# type declarations
+- [x] BE-22.2 — `WorkspaceController` — `GET /api/workspace/types`
+- [x] BE-22.3 — `PageSettings` persistence contract clarification
+- [x] BE-22.4 — Tests
 
-- Full Roslyn language server / LSP integration
-- Type generation from external / uploaded JSON schemas (JSON Schema `.json`)
-- Recursive circular reference detection beyond depth-10 guard
-- Automated round-trip tests with Monaco (frontend unit test)
-
----
-
-## Tasks
+## Notes
 
 ### BE-22.1 — `JsonTypeInferrer` — JSON → C# type declarations
 
@@ -177,7 +172,7 @@ Cover:
 
 ---
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 1. `GET /api/workspace/types?path=data/mock.json` returns valid C# record declarations reflecting
    the JSON structure.
@@ -185,5 +180,3 @@ Cover:
 3. Depth guard prevents stack overflow on pathological inputs.
 4. All `JsonTypeInferrerTests` pass.
 5. Endpoint returns `400` for non-`.json` paths and `404` for missing files.
-
----

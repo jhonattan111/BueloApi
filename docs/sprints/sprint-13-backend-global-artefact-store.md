@@ -1,4 +1,4 @@
-# Sprint 13 — Backend: Global Artefact Store (Shared Files)
+# Sprint 13 (Backend) — Global Artefact Store (Shared Files)
 
 ## Goal
 Allow files to exist **independently from any specific template**. An `employee.json` data file, a `shared-header.buelo` partial, or a `formatters.csx` helper can be created once and referenced by any report, eliminating duplication across templates.
@@ -25,7 +25,7 @@ These conventions apply to both global artefacts and per-template artefacts. Tem
 
 ---
 
-## Backend Scope
+## Scope
 
 ### 13.1 — `GlobalArtefact` model
 

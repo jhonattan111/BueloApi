@@ -7,7 +7,7 @@ Guide for AI agents (Claude Code) working in this repository. It is the **canoni
 `BueloApi` is the **report generation API** of the Buelo product. It has **two authoring paths**:
 
 1. **C# (`IDocument`)** — receives C# code at runtime, compiles it with **Roslyn**, instantiates a `QuestPDF.Infrastructure.IDocument` class, and returns **PDF** (or **Excel** via ClosedXML). It is the full-power "escape hatch".
-2. **Declarative (YAML)** — receives a declarative definition, lowers it to a typed IR (`BueloDocument`), and composes via QuestPDF — **without Roslyn**. It is the primary authoring path. See [`docs/blueprint-schema-canonico.md`](../docs/blueprint-schema-canonico.md) and the **Declarative engine** section below.
+2. **Declarative (YAML)** — receives a declarative definition, lowers it to a typed IR (`BueloDocument`), and composes via QuestPDF — **without Roslyn**. It is the primary authoring path. See [`docs/reference/`](docs/reference/) (full format reference, one file per component) and the **Declarative engine** section below.
 
 > It is part of the Buelo product, alongside the front end [`BueloWeb`](../BueloWeb). The umbrella repo is [`Buelo`](..) (submodules). The front end consumes this API at `http://localhost:5238`.
 
@@ -145,4 +145,7 @@ Render/preview return `application/pdf` (or Excel). Use `?format=` when applicab
 
 ## History and reference
 
-`docs/` keeps the sprint history and detailed guides (`.buelo` DSL era → C#/QuestPDF era). It is **historical reference**, not the current state. `ARCHITECTURE.md` at the root has the rationale for the redesign.
+`docs/reference/` is the deep, current reference for the declarative YAML format and `PageSettings` —
+see [`docs/reference/README.md`](docs/reference/README.md). `docs/workflows.md` has short "how do I
+add X" recipes. `docs/sprints/` (indexed by `docs/sprint-history.md`) is the sprint log — **historical
+reference only**, not the current state; this file wins on any conflict.

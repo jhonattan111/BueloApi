@@ -1,4 +1,4 @@
-# Sprint 9 — Backend: Dynamic Helpers & Template Versioning
+# Sprint 9 (Backend) — Dynamic Helpers & Template Versioning
 
 ## Goal
 Enable per-template helper scripts (extending `IHelperRegistry` dynamically), and introduce template versioning so historical snapshots are preserved on every save. Closes the backend feature roadmap before frontend adaption sprints.
@@ -7,12 +7,18 @@ Enable per-template helper scripts (extending `IHelperRegistry` dynamically), an
 `[x] done`
 
 ## Dependencies
-- Sprint 8 complete ✅
+- Sprint 8
 - `TemplateHeader`, `TemplateHeaderParser`, `TemplateArtefact` implemented
 
----
+## Scope
+- [x] 9.1 — Runtime helper injection from `@helper` directives
+- [x] 9.2 — `@helper` artefact type
+- [x] 9.3 — Template versioning
+- [x] 9.4 — Version endpoints
+- [x] 9.5 — Render from version
+- [x] 9.6 — Unit Tests
 
-## Backend Scope
+## Notes
 
 ### 9.1 — Runtime helper injection from `@helper` directives
 
@@ -110,9 +116,7 @@ File: `Buelo.Tests/Engine/`
 - `DynamicHelpersTests.cs`: inline `@helper` callable inside Sections template
 - `TemplateVersioningTests.cs`: save twice → 2 versions stored; restore rewinds content
 
----
-
-## Acceptance Criteria
+### Acceptance Criteria
 - [x] Inline `@helper` functions callable inside Sections template without modifying `DefaultHelperRegistry`
 - [x] `@helper from "artefact-name"` loads helpers from a `.helpers.cs` artefact
 - [x] Every `SaveAsync` creates a version snapshot

@@ -1,4 +1,4 @@
-# Sprint 19 — Backend: Project-wide Validation
+# Sprint 19 (Backend) — Project-wide Validation
 
 ## Goal
 Replace per-file validation with a **project-wide validation** endpoint. Instead of validating a
@@ -9,12 +9,19 @@ report grouped by file path. This gives users a full picture of the project heal
 `[x] done`
 
 ## Dependencies
-- Sprint 16 complete ✅ (`FileValidatorRegistry`, per-extension validators)
-- Sprint 18 backend complete ✅ (no `IBueloProjectStore`; workspace is flat file system)
+- Sprint 16 (`FileValidatorRegistry`, per-extension validators)
+- Sprint 18 backend (no `IBueloProjectStore`; workspace is flat file system)
 
----
+## Scope
 
-## Tasks
+- [x] 19-B.1 — `ProjectValidationResult` model
+- [x] 19-B.2 — `IWorkspaceFileEnumerator` service
+- [x] 19-B.3 — `FileSystemWorkspaceFileEnumerator`
+- [x] 19-B.4 — `POST /api/validate/project` endpoint
+- [x] 19-B.5 — Register `IWorkspaceFileEnumerator` in DI
+- [x] 19-B.6 — Tests
+
+## Notes
 
 ### 19-B.1 — `ProjectValidationResult` model
 
@@ -167,7 +174,7 @@ File: `Buelo.Tests/Engine/ProjectValidationTests.cs` (new file)
 
 ---
 
-## API Contract
+### API Contract
 
 ```
 POST /api/validate/project

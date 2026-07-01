@@ -1,15 +1,19 @@
-# Sprint: Sections Mode — Fluent Declarative Template Syntax
+# Sprint 6 (Backend) — Sections Mode: Fluent Declarative Template Syntax
 
-## Motivation
-
-The current `Builder` mode still requires the author to write a complete
+## Goal
+The `Builder` mode still requires the author to write a complete
 `Document.Create(container => { container.Page(page => { ... }); }).GeneratePdf();`
-expression.  For the majority of reports this is repetitive boilerplate that
+expression. For the majority of reports this is repetitive boilerplate that
 obscures the meaningful parts: page configuration, header, content, and footer.
-
 This sprint introduces **`TemplateMode.Sections`** — a new mode where the author
 only declares the four semantic blocks of a page, and the engine assembles the
 `Document.Create` scaffolding automatically.
+
+## Status
+`[x] archived — DSL era, removed`
+
+## Dependencies
+- None stated in the original sprint doc
 
 ---
 
@@ -175,16 +179,14 @@ through automatically.
 
 ---
 
-## Implementation Tasks
+## Scope
 
-### Milestone 1 — Contracts & Enum
-
+**Milestone 1 — Contracts & Enum:**
 - [x] **T-01** Add `TemplateMode.Sections` to `TemplateMode.cs` with XML doc comment
 - [x] **T-02** Add `TemplateMode.Partial` to `TemplateMode.cs` with XML doc comment
 - [x] **T-03** Update `buelo-system.instructions.md` — add table rows for the two new modes
 
-### Milestone 2 — Parser
-
+**Milestone 2 — Parser:**
 - [x] **T-04** Create `Buelo.Engine/SectionsTemplateParser.cs`
   - `ParseImports(string source)` → `IReadOnlyList<ImportDirective>` (`Slot`, `NameOrId`)
   - `ParsePageConfig(string source)` → `string?` (lambda body or null)
@@ -192,8 +194,7 @@ through automatically.
   - `StripDirectives(string source)` → source without `@import` lines
 - [x] **T-05** Define `ImportDirective` record: `Slot` (enum: `Header | Footer | Content`), `Target` (string)
 
-### Milestone 3 — Engine Integration
-
+**Milestone 3 — Engine Integration:**
 - [x] **T-06** Inject `ITemplateStore` into `TemplateEngine` constructor; update `EngineExtensions` accordingly
 - [x] **T-07** Implement `TemplateEngine.WrapSectionsTemplate(string source, IReadOnlyList<SectionFragment> imports)` 
   - Resolves each `@import` target from the store (by Guid first, then by Name)
@@ -204,8 +205,7 @@ through automatically.
   - OR `page =>` appears outside a nested lambda (simple `TrimStart().StartsWith("page =>")` check)
 - [x] **T-09** Wire `WrapSectionsTemplate` into `RenderAsync` alongside `WrapBuilderTemplate`
 
-### Milestone 4 — Tests
-
+**Milestone 4 — Tests:**
 - [x] **T-10** `Buelo.Tests/Engine/SectionsTemplateParserTests.cs`
   - Parse `@import` lines (valid, invalid, mixed with code)
   - Parse page config block (present / absent)
@@ -219,8 +219,7 @@ through automatically.
   - Heuristic correctly identifies Sections, Builder, FullClass sources
 - [x] **T-13** `Buelo.Tests/Api/TemplatesControllerTests.cs` — exercise `POST /api/templates` with `Mode = Sections`
 
-### Milestone 5 — Docs & Cleanup
-
+**Milestone 5 — Docs & Cleanup:**
 - [x] **T-14** Update `README.md` — add Sections mode to the "Template Modes" section with a full example
 - [x] **T-15** Update `buelo-system.instructions.md` — document `SectionsTemplateParser` and import directive syntax
 - [x] **T-16** Add a `Sections` example in `PAGE_SETTINGS_GUIDE.md` showing how `PageSettings` interacts with the page config block

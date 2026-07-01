@@ -1,21 +1,32 @@
-# Sprint 20 — Backend: Remove Obsolete Functionality
+# Sprint 20 (Backend) — Remove Obsolete Functionality
 
 ## Goal
 The system has been `.buelo`-only since Sprint 14. `TemplateMode.Sections`, `TemplateMode.Partial`,
 `TemplateMode.FullClass`, and `TemplateMode.Builder` are dead code. The Roslyn C# compilation path,
 `SectionsTemplateParser`, and the bundle ZIP import/export are no longer needed. Remove all of it.
 
-> **Note:** No breaking-change risk. The system is not in production and no external consumers exist.
-
 ## Status
 `[x] done`
 
 ## Dependencies
-- Sprint 18 backend complete ✅ (`@project` directive; `OutputFormat` per template)
+- Sprint 18 backend (`@project` directive; `OutputFormat` per template)
 
----
+## Scope
 
-## Tasks
+- [x] 20-B.1 — Simplify `TemplateMode` enum
+- [x] 20-B.2 — Remove `SectionsTemplateParser`
+- [x] 20-B.3 — Remove Roslyn compilation path from `TemplateEngine`
+- [x] 20-B.4 — Remove bundle ZIP export/import from `TemplatesController`
+- [x] 20-B.5 — Remove `TemplateMode` guard from `ExcelRenderer`
+- [x] 20-B.6 — Remove `IReport` interface (if unused)
+- [x] 20-B.7 — Remove `InMemoryBueloProjectStore` (covered by Sprint 18 but verify)
+- [x] 20-B.8 — Clean up `TemplateRecord.Mode` default
+- [x] 20-B.9 — Update all tests that reference removed modes
+- [x] 20-B.10 — Update `TemplateHeaderParser` (if applicable)
+
+## Notes
+
+No breaking-change risk: the system was not in production and had no external consumers.
 
 ### 20-B.1 — Simplify `TemplateMode` enum
 
@@ -126,7 +137,7 @@ evaluate whether it is still needed. If it is now dead code, delete it and remov
 
 ---
 
-## Files / Code to Delete
+### Files / Code to Delete
 
 | Item | Type |
 |------|------|

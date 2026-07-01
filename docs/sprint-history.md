@@ -1,9 +1,13 @@
-﻿# TASKS.md — Buelo Backend
+﻿# Sprint history — Buelo Backend
 
 ## Overview
-Source of truth for backend sprint planning. Each sprint has its own file in `ai/sprints/`.
+Historical log of backend sprints. Each sprint has its own file in `sprints/`. **Not current state** —
+[`../CLAUDE.md`](../CLAUDE.md) wins on any conflict.
 
-> **Current architecture**: Pure C# templates implementing QuestPDF's `IDocument`. The custom DSL (.buelo) has been removed. See `ARCHITECTURE.md` at the root for the full picture.
+> **Current architecture**: two authoring paths — **declarative YAML** (primary, no Roslyn — see
+> [`reference/`](reference/)) and **C# `IDocument`** (the escape hatch, compiled with Roslyn). This
+> index stops at Sprint 22/B5; the declarative engine, DB-backed persistence, and infra work that
+> followed are tracked in the umbrella repo's `docs/handoff.md`, not as numbered sprints.
 
 ## Sprint Index
 
@@ -50,40 +54,12 @@ Sprint B4 (Multi-Format Output)
     ↓
 Sprint B5 (Typed Data IntelliSense — JsonTypeInferrer + /api/workspace/types)
     ↓
-[Frontend sprints F1–F4 — see BueloWeb/ai/TASKS.md]
+[Frontend sprints — see BueloWeb/docs/sprint-history.md]
 ```
 
-## Project Structure (reference)
+## Project structure & conventions
 
-```
-Buelo.Contracts/        ← shared interfaces, models, enums (no business logic)
-  PageSettings.cs       ← page size, margins, colors, watermark, font
-  ReportRequest.cs      ← Template (C#), Data, PageSettings
-  TemplateRecord.cs     ← stored template with MockData + PageSettings
-  TemplateMode.cs       ← FullClass only (IDocument)
-Buelo.Engine/           ← C# compilation, PDF generation, template store implementations
-  TemplateEngine.cs     ← core: compile C#, bind data, render via QuestPDF
-  Renderers/
-    PdfRenderer.cs      ← QuestPDF
-    ExcelRenderer.cs    ← ClosedXML
-  Validators/
-    CsharpFileValidator.cs
-    JsonFileValidator.cs
-Buelo.Api/              ← ASP.NET Core controllers and startup
-  Controllers/
-    ReportController.cs          ← /validate, /render
-    TemplatesController.cs       ← CRUD templates
-    GlobalArtefactsController.cs ← data sources
-  Program.cs
-Buelo.Tests/
-  Engine/               ← unit tests for engine components
-  Api/                  ← controller-level tests
-```
-
-## Conventions
-
-- Each sprint modifies **Contracts → Engine → Api** in that order (dependency direction)
-- Unit tests live in `Buelo.Tests/` alongside the layer being tested
-- Templates are C# classes implementing `QuestPDF.Infrastructure.IDocument`
-- No BueloDsl references — all DSL code has been removed
-- After completing any sprint task, run `dotnet build` and `dotnet test` before marking done
+Superseded by [`../CLAUDE.md`](../CLAUDE.md) — its "Solution structure" and "Conventions" sections are
+the current, maintained version of what used to be duplicated here. Sprint-specific process note that
+still applies: each sprint changes **Contracts → Engine → Api** in that order, and `dotnet build` +
+`dotnet test` must pass before marking a sprint done.

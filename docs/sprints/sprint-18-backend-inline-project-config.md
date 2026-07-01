@@ -1,4 +1,4 @@
-# Sprint 18 — Backend: Inline @project Config + OutputFormat per Template
+# Sprint 18 (Backend) — Inline @project Config + OutputFormat per Template
 
 ## Goal
 Remove the standalone `project.bueloproject` file concept. Page settings and defaults are now declared
@@ -22,7 +22,7 @@ lets you open any report file and see its configuration without navigating to a 
 
 ---
 
-## Tasks
+## Scope
 
 ### 18-B.1 — `OutputFormat` enum + `TemplateRecord.OutputFormat`
 

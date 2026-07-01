@@ -1,14 +1,15 @@
-# Sprint 17 — Backend: Extensible Output Renderers (PDF + Excel Foundation)
+# Sprint 17 (Backend) — Extensible Output Renderers (PDF + Excel Foundation)
 
 ## Goal
 Decouple the render pipeline from QuestPDF. Introduce an `IOutputRenderer` abstraction so alternative output formats (Excel, HTML, DOCX) can be added as pluggable implementations without touching core engine logic. Implement `PdfRenderer` (wrapping existing QuestPDF path) and `ExcelRenderer` (initial implementation using ClosedXML). The format is selected via a `format` query parameter on render endpoints.
 
 ## Status
-`[ ] pending`
+`[x] done`
 
 ## Dependencies
-- Sprint 14 complete ✅ (`BueloDslDocument` AST available for format-specific rendering)
-- Sprint 15 complete ✅ (`BueloProject.DefaultOutputFormat` available)
+- Sprint 14 (`BueloDslDocument` AST) — planned as the format-specific rendering source; superseded by
+  the later declarative `BueloDocument` IR, see Notes.
+- Sprint 15 (`BueloProject.DefaultOutputFormat`) — superseded by `TemplateRecord.OutputFormat` (Sprint 18)
 
 ---
 
@@ -21,7 +22,7 @@ Decouple the render pipeline from QuestPDF. Introduce an `IOutputRenderer` abstr
 
 ---
 
-## Backend Scope
+## Scope
 
 ### 17.1 — `IOutputRenderer` interface
 
@@ -210,3 +211,12 @@ File: `Buelo.Tests/Api/ReportControllerTests.cs` (additions)
 - `PostRender_FormatPdf_ReturnsApplicationPdf`
 - `PostRender_FormatExcel_ReturnsXlsxContentType`
 - `GetFormats_ReturnsAllRegisteredFormats`
+
+## Notes
+
+Marked done per `sprint-history.md`'s index — this file's own status said `pending`, but
+`IOutputRenderer`/`OutputRendererRegistry`/`PdfRenderer`/`ExcelRenderer` (ClosedXML) are all live in
+the current codebase (see `../../CLAUDE.md`), and `?format=` is a real query param on the render
+endpoints today. What changed from the plan: rendering targets the later declarative `BueloDocument` IR
+(`TableNode` → worksheet, etc.), not the `.buelo`-DSL AST this sprint was scoped against — the DSL
+itself never shipped (scrapped in Sprint 20).

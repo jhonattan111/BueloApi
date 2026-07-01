@@ -1,13 +1,17 @@
-# Sprint B2: Report API & Mock Data Flow
+# Sprint B2 (Backend) — Report API & Mock Data Flow
 
-## 🎯 Objective
-Implement the complete rendering flow: JSON data → C# template → PDF using pure QuestPDF, with mock data for validation.
+## Goal
+Implement the complete rendering flow: JSON data → C# template → PDF using pure QuestPDF, with mock
+data for validation.
 
-## ✅ Tasks
+## Status
+`[x] done`
 
-### Backend
+## Dependencies
+- None
 
-#### 1. Template Storage with MockData
+## Scope
+**Template Storage with MockData:**
 - [ ] Create a few example templates with MockData:
   - Invoice template with fictional data
   - Financial Dashboard with KPIs
@@ -15,7 +19,7 @@ Implement the complete rendering flow: JSON data → C# template → PDF using p
 - [ ] Verify that MockData is being persisted correctly
 - [ ] Implement MockData validation against the expected format
 
-#### 2. ReportController Endpoints
+**ReportController Endpoints:**
 - [x] POST /api/report/validate - template validation
 - [ ] POST /api/report/render - rendering with mock data
   - Receive: Template, Data, PageSettings
@@ -23,33 +27,25 @@ Implement the complete rendering flow: JSON data → C# template → PDF using p
 - [ ] GET /api/report/templates - list templates
 - [ ] GET /api/report/templates/{id} - get a specific template
 
-#### 3. C# Template Validation
+**C# Template Validation:**
 - [ ] Verify template compilation (without dynamic Roslyn for now)
 - [ ] Return clear syntax errors
 - [ ] Validate presence of the IDocument interface
 
-### Frontend
-
-#### 1. Report Editor Interface
+**Frontend (companion sprint):**
 - [ ] Create tabs: Editor, Preview, Settings
 - [ ] Monaco Editor with C# syntax highlighting
 - [ ] Preview panel showing the result in real time
 - [ ] On-keystroke validation
-
-#### 2. Report Settings Panel
-- [ ] Form to configure:
-  - Data source (JSON selector)
-  - Page size
-  - Margins
-  - Colors
+- [ ] Form to configure: data source (JSON selector), page size, margins, colors
 - [ ] Preview of the applied settings
-
-#### 3. Mock Data Integration
 - [ ] Load MockData from the template
 - [ ] Allow editing MockData inline
 - [ ] Update the preview automatically
 
-## 📊 Flow Example
+## Notes
+
+Flow example:
 ```
 1. User writes a C# template (implements IDocument)
 2. User clicks "Preview"
@@ -59,5 +55,4 @@ Implement the complete rendering flow: JSON data → C# template → PDF using p
 6. Frontend displays the PDF preview
 ```
 
-## 🚀 Next Sprint
-Sprint B3: Global Artefacts & Data Sources (real data)
+Next sprint at the time of writing: Sprint B3 — Global Artefacts & Data Sources (real data).

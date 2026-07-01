@@ -17,7 +17,7 @@ There are **two authoring paths**, both rendered with [QuestPDF](https://www.que
 > this API at `http://localhost:5238`). Umbrella repo: [`Buelo`](..) (git submodules).
 >
 > The **canonical engineering doc is [`CLAUDE.md`](CLAUDE.md)**; the declarative format has a
-> dedicated reference at [`docs/declarative-format.md`](docs/declarative-format.md).
+> dedicated reference at [`docs/reference/`](docs/reference/).
 
 ## Stack
 
@@ -104,7 +104,7 @@ content:
 Blocks (`text`, `markdown`, `table`, `row`, `column`, `card`, `image`, `divider`, …), the `{{ }}`
 expression language and its standard library, bands, grouping/aggregation, and the reusable modules
 (`styles`/`component`/`theme`/`formats`/`lib`/`validator`) are documented in full in
-[`docs/declarative-format.md`](docs/declarative-format.md).
+[`docs/reference/`](docs/reference/) — one file per component.
 
 ### C# (`IDocument`)
 

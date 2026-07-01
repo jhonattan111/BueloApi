@@ -1,14 +1,15 @@
-# Sprint 16 — Backend: Per-File Type Validation
+# Sprint 16 (Backend) — Per-File Type Validation
 
 ## Goal
 Provide server-side validation for every file type the workspace handles. The frontend can POST any file's content with its extension to get structured errors back — line numbers, columns, severity — which are then used to display Monaco squiggles. Each validator is focused: `.buelo` validates DSL syntax, `.json` validates JSON structure, and `.cs`/`.csx` validates C# syntax via Roslyn without full compilation.
 
 ## Status
-`[ ] pending`
+`[x] done`
 
 ## Dependencies
-- Sprint 14 complete ✅ (`BueloDslParser` with error reporting available)
-- Roslyn (`Microsoft.CodeAnalysis.CSharp`) already in project ✅
+- Sprint 14 (`BueloDslParser`) — planned dependency for `BueloDslValidator` (16.3) only; the DSL was
+  scrapped before that part shipped, see Notes.
+- Roslyn (`Microsoft.CodeAnalysis.CSharp`) already in project
 
 ---
 
@@ -51,7 +52,7 @@ Error/warning object:
 
 ---
 
-## Backend Scope
+## Scope
 
 ### 16.1 — `ValidationResult` update
 
@@ -219,3 +220,11 @@ File: `Buelo.Tests/Api/ValidateControllerTests.cs`
 - `PostValidate_BueloExtension_RoutesToBueloDslValidator`
 - `PostValidate_UnknownExtension_ReturnsInfoWarning`
 - `PostValidate_Always200_EvenWithErrors`
+
+## Notes
+
+Marked done per `sprint-history.md`'s index — this file's own status said `pending`, but
+`FileValidatorRegistry`, `JsonFileValidator`, and `CsharpFileValidator` (16.2/16.4/16.5/16.6/16.8) are
+all live in the current codebase, wired via `AddBueloEngine()` (see `../../CLAUDE.md`). The one part
+that did **not** ship as planned: `BueloDslValidator` (16.3) targeted the `.buelo` DSL, which was
+scrapped in Sprint 20 before this validator was built — `.buelo` was never a supported extension here.

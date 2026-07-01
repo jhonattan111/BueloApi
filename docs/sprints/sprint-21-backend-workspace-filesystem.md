@@ -1,4 +1,4 @@
-# Sprint 21 (Backend) - Workspace Filesystem + Imports + Data Source Binding
+# Sprint 21 (Backend) — Workspace Filesystem + Imports + Data Source Binding
 
 ## Goal
 
@@ -17,30 +17,28 @@ Move backend from template-centric/global-artefact-centric model to a real works
 
 ## Dependencies
 
-- Sprint 20 backend complete
-- Frontend Sprint 21 complete
-
----
+- Sprint 20 backend
+- Frontend Sprint 21
 
 ## Scope
 
-### In scope
+In scope: new workspace tree/file APIs, new engine store abstraction for folder/file operations,
+import resolver for `.buelo` references, report settings persistence for `dataSourcePath`,
+rendering/validation by file path.
 
-- New workspace tree/file APIs
-- New engine store abstraction for folder/file operations
-- Import resolver for `.buelo` references
-- Report settings persistence for `dataSourcePath`
-- Rendering/validation by file path
+Out of scope: role-based permissions, external package registry/import from URLs, multi-workspace
+tenancy.
 
-### Out of scope
+- [x] BE-21.1 — Add workspace filesystem contracts
+- [x] BE-21.2 — Implement filesystem workspace store
+- [x] BE-21.3 — Remove global artefact dependency from render path
+- [x] BE-21.4 — Import resolver for workspace paths
+- [x] BE-21.5 — Render from `.buelo` file path + bound data source
+- [x] BE-21.6 — Workspace tree + file operations API
+- [x] BE-21.7 — Project-wide validation over folders/files
+- [x] BE-21.8 — Compatibility and migration safeguards
 
-- Role-based permissions
-- External package registry/import from URLs
-- Multi-workspace tenancy
-
----
-
-## Tasks
+## Notes
 
 ### BE-21.1 - Add workspace filesystem contracts
 
@@ -189,7 +187,7 @@ Changes:
 
 ---
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 1. Backend can create nested folders and files of types `.buelo`, `.json`, `.cs`, `.csx`, and generic files.
 2. Render endpoint accepts a `.buelo` file path and renders correctly.
@@ -198,9 +196,7 @@ Changes:
 5. Global artefact is no longer required for normal workflow.
 6. Validation returns folder-aware, path-based results.
 
----
-
-## Tests
+### Tests
 
 - Unit tests (`Buelo.Tests/Engine`):
   - path normalization and traversal protection

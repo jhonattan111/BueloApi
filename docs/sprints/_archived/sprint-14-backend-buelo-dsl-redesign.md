@@ -1,4 +1,4 @@
-# Sprint 14 — Backend: .buelo DSL Redesign (YAML-like Component Language)
+# Sprint 14 (Backend) — .buelo DSL Redesign (YAML-like Component Language)
 
 ## Goal
 Replace the raw C# QuestPDF fluent API as the primary authoring model with a declarative, YAML-inspired `.buelo` component language. Reports become component trees that are parsed, validated, and compiled to QuestPDF at render time. The language is designed to be learnable without C# knowledge, extensible with new components, and suitable for high-quality IntelliSense support.
@@ -6,7 +6,7 @@ Replace the raw C# QuestPDF fluent API as the primary authoring model with a dec
 Backward compatibility: the existing C# Sections mode continues to work. `.buelo` mode is opt-in via the new `TemplateMode.BueloDsl` value.
 
 ## Status
-`[ ] pending`
+`[x] archived — DSL era, removed`
 
 ## Dependencies
 - Sprint 13 complete ✅ (global artefact store + file extension conventions)
@@ -184,7 +184,7 @@ Used inside `text:` values and `style:` color values:
 
 ---
 
-## Backend Scope
+## Scope
 
 ### 14.1 — Add `BueloDsl` to `TemplateMode`
 

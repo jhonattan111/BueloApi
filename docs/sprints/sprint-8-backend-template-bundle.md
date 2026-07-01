@@ -1,4 +1,4 @@
-# Sprint 8 — Backend: Template Bundle & File-Scoped Artefacts
+# Sprint 8 (Backend) — Template Bundle & File-Scoped Artefacts
 
 ## Goal
 Introduce the concept of a **TemplateBundle** — a report is composed of multiple named artefacts (template source, mock data, data schema, helpers) stored and managed individually. The `TemplateRecord` evolves to support multi-artefact storage. A `FileSystemTemplateStore` is added as an optional persistence backend.
@@ -7,12 +7,18 @@ Introduce the concept of a **TemplateBundle** — a report is composed of multip
 `[x] done`
 
 ## Dependencies
-- Sprint 7 complete ✅
+- Sprint 7
 - `TemplateHeader`, `TemplateHeaderParser` implemented
 
----
+## Scope
+- [x] 8.1 — Add `Artefacts` collection to `TemplateRecord`
+- [x] 8.2 — Artefact resolution in `TemplateEngine`
+- [x] 8.3 — Artefact CRUD endpoints
+- [x] 8.4 — `FileSystemTemplateStore`
+- [x] 8.5 — Export / Import endpoints
+- [x] 8.6 — Unit Tests
 
-## Backend Scope
+## Notes
 
 ### 8.1 — Add `Artefacts` collection to `TemplateRecord`
 
@@ -103,9 +109,7 @@ File: `Buelo.Tests/Engine/FileSystemTemplateStoreTests.cs`
 - `ListAsync` returns all saved records
 - `DeleteAsync` cleans up directory
 
----
-
-## Acceptance Criteria
+### Acceptance Criteria
 - [x] `TemplateRecord` has `Artefacts` list, backward compatible (empty = no artefacts)
 - [x] Artefact CRUD endpoints functional
 - [x] `@data from "mockdata"` resolves from same-template artefact during render

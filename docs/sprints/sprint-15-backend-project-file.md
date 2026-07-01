@@ -1,10 +1,10 @@
-# Sprint 15 — Backend: Project File & Workspace Settings
+# Sprint 15 (Backend) — Project File & Workspace Settings
 
 ## Goal
 Introduce a **project-level configuration file** (`.bueloproject`) that stores workspace-wide defaults: page settings, global mock data, and project metadata. The API exposes a `/api/project` endpoint for reading and updating this configuration. Settings cascade: project defaults → template record defaults → per-request overrides.
 
 ## Status
-`[ ] pending`
+`[x] done`
 
 ## Dependencies
 - Sprint 13 complete ✅ (global artefact store)
@@ -44,7 +44,7 @@ File name: `project.bueloproject` (stored at `{TemplateStorePath}/project.buelop
 
 ---
 
-## Backend Scope
+## Scope
 
 ### 15.1 — `BueloProject` model
 

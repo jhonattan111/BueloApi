@@ -1,10 +1,10 @@
-# Sprint 7 — Backend: DSL Foundation (Deprecate FullClass/Builder, Header Directives)
+# Sprint 7 (Backend) — DSL Foundation (Deprecate FullClass/Builder, Header Directives)
 
 ## Goal
 Establish the Buelo Report DSL as the canonical authoring model. Deprecate `FullClass` and `Builder` modes. Add support for `@data`, `@settings`, and `@schema` header directives parsed from the template source before compilation.
 
 ## Status
-`[x] done`
+`[x] archived — DSL era, removed`
 
 ## Dependencies
 - Sprint 6 complete ✅
@@ -12,7 +12,7 @@ Establish the Buelo Report DSL as the canonical authoring model. Deprecate `Full
 
 ---
 
-## Backend Scope (Buelo.Engine / Buelo.Contracts)
+## Scope (Buelo.Engine / Buelo.Contracts)
 
 ### 7.1 — Deprecate `FullClass` and `Builder` in `TemplateMode`
 
