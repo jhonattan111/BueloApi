@@ -30,6 +30,15 @@ jobs:
           --collect:"XPlat Code Coverage" --settings coverlet.runsettings
           --results-directory ./TestResults
 
+      - name: Vulnerable dependency scan
+        run: |
+          dotnet list Buelo.slnx package --vulnerable --include-transitive 2>&1 | tee vuln.txt
+          if grep -Eiq '\b(High|Critical)\b' vuln.txt; then
+            echo "::error::High/Critical vulnerable NuGet packages found — see the log above."
+            exit 1
+          fi
+          echo "No High/Critical vulnerable packages."
+
       - name: Coverage report
         if: always()
         run: |

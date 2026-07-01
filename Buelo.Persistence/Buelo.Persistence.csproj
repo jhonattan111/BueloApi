@@ -15,6 +15,10 @@
   -->
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.9" />
+    <!-- Pin the SQLite native bundle above the transitive 2.1.11 that EF Core pulls in: 2.1.11 has a
+         known high-severity advisory (GHSA-2m69-gcr7-jv3q) and the 2.1.x line ends there, so the fix
+         is 3.x. Drop this once EF Core references a patched SQLitePCLRaw transitively. -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>

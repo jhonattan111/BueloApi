@@ -8,6 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <!-- Override the transitive Microsoft.OpenApi 2.0.0 (advisory GHSA-v5pm-xwqc-g5wc — circular
+         schema refs terminate parsing; vulnerable <= 2.7.4) with the patched 2.7.5. Drop once
+         AspNetCore.OpenApi references the patched version transitively. -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
   </ItemGroup>
 
   <!-- Declarative definitions (definitions/**: report/component/styles/... as YAML) and any
