@@ -17,6 +17,11 @@
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
           <ExcludeByFile>**/Migrations/**/*.cs</ExcludeByFile>
           <Exclude>[Buelo.Api]Program,[Buelo.Persistence.Postgres]*</Exclude>
+          <!-- Floor, not a target: set a bit below the measured 84.1% line / 68% branch
+               (2026-07-01) so real regressions fail CI without flaking on small fluctuations. -->
+          <Threshold>80,65</Threshold>
+          <ThresholdType>line,branch</ThresholdType>
+          <ThresholdStat>total</ThresholdStat>
         </Configuration>
       </DataCollector>
     </DataCollectors>
