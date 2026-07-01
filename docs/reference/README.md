@@ -37,4 +37,3 @@ a standalone report (e.g. one an AI generates without shipping companion module 
 
 - [`../../CLAUDE.md`](../../CLAUDE.md) — architecture, DI wiring, both engines' pipelines
 - [`../workflows.md`](../workflows.md) — how to add an endpoint / declarative block / stdlib function
-- [`../../../docs/blueprint-schema-canonico.md`](../../../docs/blueprint-schema-canonico.md) (umbrella repo) — the original design rationale and IR mapping behind this format
